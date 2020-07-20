@@ -1,0 +1,96 @@
+{
+    "cards": [
+        {
+            "Number": 1,
+            "Count": 5,
+            "Name": "Guard",
+            "Description": "Name a non-Guard card and choose another player. If that player has that card, he or she is out of the round.",
+            "Actions": [
+                "Name a card",
+                "Choose another player",
+                "If player has named card, player out of round"
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 2,
+            "Count": 2,
+            "Name": "Priest",
+            "Description": "Look at another players hand.",
+            "Actions": [
+                "Choose another player",
+                "Look at chosen players hand."
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 3,
+            "Count": 2,
+            "Name": "Baron",
+            "Description": "You and another player secretly\ncompare hands. The player with \nthe lower value is out of the round.",
+            "Actions": [
+                "Choose another player",
+                "Secretly compare hands.",
+                "The lower value is out of the round."
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 4,
+            "Count": 2,
+            "Name": "Handmaid",
+            "Description": "Until your next turn, ignore all\neffects from other players' cards",
+            "Actions": [
+                "Protection from other attacks"
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 5,
+            "Count": 2,
+            "Name": "Prince",
+            "Description": "Choose any player (including\nyourself) to discard his or her\nhand and draw a new card.",
+            "Actions": [
+                "Choose any player",
+                "Target player discards hand and draws a new card"
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 6,
+            "Count": 1,
+            "Name": "King",
+            "Description": "Trade hands with another\nplayer of your choice.",
+            "Actions": [
+                "Choose another player",
+                "Player and target player swap hands."
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 7,
+            "Count": 1,
+            "Name": "Countess",
+            "Description": "If you have this card and the\nKing or Prince in your hand,\nyou must discard this card.",
+            "Actions": [
+                "None"
+            ],
+            "Full Rules": ""
+        },
+        {
+            "Number": 8,
+            "Count": 1,
+            "Name": "Princess",
+            "Description": "If you discard this card,\nyou are out of the round.",
+            "Actions": [
+                "None"
+            ],
+            "Full Rules": ""
+        }
+    ],
+    "functions": [
+        {
+            "action": "def \n            yep\n        again\n            ok"
+        }
+    ]
+}

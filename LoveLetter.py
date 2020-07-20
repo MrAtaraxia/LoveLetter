@@ -3,18 +3,37 @@
 python LoveLetter.py
 A basic LoveLetter Game.
 
-
+DONE:
 Have the cards.
-
-TODO:
 Have the cards be able to be shuffled
 Have players draw cards.
+
+
+
+TODO:
 Allow for more than 2 players
+Bury the first card.
+Have the card that is 'in play' be out of the hand.
+
+Look Up:
+How to do Tests with random?
+If card is __ then do __ but how do you know you will get the card to do the tests on?
+
+I want to add tests to all of these games.
+
+TODO:
+Add networking/socket things to have this work like a client server.
+# Basically make it ACTUALLY work... yep.
+
+
+
 
 
 
 """
 import random
+import json
+from submodule import child
 
 
 def make_the_deck():
@@ -66,8 +85,14 @@ def make_the_deck():
                              ("If you discard this card you are out of round."))]
 
     # deck = guards_1 + priest_2 + baron_3 + handmaid_4 + prince_5 + king_6 + countess_7 + princess_8
-    deck = [*guards_1, *priest_2, *baron_3, *handmaid_4, *prince_5, *king_6, *countess_7, *princess_8]
-    return deck
+    # deck = [*guards_1, *priest_2, *baron_3, *handmaid_4, *prince_5, *king_6, *countess_7, *princess_8]
+    new_deck = []
+    with open('data.json') as json_file:
+        data = json.load(json_file)
+        for p in data['cards']:
+            for i in range(p["Count"]):
+                new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
+    return new_deck
 
 
 def main_game_loop():
@@ -89,10 +114,27 @@ def main_game_loop():
 
             if the_input.lower() == "exit":
                 continue_the_loop = False
+                to_next_turn = True
                 using_exit = True
             has_countess = False
             discard_princess = False
             # CHECK FOR Countess!!!
+            if "Countess" in game.remaining_players[game.current_player].cards \
+             and  ("Prince" in game.remaining_players[game.current_player].cards \
+                or "King" in game.remaining_players[game.current_player].cards):
+                for card in game.remaining_players[game.current_player].cards:
+                    if the_input.lower() == card.name.lower() == "countess":
+                        for action in card.actions:
+                            turn = game.card_actions(action)
+                            if turn == "Finished":
+                                to_next_turn = True
+                                game.discard_a_card(game.remaining_players[game.current_player], card)
+                    else:
+                        print("You must play the Countess since you have")
+                        print("the Prince or King in your hand.")
+
+            """
+            # used in to shorten things.
             for card in game.remaining_players[game.current_player].cards:
                 if card.name == "Countess":
                     has_countess = True
@@ -100,15 +142,20 @@ def main_game_loop():
                 for card in game.remaining_players[game.current_player].cards:
                     if card.name == "Prince" or card.name == "King":
                         discard_princess = True
+            
             if discard_princess:
                 for card in game.remaining_players[game.current_player].cards:
                     if the_input.lower() == card.name.lower() == "Countess":
                         for action in card.actions:
-                            game.card_actions(action)
+                            turn = game.card_actions(action)
+                            if turn == "Finished":
+                                to_next_turn = True
+                                game.discard_a_card(game.remaining_players[game.current_player], card)
                     else:
                         print("You must play the Countess since you have")
                         print("the Prince or King in your hand.")
 
+            """
             # Non Countess Path.
             for card in game.remaining_players[game.current_player].cards:
                 if the_input.lower() == card.name.lower():
@@ -116,7 +163,6 @@ def main_game_loop():
                         turn = game.card_actions(action)
                         if turn == "Finished":
                             to_next_turn = True
-                            # This might have issues with the discard hand card.
                             game.discard_a_card(game.remaining_players[game.current_player], card)
         game.next_player()
     end_game(using_exit)
@@ -161,20 +207,27 @@ class ObjectPlayer:
         if self.ai:
             self.ai.owner = self
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r}"
+
 
 class ObjectGame:
     def __init__(self, number_of_players=2):
         self.number_of_players = number_of_players
         self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
         self.deck = make_the_deck()
+
+
         # The following are used for the round and restored between rounds.
         self.current_deck = self.deck.copy()
         self.remaining_players = self.players.copy()
         self.current_player = 0
         self.discarded_cards = []
         self.list_of_cards = ["guard", "priest", "baron", "handmaid", "prince", "king", "countess", "princess"]
-        print(self.current_deck)
-        print(self.current_deck)
+        
         for card in self.current_deck:
             print(card.name)
         # Shuffle the deck
@@ -223,6 +276,7 @@ class ObjectGame:
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
             print(player.name, end="   ")
+
         print("""
         
         
@@ -268,6 +322,7 @@ class ObjectGame:
                         continue
                     elif selected_card == card:
                         self.selected_card = card
+                        print(card)
                         return selected_card
                     else:
                         "That is not one of the card choices. Please try again."
@@ -336,28 +391,35 @@ class ObjectGame:
                         return target_player
 
             if action == "If player has named card, player out of round":
-                if self.selected_player.cards == self.selected_card:
-                    print(self.selected_player.name + "'s card IS " + self.selected_card)
-                    print(self.selected_player.name + " is now out of the round.")
-                    self.remaining_players.remove(self.selected_player.name)
-                else:
-                    print(self.selected_player.name + "'s card is not " + self.selected_card)
+                for card in self.selected_player.cards:
+                    if card.name.lower() == self.selected_card:
+                        print(self.selected_player.name + "'s card IS " + self.selected_card)
+                        print(self.selected_player.name + " is now out of the round.")
+                        self.remaining_players.remove(self.selected_player.name)
+                    else:
+                        print(self.selected_player.name + "'s card is not " + self.selected_card)
+                    self.selected_player = None
+                    self.selected_card = None
+                    return "Finished"
+
+            if action == "Look at chosen players hand.":
+                # Display target players hand to current player.
+                print("You look at " + self.selected_player.name + " cards.")
                 self.selected_player = None
                 self.selected_card = None
                 return "Finished"
 
-            if action == "Look at chosen players hand.":
-                # Display target players hand to current player.
-                pass
-
             if action == "Secretly compare hands.":
                 # Display current players hand and target players hand
                 # only to the current player and target player.
-                pass
+                print("You and " + self.selected_player.name + " compare your cards.")
 
             if action == "The lower value is out of the round.":
                 # Do I want this to be a different one from the previous one?
-                pass
+                print("The person with the lower value is out.")
+                self.selected_player = None
+                self.selected_card = None
+                return "Finished"
 
             if action == "Protection from other attacks":
                 self.remaining_players[self.current_player].is_protected = True
@@ -366,9 +428,10 @@ class ObjectGame:
                 return "Finished"
 
             if action == "Target player discards hand and draws a new card":
+                print(self.selected_player + " discared their cards and drew a new card.")
                 if self.remaining_players[self.current_player] == self.selected_player:
                     for card in self.selected_player.cards:
-                        if card.name == "Prince":  # This will keep the card in 'play'/'hand' to discard afterwards.
+                        if card.name.lower() == "prince":  # This will keep the card in 'play'/'hand' to discard afterwards.
                             continue
                         fin = self.discard_a_card(self.selected_player, card)
                         if fin == "Finished":
@@ -407,15 +470,19 @@ class ObjectGame:
                 return "Finished"
 
 
-
-
-
 class ObjectCard:
     def __init__(self, number, name, description, actions):
         self.number = number
         self.name = name
         self.description = description
         self.actions = actions
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(number={self.number!r}, name={self.name!r}, description=" \
+               f"{self.description!r}, actions={self.actions!r}"
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
 
 class ComponentBasicAI:
