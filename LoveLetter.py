@@ -11,6 +11,9 @@ Have players draw cards.
 
 
 TODO:
+TODO - Move card to 'play area' after playing it!
+# I think this will fix most of the issues I can see having with things. Though it WILL
+require me to redo a lot of things, I think, to make it work.
 Allow for more than 2 players
 Bury the first card.
 Have the card that is 'in play' be out of the hand.
@@ -37,55 +40,6 @@ from submodule import child
 
 
 def make_the_deck():
-    guards_1 = [ObjectCard(1, "Guard", """Name a non-Guard card 
-    and choose another player. 
-    If that player has that card, 
-    he or she is out of the round.""",
-                           ("Name a card",
-                            "Choose another player",
-                            "If player has named card, player out of round"))
-                for x in range(0, 5)]
-
-    priest_2 = [ObjectCard(2, "Priest", "Look at another players hand.",
-                           ("Choose another player",
-                            "Look at chosen players hand."))
-                for x in range(0, 2)]
-
-    baron_3 = [ObjectCard(3, "Baron", """You and another player secretly
-    compare hands. The player with 
-    the lower value is out of the round.""",
-                          ("Choose another player",
-                           "Secretly compare hands.",
-                           "The lower value is out of the round."))
-               for x in range(0, 2)]
-
-    handmaid_4 = [ObjectCard(4, "Handmaid", """Until your next turn, ignore all
-    effects from other players' cards""",
-                             ("Protection from other attacks"))
-                  for x in range(0, 2)]
-
-    prince_5 = [ObjectCard(5, "Prince", """ Choose any player (including
-    yourself) to discard his or her
-    hand and draw a new card.""", ("Choose any player",
-                                   "Target player discards hand and draws a new card"))
-                for x in range(0, 2)]
-
-    king_6 = [ObjectCard(6, "King", """Trade hands with another
-    player of your choice.""",
-                         ("Choose another player",
-                          "Player and target player swap hands."))]
-
-    countess_7 = [ObjectCard(7, "Countess", """If you have this card and the
-    King or Prince in your hand,
-    you must discard this card.""",
-                             ("If other card is 5 or 6 discard this card"))]
-
-    princess_8 = [ObjectCard(8, "Princess", """If you discard this card,
-    you are out of the round.""",
-                             ("If you discard this card you are out of round."))]
-
-    # deck = guards_1 + priest_2 + baron_3 + handmaid_4 + prince_5 + king_6 + countess_7 + princess_8
-    # deck = [*guards_1, *priest_2, *baron_3, *handmaid_4, *prince_5, *king_6, *countess_7, *princess_8]
     new_deck = []
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -120,8 +74,8 @@ def main_game_loop():
             discard_princess = False
             # CHECK FOR Countess!!!
             if "Countess" in game.remaining_players[game.current_player].cards \
-             and  ("Prince" in game.remaining_players[game.current_player].cards \
-                or "King" in game.remaining_players[game.current_player].cards):
+                    and ("Prince" in game.remaining_players[game.current_player].cards
+                         or "King" in game.remaining_players[game.current_player].cards):
                 for card in game.remaining_players[game.current_player].cards:
                     if the_input.lower() == card.name.lower() == "countess":
                         for action in card.actions:
@@ -133,29 +87,6 @@ def main_game_loop():
                         print("You must play the Countess since you have")
                         print("the Prince or King in your hand.")
 
-            """
-            # used in to shorten things.
-            for card in game.remaining_players[game.current_player].cards:
-                if card.name == "Countess":
-                    has_countess = True
-            if has_countess:
-                for card in game.remaining_players[game.current_player].cards:
-                    if card.name == "Prince" or card.name == "King":
-                        discard_princess = True
-            
-            if discard_princess:
-                for card in game.remaining_players[game.current_player].cards:
-                    if the_input.lower() == card.name.lower() == "Countess":
-                        for action in card.actions:
-                            turn = game.card_actions(action)
-                            if turn == "Finished":
-                                to_next_turn = True
-                                game.discard_a_card(game.remaining_players[game.current_player], card)
-                    else:
-                        print("You must play the Countess since you have")
-                        print("the Prince or King in your hand.")
-
-            """
             # Non Countess Path.
             for card in game.remaining_players[game.current_player].cards:
                 if the_input.lower() == card.name.lower():

@@ -10,7 +10,8 @@
                 "Choose another player",
                 "If player has named card, player out of round"
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 2,
@@ -21,7 +22,8 @@
                 "Choose another player",
                 "Look at chosen players hand."
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 3,
@@ -33,7 +35,8 @@
                 "Secretly compare hands.",
                 "The lower value is out of the round."
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 4,
@@ -43,7 +46,8 @@
             "Actions": [
                 "Protection from other attacks"
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 5,
@@ -54,7 +58,8 @@
                 "Choose any player",
                 "Target player discards hand and draws a new card"
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 6,
@@ -65,7 +70,8 @@
                 "Choose another player",
                 "Player and target player swap hands."
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 7,
@@ -75,7 +81,8 @@
             "Actions": [
                 "None"
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         },
         {
             "Number": 8,
@@ -85,7 +92,8 @@
             "Actions": [
                 "None"
             ],
-            "Full Rules": ""
+            "Full Rules": "",
+            "Image": ""
         }
     ],
     "functions": [
