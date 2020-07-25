@@ -35,9 +35,9 @@ Add networking/socket things to have this work like a client server.
 
 """
 import random
+import cProfile
 import json
 from submodule import child
-
 
 def make_the_deck():
     new_deck = []
