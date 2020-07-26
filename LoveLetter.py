@@ -54,7 +54,6 @@ def main_game_loop():
     continue_the_loop = True
     using_exit = False
     print(game.deck)
-    print("HERE")
     while continue_the_loop:
         game.remaining_players[game.current_player].is_protected = False   # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
@@ -139,15 +138,13 @@ class ObjectPlayer:
         if self.ai:
             self.ai.owner = self
 
+    """
     def __str__(self) -> str:
-        # return f"{self.name}"
-        return self.name
+        return f"{self.name}"
 
+    """
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r}"
-
-    def remove_card(self, card):
-        return self.cards.pop(card.name)
+        return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
 
 
 class ObjectGame:
@@ -225,9 +222,8 @@ class ObjectGame:
                     print("   ", card.name)
 
     def draw_the_discard(self):
-        for card in self.discarded_cards:
-            print(card, end="")
-        print()
+        pass
+        #for card in self.discarded_cards
 
 
     def discard_a_card(self, player, card):
@@ -238,7 +234,8 @@ class ObjectGame:
             print(player.name + " discarded the princess. They are removed from the round.")
             self.player_removed_from_round(player)
             return "Finished"
-        self.discarded_cards.append(player.remove_card(card))
+        print("PLAYER: ", player)
+        self.discarded_cards.append(player.cards.remove(card))
 
     def shuffle_the_deck(self):
         shuffled_deck = []
@@ -357,7 +354,7 @@ class ObjectGame:
                 # Display current players hand and target players hand
                 # only to the current player and target player.
                 print("You and " + self.selected_player.name + " compare your cards.")
-                return "Finished" #TEMP UNTIL FIXING THIS!
+                return "Finished" # Temp to unbreak things.
 
             if action == "The lower value is out of the round.":
                 # Do I want this to be a different one from the previous one?
@@ -373,7 +370,7 @@ class ObjectGame:
                 return "Finished"
 
             if action == "Target player discards hand and draws a new card":
-                print(str(self.selected_player) + " discared their cards and drew a new card.")
+                print(self.selected_player.name + " discared their cards and drew a new card.")
                 if self.remaining_players[self.current_player] == self.selected_player:
                     for card in self.selected_player.cards:
                         if card.name.lower() == "prince":  # This will keep the card in 'play'/'hand' to discard afterwards.
@@ -422,13 +419,12 @@ class ObjectCard:
         self.description = description
         self.actions = actions
 
-    def __repr__(self) -> str:
+    """def __repr__(self) -> str:
         return f"{self.__class__.__name__}(number={self.number!r}, name={self.name!r}, description=" \
                f"{self.description!r}, actions={self.actions!r}"
 
     def __str__(self) -> str:
-        # return f"{self.name}"
-        return self.name
+        return f"{self.name}" """
 
 
 class ComponentBasicAI:
