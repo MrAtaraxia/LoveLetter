@@ -8,14 +8,14 @@ import os
 import sys
 
 
-class Credentials():
+class Credentials:
 
     def __init__(self):
-        self.__username = ""
-        self.__key = ""
-        self.__password = ""
-        self.__key_file = 'key.key'
-        self.__time_of_exp = -1
+        self._username = ""
+        self._key = ""
+        self._password = ""
+        self._key_file = 'key.key'
+        self._time_of_exp = -1
 
     # ----------------------------------------
     # Getter setter for attributes
@@ -23,33 +23,33 @@ class Credentials():
 
     @property
     def username(self):
-        return self.__username
+        return self._username
 
     @username.setter
     def username(self, username):
-        while (username == ''):
+        while username == '':
             username = input('Enter a proper User name, blank is not accepted:')
-        self.__username = username
+        self._username = username
 
     @property
     def password(self):
-        return self.__password
+        return self._password
 
     @password.setter
     def password(self, password):
-        self.__key = Fernet.generate_key()
-        f = Fernet(self.__key)
-        self.__password = f.encrypt(password.encode()).decode()
+        self._key = Fernet.generate_key()
+        f = Fernet(self._key)
+        self._password = f.encrypt(password.encode()).decode()
         del f
 
     @property
     def expiry_time(self):
-        return self.__time_of_exp
+        return self._time_of_exp
 
     @expiry_time.setter
     def expiry_time(self, exp_time):
-        if (exp_time >= 2):
-            self.__time_of_exp = exp_time
+        if exp_time >= 2:
+            self._time_of_exp = exp_time
 
     def create_cred(self):
         """
@@ -61,42 +61,43 @@ class Credentials():
 
         with open(cred_filename, 'w') as file_in:
             file_in.write("#Credential file:\nUsername={}\nPassword={}\nExpiry={}\n"
-                          .format(self.__username, self.__password, self.__time_of_exp))
+                          .format(self._username, self._password, self._time_of_exp))
             file_in.write("++" * 20)
 
             # If there exists an older key file, This will remove it.
-        if (os.path.exists(self.__key_file)):
-            os.remove(self.__key_file)
+        if os.path.exists(self._key_file):
+            os.remove(self._key_file)
 
             # Open the Key.key file and place the key in it.
         # The key file is hidden.
         try:
 
             os_type = sys.platform
-            if (os_type == 'linux'):
-                self.__key_file = '.' + self.__key_file
+            if os_type == 'linux':
+                self._key_file = '.' + self._key_file
 
-            with open(self.__key_file, 'w') as key_in:
-                key_in.write(self.__key.decode())
+            with open(self._key_file, 'w') as key_in:
+                key_in.write(self._key.decode())
                 # Hidding the key file.
-                # The below code snippet finds out which current os the scrip is running on and does the taks base on it.
-                if (os_type == 'win32'):
-                    ctypes.windll.kernel32.SetFileAttributesW(self.__key_file, 2)
+                # The below code snippet finds out which current os the scrip is
+                # running on and does the taks base on it.
+                if os_type == 'win32':
+                    ctypes.windll.kernel32.SetFileAttributesW(self._key_file, 2)
                 else:
                     pass
 
         except PermissionError:
-            os.remove(self.__key_file)
+            os.remove(self._key_file)
             print("A Permission error occurred.\n Please re run the script")
             sys.exit()
 
-        self.__username = ""
-        self.__password = ""
-        self.__key = ""
-        self.__key_file
+        self._username = ""
+        self._password = ""
+        self._key = ""
+        # self._key_file
 
 
-def main():
+def create_cred():
     # Creating an object for Credentials class
     creds = Credentials()
 
@@ -116,6 +117,45 @@ def main():
         os.startfile('expire.py')
 
     print("**" * 20)
+
+
+def retrieve_cred():
+    cred_filename = 'CredFile.ini'
+    # key_file = 'key.key'
+
+    # key = ''
+
+    with open('.key.key', 'r') as key_in:
+        key = key_in.read().encode()
+
+        # If you want the Cred file to be of one
+    # time use uncomment the below line
+    # os.remove(key_file)
+
+    f = Fernet(key)
+    with open(cred_filename, 'r') as cred_in:
+        lines = cred_in.readlines()
+        config = {}
+        for line in lines:
+            tuples = line.rstrip('\n').split('=', 1)
+            if tuples[0] in ('Username ', 'Password '):
+                config[tuples[0]] = tuples[1]
+
+        passwd = f.decrypt(config['Password '].encode()).decode()
+        print("Password:", passwd)
+
+
+def main():
+    while True:
+        name = input("create or retrieve")
+        if name == "create":
+            create_cred()
+            break
+        elif name == "retrieve":
+            retrieve_cred()
+            break
+        else:
+            "That input is not valid, please try again."
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ def main_game_loop():
         game.remaining_players[game.current_player].is_protected = False   # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         game.deal_a_card(game.remaining_players[game.current_player])
-        game.draw_the_card_hands()  # draw_the_board(game.board)
+        game.draw_the_card_hands()  # draw_the_game
         to_next_turn = False
         while not to_next_turn:
             the_input = input(game.players[game.current_player].name +
@@ -155,7 +155,9 @@ class ObjectGame:
         self.current_deck = self.deck.copy()
         self.remaining_players = self.players.copy()
         self.current_player = 0
+        self.current_card = None # The current card that is being resolved.
         self.discarded_cards = []
+        self.hidden_cards = []
         self.list_of_cards = ["guard", "priest", "baron", "handmaid", "prince", "king", "countess", "princess"]
         
         for card in self.current_deck:
