@@ -54,11 +54,13 @@ def main_game_loop():
     continue_the_loop = True
     using_exit = False
     print(game.deck)
+    print("HERE")
     while continue_the_loop:
         game.remaining_players[game.current_player].is_protected = False   # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         game.deal_a_card(game.remaining_players[game.current_player])
         game.draw_the_card_hands()  # draw_the_game
+        game.draw_the_discard()
         to_next_turn = False
         while not to_next_turn:
             the_input = input(game.players[game.current_player].name +
@@ -138,10 +140,14 @@ class ObjectPlayer:
             self.ai.owner = self
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        # return f"{self.name}"
+        return self.name
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r}"
+
+    def remove_card(self, card):
+        return self.cards.pop(card.name)
 
 
 class ObjectGame:
@@ -218,6 +224,12 @@ class ObjectGame:
                 for card in player.cards:
                     print("   ", card.name)
 
+    def draw_the_discard(self):
+        for card in self.discarded_cards:
+            print(card, end="")
+        print()
+
+
     def discard_a_card(self, player, card):
         # removes the card from player and adds it to the pile of discarded cards
         # CHECK FOR PRINCESS!!!
@@ -226,7 +238,7 @@ class ObjectGame:
             print(player.name + " discarded the princess. They are removed from the round.")
             self.player_removed_from_round(player)
             return "Finished"
-        self.discarded_cards.append(player.cards.remove(card))
+        self.discarded_cards.append(player.remove_card(card))
 
     def shuffle_the_deck(self):
         shuffled_deck = []
@@ -345,6 +357,7 @@ class ObjectGame:
                 # Display current players hand and target players hand
                 # only to the current player and target player.
                 print("You and " + self.selected_player.name + " compare your cards.")
+                return "Finished" #TEMP UNTIL FIXING THIS!
 
             if action == "The lower value is out of the round.":
                 # Do I want this to be a different one from the previous one?
@@ -360,7 +373,7 @@ class ObjectGame:
                 return "Finished"
 
             if action == "Target player discards hand and draws a new card":
-                print(self.selected_player + " discared their cards and drew a new card.")
+                print(str(self.selected_player) + " discared their cards and drew a new card.")
                 if self.remaining_players[self.current_player] == self.selected_player:
                     for card in self.selected_player.cards:
                         if card.name.lower() == "prince":  # This will keep the card in 'play'/'hand' to discard afterwards.
@@ -414,7 +427,8 @@ class ObjectCard:
                f"{self.description!r}, actions={self.actions!r}"
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        # return f"{self.name}"
+        return self.name
 
 
 class ComponentBasicAI:
