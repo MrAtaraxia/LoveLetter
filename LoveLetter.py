@@ -50,14 +50,14 @@ def make_the_deck():
 
 def main_game_loop():
     # The main game.
-    game = ObjectGame()
+    game = ObjectGame(number_of_players=3)
     continue_the_loop = True
     using_exit = False
     print(game.deck)
     while continue_the_loop:
         game.remaining_players[game.current_player].is_protected = False   # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
-        game.deal_a_card(game.remaining_players[game.current_player])
+        # game.deal_a_card(game.remaining_players[game.current_player])
         game.draw_the_card_hands()  # draw_the_game
         game.draw_the_discard()
         to_next_turn = False
@@ -83,19 +83,24 @@ def main_game_loop():
                             turn = game.card_actions(action)
                             if turn == "Finished":
                                 to_next_turn = True
+                                break
+                                # This break 'should' get me out of having the issue
+                                # with 2 cards that are the same name.
                     else:
                         print("You must play the Countess since you have")
                         print("the Prince or King in your hand.")
 
             # Non Countess Path.
             else:
-                for card in game.remaining_players[game.current_player].cards:
-                    if the_input.lower() == card.name.lower():
+                for count, card in enumerate(game.remaining_players[game.current_player].cards):
+                    if the_input.lower() == card.name.lower() or the_input == count:
+                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
                             if turn == "Finished":
                                 to_next_turn = True
+                                break
         game.next_player()
     end_game(using_exit)
 
@@ -208,24 +213,23 @@ class ObjectGame:
         self.current_player = self.current_player % len(self.remaining_players)
 
     def draw_the_card_hands(self):
-        for player in self.remaining_players:
+        for count, player in enumerate(self.remaining_players):
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
-            print(player.name, end="   ")
+            print(count, ":", player.name, end="   ")
 
         print("""
-        
-        
         """)
         for player in self.remaining_players:
             if player == self.remaining_players[self.current_player]:
-                for card in player.cards:
-                    print("   ", card.name)
+                for count, card in enumerate(player.cards):
+                    print("   ",count, ":", card.name)
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
         for card in self.discarded_cards:
             print(card, end=" ")
+        print()
 
     def discard_a_card(self, player, card):
         # removes the card from player and adds it to the pile of discarded cards
@@ -236,7 +240,8 @@ class ObjectGame:
             self.player_removed_from_round(player)
             return "Finished"
         print("PLAYER: ", player)
-        self.discarded_cards.append(player.cards.remove(card))
+        self.discarded_cards.append(card)
+        player.cards.remove(card)
 
     def shuffle_the_deck(self):
         shuffled_deck = []
@@ -405,12 +410,12 @@ class ObjectCard:
         self.description = description
         self.actions = actions
 
-    """def __repr__(self) -> str:
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}(number={self.number!r}, name={self.name!r}, description=" \
                f"{self.description!r}, actions={self.actions!r}"
 
     def __str__(self) -> str:
-        return f"{self.name}" """
+        return f"{self.name}"
 
 
 class ComponentBasicAI:
