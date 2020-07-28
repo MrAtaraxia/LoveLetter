@@ -195,7 +195,13 @@ class ObjectGame:
         if player_names is None:
             self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
         else:
-            self.players = [ObjectPlayer(name) for name in player_names]
+            self.players = []
+            for x in range(self.number_of_players):
+                try:
+                    self.players.append(ObjectPlayer(player_names[x]))
+                except IndexError:
+                    self.players.append(ObjectPlayer("Player" + str(x)))
+            # self.players = [ObjectPlayer(name) for name in player_names]
         self.deck = make_the_deck()
 
         # The following are used for the round and restored between rounds.
@@ -244,11 +250,18 @@ class ObjectGame:
     def setup_round(self, winning_player):
         self.current_deck = self.deck.copy()
         self.remaining_players = self.players.copy()
+        self.discarded_cards = []
+        self.hidden_cards = []
         # The winner of the last round goes first.
-        for x in range(len(self.remaining_players)):
-            if self.remaining_players[x] == winning_player:
-                self.current_player = x
-                break
+        for count, player in enumerate(self.remaining_players):
+            if player == winning_player:
+                self.current_player = count
+            # Resets the count of the discarded/played amount for each player.
+            player.discarded_amount = 0
+        #for x in range(len(self.remaining_players)):
+        #    if self.remaining_players[x] == winning_player:
+        #        self.current_player = x
+        #        break
 
     def next_player(self):
         self.current_player += 1
@@ -311,11 +324,16 @@ class ObjectGame:
 
         return shuffled_deck
 
-    def deal_a_card(self, player):
+    def deal_a_card(self, player, deck="deck"):
         # print("Player", player.name, "was dealt a card")
-        print("Player {name} was dealt a card".format(name=player.name))
-        player.cards.append(self.current_deck[0])
-        self.current_deck.pop(0)
+        if deck == "deck":
+            print("Player {name} was dealt a card".format(name=player.name))
+            player.cards.append(self.current_deck.pop(0))
+            # self.current_deck.pop(0)
+        elif deck == "removed":
+            print("Player {name} was dealt the hidden card".format(name=player.name))
+            player.cards.append(self.hidden_cards.pop(0))
+
 
     def finish_actions(self) -> str:
         self.selected_player = None
@@ -456,16 +474,16 @@ class ObjectGame:
 
             if action == "Target player discards hand and draws a new card":
                 print(self.selected_player.name + " discared their cards and drew a new card.")
-                if self.remaining_players[self.current_player] == self.selected_player:
-                    for card in self.selected_player.cards:
-                        fin = self.discard_a_card(self.selected_player, card)
-                        if fin == "Finished":
-                            return self.finish_actions()
+
                 for card in self.selected_player.cards:
                     fin = self.discard_a_card(self.selected_player, card)
                     if fin == "Finished":
                         return self.finish_actions()
-                self.deal_a_card(self.selected_player)
+                if len(self.current_deck) == 0:
+                    print("There are no cards left in the deck.")
+                    self.deal_a_card(self.selected_player, deck="removed")
+                else:
+                    self.deal_a_card(self.selected_player)
                 return self.finish_actions()
 
             if action == "Player and target player swap hands.":
@@ -530,4 +548,4 @@ class ComponentBasicAI:
 
 
 if __name__ == "__main__":
-    main_game_loop(number_of_players=3, player_names=["Bob", "Chris", "Dan"])
+    main_game_loop(number_of_players=3, player_names=["Chris", "Dan"])
