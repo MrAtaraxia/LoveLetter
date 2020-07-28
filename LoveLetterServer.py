@@ -1,52 +1,14 @@
-# Base imports
+#! usr/bin/env python3
+"""
+python LoveLetter.py
+A basic LoveLetter Game.
+
+TODO - NETWORKING... make it so more than 1 location...
+
+"""
 import random
 import json
-# Other imports
-
-# My imports
-
-
-
-class Networking:
-    def __init__(self):
-        pass
-
-    def make_connection(self):
-        pass
-
-    def send(self):
-        pass
-
-    def receive(self):
-        pass
-
-
-class ComponentBasicAI:
-    def __init__(self, player=None):
-        self.owner = player
-
-    def take_turn(self, board):
-        # Returns the value of the location that the ai wants to take.
-        allowed_moves = []
-        opponent = []
-        player = []
-        for x in range(0, len(board)):
-            for y in range(0, len(board[0])):
-                if board[x][y] == str(y) + str(x):
-                    allowed_moves.append(board[x][y])
-                elif board[x][y] == self.owner.symbol:
-                    player.append(str(y) + str(x))
-                else:
-                    opponent.append(str(y) + str(x))
-        for move in allowed_moves:
-            if move == "11":
-                return 11
-        # Checks to see if there are any cells that will allow the player to 'win'
-        # if so takes one of those locations.
-        # Checks to see if there are any cells that will allow the opponent to 'win'
-        # if so takes one of those locations.
-        # Checks to see if there are any cells that will make the player 1 away from winning
-        #
+from submodule import child
 
 
 def make_the_deck():
@@ -57,6 +19,146 @@ def make_the_deck():
             for i in range(p["Count"]):
                 new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
     return new_deck
+
+
+def main_game_loop(*args, **kwargs):
+    # The main game.
+    game = ObjectGame(*args, **kwargs)
+    continue_the_loop = True
+    using_exit = False
+    # print(game.deck)
+    while continue_the_loop:
+        print("Player {name}'s turn".format(name=game.remaining_players[game.current_player].name))
+        game.remaining_players[game.current_player].is_protected = False  # remove protected!
+        game.deal_a_card(game.remaining_players[game.current_player])
+        # game.deal_a_card(game.remaining_players[game.current_player])
+        to_next_turn = False
+        while not to_next_turn:
+            game.draw_other_players()   # Draw the other players
+            print()
+            game.draw_the_card_hands()  # Draw the cards in your hand
+            print()
+            game.draw_the_discard()     # Draw the discard pile
+            the_input = input(game.remaining_players[game.current_player].name +
+                              " Please type the name or number of the card you \n"
+                              "want to play or type Exit to end the program.")
+
+            if the_input.lower() == "exit":
+                continue_the_loop = False
+                to_next_turn = True
+                using_exit = True
+                break
+            # has_countess = False
+            # discard_princess = False
+            # CHECK FOR Countess!!!
+            if "Countess" in game.remaining_players[game.current_player].cards \
+                    and ("Prince" in game.remaining_players[game.current_player].cards
+                         or "King" in game.remaining_players[game.current_player].cards):
+                for card in game.remaining_players[game.current_player].cards:
+                    if the_input.lower() == card.name.lower() == "countess":
+                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
+                        game.discard_a_card(game.remaining_players[game.current_player], card)
+                        for action in card.actions:
+                            turn = game.card_actions(action)
+                            if turn == "Finished":
+                                to_next_turn = True
+                                break
+                                # This break 'should' get me out of having the issue
+                                # with 2 cards that are the same name.
+                    else:
+                        print("You must play the Countess since you have")
+                        print("the Prince or King in your hand.")
+
+            # Non Countess Path.
+            else:
+                for count, card in enumerate(game.remaining_players[game.current_player].cards):
+                    if the_input.lower() == card.name.lower() or the_input == str(count):
+                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
+                        game.remaining_players[game.current_player].discarded_amount += card.number
+                        game.discard_a_card(game.remaining_players[game.current_player], card)
+                        for action in card.actions:
+                            turn = game.card_actions(action)
+                            if turn == "Finished":
+                                to_next_turn = True
+                                break
+        round_winner = check_for_round_end(game.remaining_players, game.current_deck)
+        game.next_player()
+        if round_winner != "no":
+            game.draw_round_end(round_winner)
+            game.setup_round(round_winner)
+        check_for_game_end(game.players)
+    end_game(using_exit)
+
+
+def process_the_input():
+    the_input = input("Where would you like to go?")
+    print(the_input)
+
+
+def check_for_round_end(current_players, current_deck) -> str:
+    # checks to see if only one player is left, if so they are the victor.
+    if len(current_players) == 1:
+        for player in current_players:
+            player.score += 1
+            return player
+    # checks to see if there are any more cards left to be drawn.
+    if len(current_deck) == 0:
+        # If no more cards and more than 1 player player with the highest card value wins.
+        high_card = 0
+        high_player = ""
+        for player in current_players:
+            for card in player.cards:
+                if card.number > high_card:
+                    high_card = card.number
+                    high_player = player
+        # WHAT HAPPENS IF THEY ARE TIED CARDS?
+        # I DON"T REMEMBER WHAT HAPPENS THERE...
+        return high_player
+
+    return "no"
+
+
+def check_for_game_end(all_players, winning_score=3):
+    # checks if someone has won the game. enough wins
+    for player in all_players:
+        if player.score > winning_score:
+            return player
+    pass
+
+
+def end_game(if_exit):
+    end = False
+    if if_exit:
+        end = True
+    while not end:
+        the_input = input("Would you like to play again Y/N?")
+        if the_input.lower() == "y" or the_input.lower() == "yes" or the_input.lower() == "(y)es":
+            main_game_loop()
+            end = True  # This will make it so there are not multiple of these afterwards.
+        elif the_input.lower() == "n" or the_input.lower() == "no" or the_input.lower() == "(n)o":
+            end = True
+        elif the_input.lower() == "o" or the_input.lower() == "or":
+            print("Seriously...")
+        else:
+            print("Please enter (Y)es or (N)o")
+
+
+class ObjectPlayer:
+    def __init__(self, name, ai=None):
+        self.name = name
+        self.score = 0
+        self.cards = []
+        self.ai = ai
+        self.is_protected = False
+        if self.ai:
+            self.ai.owner = self
+        self.discarded_amount = 0
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
 
 
 class ObjectGame:
@@ -396,24 +498,6 @@ class ObjectGame:
                 return self.finish_actions()
 
 
-class ObjectPlayer:
-    def __init__(self, name, ai=None):
-        self.name = name
-        self.score = 0
-        self.cards = []
-        self.ai = ai
-        self.is_protected = False
-        if self.ai:
-            self.ai.owner = self
-        self.discarded_amount = 0
-
-    def __str__(self) -> str:
-        return f"{self.name}"
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
-
-
 class ObjectCard:
     def __init__(self, number, name, description, actions):
         self.number = number
@@ -429,9 +513,33 @@ class ObjectCard:
         return f"{self.name}"
 
 
-def main():
-    pass
+class ComponentBasicAI:
+    def __init__(self, player=None):
+        self.owner = player
+
+    def take_turn(self, board):
+        # Returns the value of the location that the ai wants to take.
+        allowed_moves = []
+        opponent = []
+        player = []
+        for x in range(0, len(board)):
+            for y in range(0, len(board[0])):
+                if board[x][y] == str(y) + str(x):
+                    allowed_moves.append(board[x][y])
+                elif board[x][y] == self.owner.symbol:
+                    player.append(str(y) + str(x))
+                else:
+                    opponent.append(str(y) + str(x))
+        for move in allowed_moves:
+            if move == "11":
+                return 11
+        # Checks to see if there are any cells that will allow the player to 'win'
+        # if so takes one of those locations.
+        # Checks to see if there are any cells that will allow the opponent to 'win'
+        # if so takes one of those locations.
+        # Checks to see if there are any cells that will make the player 1 away from winning
+        #
 
 
 if __name__ == "__main__":
-    main()
+    main_game_loop(number_of_players=3, player_names=["Chris", "Dan"])

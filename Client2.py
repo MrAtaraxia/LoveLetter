@@ -1,32 +1,41 @@
-#! usr/bin/env python3
-"""
-python LoveLetter.py
-A basic LoveLetter Game.
-
-"""
-# Base imports
-import random
-import json
-# Other imports
-
-# My imports
-from submodule import child
-import LoveLetterServer as server
-
 """Network Threading"""
-# BASE IMPORTS
 from socket import AF_INET, socket, SOCK_STREAM
 import socket as socky
 from threading import Thread
 import sys
 import base64
 import hashlib
-# OTHER IMPORTS
 from Cryptodome.Cipher import AES
 from Cryptodome.Random import get_random_bytes
 import bcrypt
 from AESCipher import AESCipher
-# MY IMPORTS
+
+
+
+"""
+Done - Adjusted this to be a Client version.
+# Finished on 2020.06.22
+
+Done - Adjusted this to be a class. 
+# Finished on 2020.06.22
+
+TODO - Look into JSON / YAML data for the storage of the file about the current state?
+# Not sure this will work with the encryption I am using.
+
+TODO - Other things.
+# Look into doing other things as well. Like how I want them to convert from this to actually a 
+# communication between frontend/backend of a different program.
+
+Done - Figure out how to make random key during the program.
+# Finished on 2020.06.22
+
+TODO - Add the changing of the key during the sending.
+# 
+
+
+"""
+
+
 
 class ClientNetworking():
 
@@ -41,12 +50,14 @@ class ClientNetworking():
         self._port2 = _port2
         self.__key__ = hashlib.sha256(b'16-character key').digest()
         self.__key2__ = b'16-character key'
-        # SHUFFLES A FUCKING LIST OMG WHY DID I NOT KNOW ABOUT THIS !
+        # SHUFFLES A FUCKING LIST OMG WHY DID I NOT KNOW ABOUT THIS ! 
         # random.shuffle(list)
 
         self.BUFSIZ = 1024
         self.client_to_close = False
         self.server_to_close = False
+
+
 
     def starting_client(self, _host, _port):
         _address = (_host, _port)
@@ -65,6 +76,7 @@ class ClientNetworking():
         if self.client_to_close:
             print("client ended")
             sys.exit(0)  # Closes the thread
+
 
     def send(self, client_socket):  # event is passed by binders.
         """Handles sending of messages."""
@@ -85,13 +97,14 @@ class ClientNetworking():
                 print("send ended")
                 sys.exit(0)
                 # exit(0)
-
+        
         self.server_to_close = True
         self.client_to_close = True
         client_socket.close()
         # main_window.quit()
         print("send ended")
         sys.exit(0)
+
 
     def receive(self, conn):
         """Handles receiving of messages."""
@@ -114,7 +127,7 @@ class ClientNetworking():
                 # finally:
                 #  combo.txt1.insert(END, "\n")
                 #  combo.txt1.configure(state='disabled')
-
+            
             conn.close()  # Closes the socket
             # main_window.quit()
             print('receive ended')
@@ -122,6 +135,7 @@ class ClientNetworking():
         except ConnectionAbortedError as e:
             print(e)
             sys.exit(0)
+        
 
 
 if __name__ == '__main__':
