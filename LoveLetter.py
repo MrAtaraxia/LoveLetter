@@ -102,6 +102,7 @@ def main_game_loop(*args, **kwargs):
                 for count, card in enumerate(game.remaining_players[game.current_player].cards):
                     if the_input.lower() == card.name.lower() or the_input == str(count):
                         print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
+                        game.remaining_players[game.current_player].discarded_amount += card.value
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
@@ -179,6 +180,7 @@ class ObjectPlayer:
         self.is_protected = False
         if self.ai:
             self.ai.owner = self
+        self.discarded_amount = 0
 
     def __str__(self) -> str:
         return f"{self.name}"
@@ -430,11 +432,22 @@ class ObjectGame:
                     print(card.name, end=" ")
                     selected_value = card.number
                 print("")
-                return 0  # I think this does what I want it to.
+                if selected_value < current_value:
+                    print("Player {selected}'s card has a lower value.".format(selected=self.selected_player.name))
+                    self.player_removed_from_round(self.selected_player)
+                elif selected_value < current_value:
+                    print("Player {selected}'s card has a lower value.".format(selected=
+                                                                               self.remaining_players
+                                                                               [self.current_player]))
+                    self.player_removed_from_round(self.remaining_players[self.current_player])
+                else:
+                    print("Both players had cards with the same value.")
+                return self.finish_actions()
 
             if action == "The lower value is out of the round.":
+                # THIS SHOULD NOT BE CALLED
                 # Do I want this to be a different one from the previous one?
-                print("The person with the lower value is out.")
+                print("THIS SHOULD NOT BE CALLED")
                 return self.finish_actions()
 
             if action == "Protection from other attacks":
@@ -456,17 +469,17 @@ class ObjectGame:
                 return self.finish_actions()
 
             if action == "Player and target player swap hands.":
-                temp_cards = self.remaining_players[self.current_player].cards
-                self.remaining_players[self.current_player].cards = self.selected_player
-                self.selected_player.cards = temp_cards
+                self.remaining_players[self.current_player].cards, self.selected_player.cards = \
+                    self.selected_player.cards, self.remaining_players[self.current_player].cards
+                # temp_cards = self.remaining_players[self.current_player].cards
+                # self.remaining_players[self.current_player].cards = self.selected_player
+                # self.selected_player.cards = temp_cards
                 return self.finish_actions()
 
             if action == "If other card is 5 or 6 discard this card":
                 return self.finish_actions()
 
             if action == "If you discard this card you are out of round.":
-                # DO I need that as it 'should' do that when discarded afterwards.
-                # self.player_removed_from_round(self.remaining_players[self.current_player])
                 return self.finish_actions()
 
             if action == "None":
