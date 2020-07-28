@@ -54,15 +54,18 @@ def main_game_loop(*args, **kwargs):
     game = ObjectGame(*args, **kwargs)
     continue_the_loop = True
     using_exit = False
-    print(game.deck)
+    # print(game.deck)
     while continue_the_loop:
+        print("Player {name}'s turn".format(name=game.remaining_players[game.current_player].name))
         game.remaining_players[game.current_player].is_protected = False  # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
         while not to_next_turn:
             game.draw_other_players()   # Draw the other players
+            print()
             game.draw_the_card_hands()  # Draw the cards in your hand
+            print()
             game.draw_the_discard()     # Draw the discard pile
             the_input = input(game.remaining_players[game.current_player].name +
                               " Please type the name or number of the card you \n"
@@ -107,6 +110,7 @@ def main_game_loop(*args, **kwargs):
                                 break
         round_winner = check_for_round_end(game.remaining_players, game.current_deck)
         if round_winner != "no":
+            game.draw_round_end(round_winner)
             game.setup_round(round_winner)
         check_for_game_end(game.players)
         game.next_player()
@@ -253,9 +257,9 @@ class ObjectGame:
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
             if player.is_protected:
-                print("(" + str(count), ":", player.name + ")", end="   ")
+                print("(" + str(count) + " : " + player.name, "*"*player.score, ")", sep="", end="   ")
             else:
-                print(count, ":", player.name, end="")
+                print(count, ":", player.name, "*"*player.score, end="")
                 for card in player.cards:
                     print(" ", card.name, end="")
                 print("", end="   ")
@@ -265,11 +269,20 @@ class ObjectGame:
         for player in self.remaining_players:
             if player == self.remaining_players[self.current_player]:
                 for count, card in enumerate(player.cards):
-                    print("   ", count, ":", card.name)
+                    print("   ", count, ":", card.name, "(", card.number, ")")
                     print(card.description)
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
+        print("Discarded Cards: ", end="")
+        for card in self.discarded_cards:
+            print(card, end=" ")
+        print()
+
+    def draw_round_end(self, player):
+        # Draw/ Write the names of the cards in the discard pile.
+        print("Player {name} won the round. Their score increased by 1.".format(name=player.name))
+        print("Player {name}'s current score is {score}".format(name=player.name, score=player.score))
         for card in self.discarded_cards:
             print(card, end=" ")
         print()
@@ -396,12 +409,27 @@ class ObjectGame:
             if action == "Look at chosen players hand.":
                 # Display target players hand to current player.
                 print("You look at " + self.selected_player.name + " cards.")
+                for card in self.selected_player.cards:
+                    print(card, end="")
+                print("")
                 return self.finish_actions()
 
             if action == "Secretly compare hands.":
                 # Display current players hand and target players hand
                 # only to the current player and target player.
+                current_value = 0
+                selected_value = 0
                 print("You and " + self.selected_player.name + " compare your cards.")
+                print(self.remaining_players[self.current_player].name, "'s cards: ", sep="", end="")
+                for card in self.remaining_players[self.current_player].cards:
+                    print(card.name, end=" ")
+                    current_value = card.number
+                print("")
+                print(self.selected_player.name, "'s cards: ", sep="", end="")
+                for card in self.selected_player.cards:
+                    print(card.name, end=" ")
+                    selected_value = card.number
+                print("")
                 return 0  # I think this does what I want it to.
 
             if action == "The lower value is out of the round.":
