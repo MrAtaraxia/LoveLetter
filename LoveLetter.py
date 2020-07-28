@@ -78,23 +78,24 @@ def main_game_loop():
                          or "King" in game.remaining_players[game.current_player].cards):
                 for card in game.remaining_players[game.current_player].cards:
                     if the_input.lower() == card.name.lower() == "countess":
+                        game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
                             if turn == "Finished":
                                 to_next_turn = True
-                                game.discard_a_card(game.remaining_players[game.current_player], card)
                     else:
                         print("You must play the Countess since you have")
                         print("the Prince or King in your hand.")
 
             # Non Countess Path.
-            for card in game.remaining_players[game.current_player].cards:
-                if the_input.lower() == card.name.lower():
-                    for action in card.actions:
-                        turn = game.card_actions(action)
-                        if turn == "Finished":
-                            to_next_turn = True
-                            game.discard_a_card(game.remaining_players[game.current_player], card)
+            else:
+                for card in game.remaining_players[game.current_player].cards:
+                    if the_input.lower() == card.name.lower():
+                        game.discard_a_card(game.remaining_players[game.current_player], card)
+                        for action in card.actions:
+                            turn = game.card_actions(action)
+                            if turn == "Finished":
+                                to_next_turn = True
         game.next_player()
     end_game(using_exit)
 
@@ -153,18 +154,18 @@ class ObjectGame:
         self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
         self.deck = make_the_deck()
 
-
         # The following are used for the round and restored between rounds.
         self.current_deck = self.deck.copy()
         self.remaining_players = self.players.copy()
         self.current_player = 0
-        self.current_card = None # The current card that is being resolved.
+        self.current_card = None  # The current card that is being resolved.
         self.discarded_cards = []
         self.hidden_cards = []
         self.list_of_cards = ["guard", "priest", "baron", "handmaid", "prince", "king", "countess", "princess"]
-        
-        for card in self.current_deck:
-            print(card.name)
+
+        # Display all cards in the deck
+        # for card in self.current_deck:
+        #     print(card.name)
         # Shuffle the deck
         self.current_deck = self.shuffle_the_deck()
         # Deal a card to each player
@@ -222,9 +223,9 @@ class ObjectGame:
                     print("   ", card.name)
 
     def draw_the_discard(self):
-        pass
-        #for card in self.discarded_cards
-
+        # Draw/ Write the names of the cards in the discard pile.
+        for card in self.discarded_cards:
+            print(card, end=" ")
 
     def discard_a_card(self, player, card):
         # removes the card from player and adds it to the pile of discarded cards
@@ -250,6 +251,11 @@ class ObjectGame:
     def deal_a_card(self, player):
         player.cards.append(self.current_deck[0])
         self.current_deck.pop(0)
+
+    def finish_actions(self) -> str:
+        self.selected_player = None
+        self.selected_card = None
+        return "Finished"
 
     def card_actions(self, action):
         while True:
@@ -288,9 +294,7 @@ class ObjectGame:
                 target_player = input(players)
                 if unprotected_players == 0:
                     print("There are no targets that you can target. The spell fizzles out.")
-                    self.selected_player = None
-                    self.selected_card = None
-                    return "Finished"
+                    return self.finish_actions()
                 for player in self.remaining_players:
                     if player == self.remaining_players[self.current_player]:
                         continue  # This should remove the ability to target yourself.
@@ -320,9 +324,7 @@ class ObjectGame:
                 target_player = input(players)
                 if unprotected_players == 0:
                     print("There are no targets that you can target. The spell fizzles out.")
-                    self.selected_player = None
-                    self.selected_card = None
-                    return "Finished"
+                    return self.finish_actions()
                 for player in self.remaining_players:
                     if player.is_protected is True:
                         print("Sorry that player is protected. Try someone else.")
@@ -339,35 +341,28 @@ class ObjectGame:
                         self.remaining_players.remove(self.selected_player.name)
                     else:
                         print(self.selected_player.name + "'s card is not " + self.selected_card)
-                    self.selected_player = None
-                    self.selected_card = None
-                    return "Finished"
+                    return self.finish_actions()
 
             if action == "Look at chosen players hand.":
                 # Display target players hand to current player.
                 print("You look at " + self.selected_player.name + " cards.")
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
 
             if action == "Secretly compare hands.":
                 # Display current players hand and target players hand
                 # only to the current player and target player.
                 print("You and " + self.selected_player.name + " compare your cards.")
-                return "Finished" # Temp to unbreak things.
+                return 0  # I think this does what I want it to.
 
             if action == "The lower value is out of the round.":
                 # Do I want this to be a different one from the previous one?
                 print("The person with the lower value is out.")
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
 
             if action == "Protection from other attacks":
                 self.remaining_players[self.current_player].is_protected = True
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
+
 
             if action == "Target player discards hand and draws a new card":
                 print(self.selected_player.name + " discared their cards and drew a new card.")
@@ -377,39 +372,30 @@ class ObjectGame:
                             continue
                         fin = self.discard_a_card(self.selected_player, card)
                         if fin == "Finished":
-                            self.selected_player = None
-                            self.selected_card = None
-                            return "Finished"
+                            return self.finish_actions()
                 for card in self.selected_player.cards:
                     fin = self.discard_a_card(self.selected_player, card)
                     if fin == "Finished":
-                        self.selected_player = None
-                        self.selected_card = None
-                        return "Finished"
+                        return self.finish_actions()
                 self.deal_a_card(self.selected_player)
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
 
             if action == "Player and target player swap hands.":
                 temp_cards = self.remaining_players[self.current_player].cards
                 self.remaining_players[self.current_player].cards = self.selected_player
                 self.selected_player.cards = temp_cards
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
 
             if action == "If other card is 5 or 6 discard this card":
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
 
             if action == "If you discard this card you are out of round.":
                 # DO I need that as it 'should' do that when discarded afterwards.
                 # self.player_removed_from_round(self.remaining_players[self.current_player])
-                self.selected_player = None
-                self.selected_card = None
-                return "Finished"
+                return self.finish_actions()
+
+            if action == "None":
+                return self.finish_actions()
 
 
 class ObjectCard:
