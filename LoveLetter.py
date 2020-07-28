@@ -56,14 +56,14 @@ def main_game_loop(*args, **kwargs):
     using_exit = False
     print(game.deck)
     while continue_the_loop:
-        game.remaining_players[game.current_player].is_protected = False   # remove protected!
+        game.remaining_players[game.current_player].is_protected = False  # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
         while not to_next_turn:
             game.draw_the_card_hands()  # draw_the_game
             game.draw_the_discard()
-            the_input = input(game.players[game.current_player].name +
+            the_input = input(game.remaining_players[game.current_player].name +
                               " Please type the name or number of the card you \n"
                               "want to play or type Exit to end the program.")
 
@@ -71,8 +71,9 @@ def main_game_loop(*args, **kwargs):
                 continue_the_loop = False
                 to_next_turn = True
                 using_exit = True
-            has_countess = False
-            discard_princess = False
+                break
+            # has_countess = False
+            # discard_princess = False
             # CHECK FOR Countess!!!
             if "Countess" in game.remaining_players[game.current_player].cards \
                     and ("Prince" in game.remaining_players[game.current_player].cards
@@ -95,7 +96,7 @@ def main_game_loop(*args, **kwargs):
             # Non Countess Path.
             else:
                 for count, card in enumerate(game.remaining_players[game.current_player].cards):
-                    if the_input.lower() == card.name.lower() or the_input == count:
+                    if the_input.lower() == card.name.lower() or the_input == str(count):
                         print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
@@ -103,6 +104,7 @@ def main_game_loop(*args, **kwargs):
                             if turn == "Finished":
                                 to_next_turn = True
                                 break
+        check_for_game_end(game.remaining_players, game.players)
         game.next_player()
     end_game(using_exit)
 
@@ -112,9 +114,13 @@ def process_the_input():
     print(the_input)
 
 
-def check_for_game_end(players):
-    # checks if someone has won the game.
-    # checks to see how many players are left in the game.
+def check_for_game_end(current_players, all_players, winning_score=3):
+    # checks to see if only one player is left, if so they are the victor.
+    if len(current_players) == 1:
+        for player in current_players:
+            player.score += 1
+    
+    # checks if someone has won the game. enough wins
     # checks to see if there are any more cards left to be drawn.
     # If no more cards and more than 1 player player with the highest card value wins.
     pass
@@ -140,17 +146,16 @@ def end_game(if_exit):
 class ObjectPlayer:
     def __init__(self, name, ai=None):
         self.name = name
+        self.score = 0
         self.cards = []
         self.ai = ai
         self.is_protected = False
         if self.ai:
             self.ai.owner = self
 
-    """
     def __str__(self) -> str:
         return f"{self.name}"
 
-    """
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
 
@@ -191,6 +196,8 @@ class ObjectGame:
     def player_removed_from_round(self, player_to_remove):
         # checks to see if the current player is removed.
         # If so removes current player and adjusts the current player location.
+        for card in player_to_remove.cards:
+            self.discarded_cards.append(card)
         if player_to_remove == self.remaining_players[self.current_player]:
             self.current_player = (self.current_player - 1) % len(self.remaining_players)
             self.remaining_players.remove(player_to_remove)
@@ -221,14 +228,20 @@ class ObjectGame:
         for count, player in enumerate(self.remaining_players):
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
-            print(count, ":", player.name, end="   ")
+            if player.is_protected:
+                print("(" + str(count), ":", player.name + ")", end="   ")
+            else:
+                print(count, ":", player.name, end="")
+                for card in player.cards:
+                    print(" ", card.name, end="")
+                print("", end="   ")
 
         print("""
         """)
         for player in self.remaining_players:
             if player == self.remaining_players[self.current_player]:
                 for count, card in enumerate(player.cards):
-                    print("   ",count, ":", card.name)
+                    print("   ", count, ":", card.name)
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
@@ -251,7 +264,7 @@ class ObjectGame:
     def shuffle_the_deck(self):
         shuffled_deck = []
         while len(self.current_deck) > 0:
-            current = random.randint(0, len(self.current_deck)-1)
+            current = random.randint(0, len(self.current_deck) - 1)
             # shuffled_deck.append(self.current_deck[current])
             # self.current_deck.pop(current)
             shuffled_deck.append(self.current_deck.pop(current))
@@ -348,7 +361,7 @@ class ObjectGame:
                     if card.name.lower() == self.selected_card:
                         print(self.selected_player.name + "'s card IS " + self.selected_card)
                         print(self.selected_player.name + " is now out of the round.")
-                        self.remaining_players.remove(self.selected_player.name)
+                        self.remaining_players.remove(self.selected_player)
                     else:
                         print(self.selected_player.name + "'s card is not " + self.selected_card)
                     return self.finish_actions()
