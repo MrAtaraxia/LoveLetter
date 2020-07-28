@@ -104,7 +104,10 @@ def main_game_loop(*args, **kwargs):
                             if turn == "Finished":
                                 to_next_turn = True
                                 break
-        check_for_game_end(game.remaining_players, game.players)
+        round_winner = check_for_round_end(game.remaining_players, game.current_deck)
+        if round_winner != "no":
+            game.setup_round(round_winner)
+        check_for_game_end(game.players)
         game.next_player()
     end_game(using_exit)
 
@@ -114,15 +117,34 @@ def process_the_input():
     print(the_input)
 
 
-def check_for_game_end(current_players, all_players, winning_score=3):
+def check_for_round_end(current_players, current_deck) -> str:
     # checks to see if only one player is left, if so they are the victor.
     if len(current_players) == 1:
         for player in current_players:
             player.score += 1
-    
-    # checks if someone has won the game. enough wins
+            return player
     # checks to see if there are any more cards left to be drawn.
-    # If no more cards and more than 1 player player with the highest card value wins.
+    if len(current_deck) == 0:
+        # If no more cards and more than 1 player player with the highest card value wins.
+        high_card = 0
+        high_player = ""
+        for player in current_players:
+            for card in player.cards:
+                if card.number > high_card:
+                    high_card = card.number
+                    high_player = player
+        # WHAT HAPPENS IF THEY ARE TIED CARDS?
+        # I DON"T REMEMBER WHAT HAPPENS THERE...
+        return high_player
+
+    return "no"
+
+
+def check_for_game_end(all_players, winning_score=3):
+    # checks if someone has won the game. enough wins
+    for player in all_players:
+        if player.score > winning_score:
+            return player
     pass
 
 
@@ -215,9 +237,10 @@ class ObjectGame:
     def setup_round(self, winning_player):
         self.current_deck = self.deck.copy()
         self.remaining_players = self.players.copy()
+        # The winner of the last round goes first.
         for x in range(len(self.remaining_players)):
             if self.remaining_players[x] == winning_player:
-                self.current_player = 0
+                self.current_player = x
                 break
 
     def next_player(self):
