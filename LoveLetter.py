@@ -102,7 +102,7 @@ def main_game_loop(*args, **kwargs):
                 for count, card in enumerate(game.remaining_players[game.current_player].cards):
                     if the_input.lower() == card.name.lower() or the_input == str(count):
                         print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
-                        game.remaining_players[game.current_player].discarded_amount += card.value
+                        game.remaining_players[game.current_player].discarded_amount += card.number
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
@@ -110,11 +110,11 @@ def main_game_loop(*args, **kwargs):
                                 to_next_turn = True
                                 break
         round_winner = check_for_round_end(game.remaining_players, game.current_deck)
+        game.next_player()
         if round_winner != "no":
             game.draw_round_end(round_winner)
             game.setup_round(round_winner)
         check_for_game_end(game.players)
-        game.next_player()
     end_game(using_exit)
 
 
@@ -210,6 +210,10 @@ class ObjectGame:
         self.current_player = 0
         self.current_card = None  # The current card that is being resolved.
         self.discarded_cards = []
+        # discards 3 cards if playing 2 players.
+        if self.number_of_players == 2:
+            for x in range(3):
+                self.discarded_cards.append(self.current_deck.pop(0))
         self.hidden_cards = []
         self.list_of_cards = ["guard", "priest", "baron", "handmaid", "prince", "king", "countess", "princess"]
 
@@ -248,16 +252,34 @@ class ObjectGame:
                     break
 
     def setup_round(self, winning_player):
+        # Create a copy of the deck
         self.current_deck = self.deck.copy()
+        # Shuffle the deck
+        self.current_deck = self.shuffle_the_deck()
+        # Put all players back in the game.
         self.remaining_players = self.players.copy()
-        self.discarded_cards = []
+        # Clears the current card that is being resolved.
+        self.current_card = None  # Should not need to do this but doing it just to be safe.
+        # Clear the hidden card.
         self.hidden_cards = []
+        # Hides a card.
+        self.hidden_cards.append(self.current_deck.pop(0))
+        # Clear the played cards.
+        self.discarded_cards = []
+        # discards 3 cards if playing 2 players.
+        if self.number_of_players == 2:
+            for x in range(3):
+                self.discarded_cards.append(self.current_deck.pop(0))
         # The winner of the last round goes first.
         for count, player in enumerate(self.remaining_players):
             if player == winning_player:
                 self.current_player = count
             # Resets the count of the discarded/played amount for each player.
             player.discarded_amount = 0
+            # Resets the cards in the hand.
+            player.cards = []
+            self.deal_a_card(player)
+
         #for x in range(len(self.remaining_players)):
         #    if self.remaining_players[x] == winning_player:
         #        self.current_player = x
@@ -453,8 +475,8 @@ class ObjectGame:
                 if selected_value < current_value:
                     print("Player {selected}'s card has a lower value.".format(selected=self.selected_player.name))
                     self.player_removed_from_round(self.selected_player)
-                elif selected_value < current_value:
-                    print("Player {selected}'s card has a lower value.".format(selected=
+                elif selected_value > current_value:
+                    print("Player {current}'s card has a lower value.".format(current=
                                                                                self.remaining_players
                                                                                [self.current_player]))
                     self.player_removed_from_round(self.remaining_players[self.current_player])
