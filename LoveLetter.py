@@ -38,6 +38,7 @@ import random
 import json
 from submodule import child
 
+
 def make_the_deck():
     new_deck = []
     with open('data.json') as json_file:
@@ -48,9 +49,9 @@ def make_the_deck():
     return new_deck
 
 
-def main_game_loop():
+def main_game_loop(*args, **kwargs):
     # The main game.
-    game = ObjectGame(number_of_players=3)
+    game = ObjectGame(*args, **kwargs)
     continue_the_loop = True
     using_exit = False
     print(game.deck)
@@ -58,12 +59,12 @@ def main_game_loop():
         game.remaining_players[game.current_player].is_protected = False   # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
-        game.draw_the_card_hands()  # draw_the_game
-        game.draw_the_discard()
         to_next_turn = False
         while not to_next_turn:
+            game.draw_the_card_hands()  # draw_the_game
+            game.draw_the_discard()
             the_input = input(game.players[game.current_player].name +
-                              " Please type the name of the card you \n"
+                              " Please type the name or number of the card you \n"
                               "want to play or type Exit to end the program.")
 
             if the_input.lower() == "exit":
@@ -78,6 +79,7 @@ def main_game_loop():
                          or "King" in game.remaining_players[game.current_player].cards):
                 for card in game.remaining_players[game.current_player].cards:
                     if the_input.lower() == card.name.lower() == "countess":
+                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
@@ -154,9 +156,12 @@ class ObjectPlayer:
 
 
 class ObjectGame:
-    def __init__(self, number_of_players=2):
+    def __init__(self, number_of_players=2, player_names=None):
         self.number_of_players = number_of_players
-        self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
+        if player_names is None:
+            self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
+        else:
+            self.players = [ObjectPlayer(name) for name in player_names]
         self.deck = make_the_deck()
 
         # The following are used for the round and restored between rounds.
@@ -239,7 +244,7 @@ class ObjectGame:
             print(player.name + " discarded the princess. They are removed from the round.")
             self.player_removed_from_round(player)
             return "Finished"
-        print("PLAYER: ", player)
+        print("PLAYER:", player, "discarded a card.")
         self.discarded_cards.append(card)
         player.cards.remove(card)
 
@@ -368,13 +373,10 @@ class ObjectGame:
                 self.remaining_players[self.current_player].is_protected = True
                 return self.finish_actions()
 
-
             if action == "Target player discards hand and draws a new card":
                 print(self.selected_player.name + " discared their cards and drew a new card.")
                 if self.remaining_players[self.current_player] == self.selected_player:
                     for card in self.selected_player.cards:
-                        if card.name.lower() == "prince":  # This will keep the card in 'play'/'hand' to discard afterwards.
-                            continue
                         fin = self.discard_a_card(self.selected_player, card)
                         if fin == "Finished":
                             return self.finish_actions()
@@ -447,4 +449,4 @@ class ComponentBasicAI:
 
 
 if __name__ == "__main__":
-    main_game_loop()
+    main_game_loop(number_of_players=3, player_names=["Bob", "Chris", "Dan"])
