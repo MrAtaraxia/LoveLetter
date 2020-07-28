@@ -61,8 +61,9 @@ def main_game_loop(*args, **kwargs):
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
         while not to_next_turn:
-            game.draw_the_card_hands()  # draw_the_game
-            game.draw_the_discard()
+            game.draw_other_players()   # Draw the other players
+            game.draw_the_card_hands()  # Draw the cards in your hand
+            game.draw_the_discard()     # Draw the discard pile
             the_input = input(game.remaining_players[game.current_player].name +
                               " Please type the name or number of the card you \n"
                               "want to play or type Exit to end the program.")
@@ -247,7 +248,7 @@ class ObjectGame:
         self.current_player += 1
         self.current_player = self.current_player % len(self.remaining_players)
 
-    def draw_the_card_hands(self):
+    def draw_other_players(self):
         for count, player in enumerate(self.remaining_players):
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
@@ -258,13 +259,14 @@ class ObjectGame:
                 for card in player.cards:
                     print(" ", card.name, end="")
                 print("", end="   ")
+        print("")
 
-        print("""
-        """)
+    def draw_the_card_hands(self):
         for player in self.remaining_players:
             if player == self.remaining_players[self.current_player]:
                 for count, card in enumerate(player.cards):
                     print("   ", count, ":", card.name)
+                    print(card.description)
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
@@ -295,6 +297,8 @@ class ObjectGame:
         return shuffled_deck
 
     def deal_a_card(self, player):
+        # print("Player", player.name, "was dealt a card")
+        print("Player {name} was dealt a card".format(name=player.name))
         player.cards.append(self.current_deck[0])
         self.current_deck.pop(0)
 
@@ -313,7 +317,7 @@ class ObjectGame:
                 for card in self.list_of_cards:
                     if card == 'guard':
                         continue
-                    elif selected_card == card:
+                    elif selected_card.lower() == card:
                         self.selected_card = card
                         print(card)
                         return selected_card
@@ -326,14 +330,14 @@ class ObjectGame:
                 # Displays the other players.
                 unprotected_players = 0
                 total_other_players = 0
-                for player in self.remaining_players:
+                for count, player in enumerate(self.remaining_players):
                     if player == self.remaining_players[self.current_player]:
                         continue  # This should remove the showing yourself.
                     elif player.is_protected:
-                        players += "(" + player.name + ") "
+                        players += "(" + str(count) + " : " + player.name + ") "
                         total_other_players += 1
                     else:
-                        players += player.name + " "
+                        players += str(count) + " : " + player.name + " "
                         unprotected_players += 1
                         total_other_players += 1
 
@@ -341,13 +345,13 @@ class ObjectGame:
                 if unprotected_players == 0:
                     print("There are no targets that you can target. The spell fizzles out.")
                     return self.finish_actions()
-                for player in self.remaining_players:
+                for count, player in enumerate(self.remaining_players):
                     if player == self.remaining_players[self.current_player]:
                         continue  # This should remove the ability to target yourself.
                     elif player.is_protected is True:
                         print("Sorry that player is protected. Try someone else.")
                         continue  # This should remove the ability to target a protected player.
-                    elif target_player == player.name:
+                    elif target_player == player.name or target_player == str(count):
                         self.selected_player = player
                         return target_player
 

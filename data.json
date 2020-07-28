@@ -4,7 +4,7 @@
             "Number": 1,
             "Count": 5,
             "Name": "Guard",
-            "Description": "Name a non-Guard card and choose another player. If that player has that card, he or she is out of the round.",
+            "Description": "Name a non-Guard card \nand choose another player. \nIf that player has that card, \nhe or she is out of the round.",
             "Actions": [
                 "Name a card",
                 "Choose another player",
