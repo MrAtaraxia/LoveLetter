@@ -21,6 +21,14 @@ def make_the_deck():
     return new_deck
 
 
+def to_display(message=""):
+    print(message)
+
+
+def to_receive():
+    return input()
+
+
 def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
@@ -28,20 +36,21 @@ def main_game_loop(*args, **kwargs):
     using_exit = False
     # print(game.deck)
     while continue_the_loop:
-        print("Player {name}'s turn".format(name=game.remaining_players[game.current_player].name))
+        to_display("Player {name}'s turn".format(name=game.remaining_players[game.current_player].name))
         game.remaining_players[game.current_player].is_protected = False  # remove protected!
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
         while not to_next_turn:
             game.draw_other_players()   # Draw the other players
-            print()
+            to_display("")
             game.draw_the_card_hands()  # Draw the cards in your hand
-            print()
+            to_display("")
             game.draw_the_discard()     # Draw the discard pile
-            the_input = input(game.remaining_players[game.current_player].name +
-                              " Please type the name or number of the card you \n"
-                              "want to play or type Exit to end the program.")
+            to_display(game.remaining_players[game.current_player].name +
+                       " Please type the name or number of the card you \n"
+                       "want to play or type Exit to end the program.")
+            the_input = to_receive()
 
             if the_input.lower() == "exit":
                 continue_the_loop = False
@@ -73,7 +82,7 @@ def main_game_loop(*args, **kwargs):
             else:
                 for count, card in enumerate(game.remaining_players[game.current_player].cards):
                     if the_input.lower() == card.name.lower() or the_input == str(count):
-                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
+                        to_display(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
                         game.remaining_players[game.current_player].discarded_amount += card.number
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
@@ -88,11 +97,6 @@ def main_game_loop(*args, **kwargs):
             game.setup_round(round_winner)
         check_for_game_end(game.players)
     end_game(using_exit)
-
-
-def process_the_input():
-    the_input = input("Where would you like to go?")
-    print(the_input)
 
 
 def check_for_round_end(current_players, current_deck) -> str:
@@ -131,16 +135,17 @@ def end_game(if_exit):
     if if_exit:
         end = True
     while not end:
-        the_input = input("Would you like to play again Y/N?")
+        to_display("Would you like to play again Y/N?")
+        the_input = to_receive()
         if the_input.lower() == "y" or the_input.lower() == "yes" or the_input.lower() == "(y)es":
             main_game_loop()
             end = True  # This will make it so there are not multiple of these afterwards.
         elif the_input.lower() == "n" or the_input.lower() == "no" or the_input.lower() == "(n)o":
             end = True
         elif the_input.lower() == "o" or the_input.lower() == "or":
-            print("Seriously...")
+            to_display("Seriously...")
         else:
-            print("Please enter (Y)es or (N)o")
+            to_display("Please enter (Y)es or (N)o")
 
 
 class ObjectPlayer:
@@ -266,35 +271,35 @@ class ObjectGame:
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
             if player.is_protected:
-                print("(" + str(count) + " : " + player.name, "*"*player.score, ")", sep="", end="   ")
+                to_display("(" + str(count) + " : " + player.name + "*"*player.score + ")")
             else:
-                print(count, ":", player.name, "*"*player.score, end="")
+                to_display(count + " : " + player.name + "*"*player.score)
                 for card in player.cards:
-                    print(" ", card.name, end="")
-                print("", end="   ")
-        print("")
+                    to_display(" " + card.name)
+                to_display("   ")
+        to_display("")
 
     def draw_the_card_hands(self):
         for player in self.remaining_players:
             if player == self.remaining_players[self.current_player]:
                 for count, card in enumerate(player.cards):
-                    print("   ", count, ":", card.name, "(", card.number, ")")
-                    print(card.description)
+                    to_display("   " + str(count) + " : " + card.name + "(" + str(card.number) + ")")
+                    to_display(card.description)
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
-        print("Discarded Cards: ", end="")
+        to_display("Discarded Cards: ")
         for card in self.discarded_cards:
-            print(card, end=" ")
-        print()
+            to_display(card + " ")
+        to_display()
 
     def draw_round_end(self, player):
         # Draw/ Write the names of the cards in the discard pile.
-        print("Player {name} won the round. Their score increased by 1.".format(name=player.name))
-        print("Player {name}'s current score is {score}".format(name=player.name, score=player.score))
+        to_display("Player {name} won the round. Their score increased by 1.".format(name=player.name))
+        to_display("Player {name}'s current score is {score}".format(name=player.name, score=player.score))
         for card in self.discarded_cards:
-            print(card, end=" ")
-        print()
+            to_display(card, end=" ")
+        to_display("")
 
     def discard_a_card(self, player, card):
         # removes the card from player and adds it to the pile of discarded cards
