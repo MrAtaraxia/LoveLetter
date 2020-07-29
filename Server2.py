@@ -15,7 +15,6 @@ from AESCipher import AESCipher
 import random
 import string
 
-
 """
 Done - Adjusted this to be a Server version.
 # Finished on 2020.06.22
@@ -69,6 +68,7 @@ def trial_exit():
     print("Trying to escape!")
     sys.exit()
 
+
 def get_hashed_password(plain_text_password):
     # Hash a password for the first time
     #   (Using bcrypt, the salt is saved into the hash itself)
@@ -93,12 +93,9 @@ def hashing():
     print(check_password(plain2, password2))
 
 
-
-
-
 class ServerNetworking():
 
-    def __init__(self, _host_name='', _key = hashlib.sha256(b'16-character key').digest(), _port=5600, _port2=5700):
+    def __init__(self, _host_name='', _key=hashlib.sha256(b'16-character key').digest(), _port=5600, _port2=5700):
         # port3 = 5800
         self._host_name = _host_name
         self._host_ip = socky.gethostbyname(self._host_name)
@@ -112,13 +109,12 @@ class ServerNetworking():
         self.client_to_close = False
         self.server_to_close = False
         self.clients = []
-        
-        self.new_key = ''.join(random.choices(string.ascii_letters + string.digits, k = 16))
+
+        self.new_key = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         print(self.new_key)
         # print(_host)
         # PORT = 5000
         # BUFSIZ = 1024
-
 
     def starting_server(self, _host, _port, method_to_run1):
         _address = (_host, _port)
@@ -140,7 +136,7 @@ class ServerNetworking():
                     self.clients.append({"Name": client_name, "Address": addr, "Conn": conn})
                     thread1 = Thread(target=method_to_run1, args=(conn, client_name))
                     thread1.start()
-                    
+
                     count += 1
         except OSError as e:
             print(e)
@@ -154,7 +150,6 @@ class ServerNetworking():
             thread2.continue_running = False
             sys.exit(0)  # Closes the thread
 
-
     def receive(self, conn, client_name):
         """Handles receiving of messages."""
         receive_cypher = AESCipher(self._key)
@@ -166,7 +161,7 @@ class ServerNetworking():
                 # Insert a new item at the end of the list
                 # print(encrypted_msg)
                 msg = receive_cypher.decrypt(encrypted_msg)
-                
+
                 # Now I want to add it to the stack so it can be echoed to everyone.
                 self.send_stack.append({"SendType": "All", "From": client_name, "Message": msg})
                 if isinstance(msg, str):
@@ -182,7 +177,7 @@ class ServerNetworking():
                     interrupt_main()
                     # main_window.quit()
                     print('receive ended')
-                    break # This instead of sys.exit(0) ?
+                    break  # This instead of sys.exit(0) ?
                     # sys.exit(0)  # Closes the thread
 
             # finally:
@@ -192,7 +187,6 @@ class ServerNetworking():
             print("hopefully shutting down.")
         finally:
             conn.close()
-
 
     def send(self, client_socket: str, message_to_send: str):  # event is passed by binders.
         """
@@ -213,12 +207,10 @@ class ServerNetworking():
             sys.exit(0)
             # exit(0)
 
-
     def send_all(self, message_from, message):
 
         for client in self.clients:
             self.send(client["Conn"], str(message_from) + " : " + message)
-
 
     def sending(self):
         """
@@ -232,9 +224,9 @@ class ServerNetworking():
                 if self.send_stack != []:
                     current_message = self.send_stack.pop()
                     print(current_message)
-                    if current_message["SendType"]== "All":
+                    if current_message["SendType"] == "All":
                         self.send_all(current_message["From"], current_message["Message"])
-                    #else:
+                    # else:
                     #    self.send()
         except OSError as e:
             print(e)
@@ -245,19 +237,16 @@ class ServerNetworking():
             # msg = input()
             # if self.send_stack[self.send_stack.length-1]("SendType") == "All":
 
-            #else:
+            # else:
             #    msg = self.send_stack.pop
-            #self.send()
-
+            # self.send()
 
     def change_passphrase(self, new_pass):
         self._key2 = new_pass
         self.send_stack.append(self._key2)
-        
 
 
-if __name__ == '__main__':
-    # hashing()
+def main():
     host_name = socky.gethostname()
     myserver = ServerNetworking(host_name)
     try:
@@ -269,3 +258,7 @@ if __name__ == '__main__':
         raise
     finally:
         sys.exit()
+
+if __name__ == '__main__':
+    # hashing()
+    main()

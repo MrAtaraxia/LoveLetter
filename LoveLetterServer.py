@@ -6,9 +6,16 @@ A basic LoveLetter Game.
 TODO - NETWORKING... make it so more than 1 location...
 
 """
+# Default
 import random
 import json
+import socket as socky
+# Premade
+
+# Mine
+from Server2 import ServerNetworking as Networking
 from submodule import child
+
 
 
 def make_the_deck():
@@ -21,8 +28,8 @@ def make_the_deck():
     return new_deck
 
 
-def to_display(message=""):
-    print(message)
+def to_display(message="", sep="", end="\n"):
+    print(message, sep=sep, end=end)
 
 
 def to_receive():
@@ -32,6 +39,8 @@ def to_receive():
 def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
+    # Starting the SERVER
+    network = Networking()
     continue_the_loop = True
     using_exit = False
     # print(game.deck)
@@ -49,7 +58,7 @@ def main_game_loop(*args, **kwargs):
             game.draw_the_discard()     # Draw the discard pile
             to_display(game.remaining_players[game.current_player].name +
                        " Please type the name or number of the card you \n"
-                       "want to play or type Exit to end the program.")
+                       "want to play or type Exit to end the program.", end="")
             the_input = to_receive()
 
             if the_input.lower() == "exit":
@@ -65,7 +74,7 @@ def main_game_loop(*args, **kwargs):
                          or "King" in game.remaining_players[game.current_player].cards):
                 for card in game.remaining_players[game.current_player].cards:
                     if the_input.lower() == card.name.lower() == "countess":
-                        print(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
+                        to_display(game.remaining_players[game.current_player].name + " plays " + card.name + ".")
                         game.discard_a_card(game.remaining_players[game.current_player], card)
                         for action in card.actions:
                             turn = game.card_actions(action)
@@ -75,8 +84,8 @@ def main_game_loop(*args, **kwargs):
                                 # This break 'should' get me out of having the issue
                                 # with 2 cards that are the same name.
                     else:
-                        print("You must play the Countess since you have")
-                        print("the Prince or King in your hand.")
+                        to_display("You must play the Countess since you have")
+                        to_display("the Prince or King in your hand.")
 
             # Non Countess Path.
             else:
@@ -271,12 +280,12 @@ class ObjectGame:
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
             if player.is_protected:
-                to_display("(" + str(count) + " : " + player.name + "*"*player.score + ")")
+                to_display("(" + str(count) + " : " + player.name + "*"*player.score + ")", sep="", end="   ")
             else:
-                to_display(count + " : " + player.name + "*"*player.score)
+                to_display(str(count) + " : " + player.name + "*"*player.score, sep="", end="   ")
                 for card in player.cards:
-                    to_display(" " + card.name)
-                to_display("   ")
+                    to_display(" " + card.name, end="")
+                to_display("   ", end="")
         to_display("")
 
     def draw_the_card_hands(self):
@@ -288,9 +297,9 @@ class ObjectGame:
 
     def draw_the_discard(self):
         # Draw/ Write the names of the cards in the discard pile.
-        to_display("Discarded Cards: ")
+        to_display("Discarded Cards: ", end="")
         for card in self.discarded_cards:
-            to_display(card + " ")
+            to_display(card + " ", end="")
         to_display()
 
     def draw_round_end(self, player):
@@ -306,10 +315,10 @@ class ObjectGame:
         # CHECK FOR PRINCESS!!!
         # Do I want to return something here to deal with this?
         if card.name == "Princess":
-            print(player.name + " discarded the princess. They are removed from the round.")
+            to_display(player.name + " discarded the princess. They are removed from the round.")
             self.player_removed_from_round(player)
             return "Finished"
-        print("PLAYER:", player, "discarded a card.")
+        to_display("PLAYER: " + player + " discarded a card.")
         self.discarded_cards.append(card)
         player.cards.remove(card)
 
@@ -326,11 +335,11 @@ class ObjectGame:
     def deal_a_card(self, player, deck="deck"):
         # print("Player", player.name, "was dealt a card")
         if deck == "deck":
-            print("Player {name} was dealt a card".format(name=player.name))
+            to_display("Player {name} was dealt a card".format(name=player.name))
             player.cards.append(self.current_deck.pop(0))
             # self.current_deck.pop(0)
         elif deck == "removed":
-            print("Player {name} was dealt the hidden card".format(name=player.name))
+            to_display("Player {name} was dealt the hidden card".format(name=player.name))
             player.cards.append(self.hidden_cards.pop(0))
 
 
@@ -342,22 +351,25 @@ class ObjectGame:
     def card_actions(self, action):
         while True:
             if action == "Name a card":
-                print("Which non-guard card would you like to choose?")
-                print("Please type one of the following:")
-                selected_card = input("priest, baron, handmaid, prince, king, countess, or princess")
+                to_display("Which non-guard card would you like to choose?")
+                to_display("Please type one of the following:")
+                to_display("2: priest, 3: baron, 4: handmaid, ")
+                to_display("5: prince, 6: king, 7: countess,) ")
+                to_display("or 8: princess")
+                selected_card = to_receive()
                 # Check to make sure the selected_card is a selectable card.
                 for card in self.list_of_cards:
                     if card == 'guard':
                         continue
                     elif selected_card.lower() == card:
                         self.selected_card = card
-                        print(card)
+                        to_display(card)
                         return selected_card
                     else:
                         "That is not one of the card choices. Please try again."
 
             if action == "Choose another player":
-                print("Which player would you like to choose?")
+                to_display("Which player would you like to choose?")
                 players = ""
                 # Displays the other players.
                 unprotected_players = 0
@@ -372,16 +384,16 @@ class ObjectGame:
                         players += str(count) + " : " + player.name + " "
                         unprotected_players += 1
                         total_other_players += 1
-
-                target_player = input(players)
+                to_display(players)
+                target_player = to_receive()
                 if unprotected_players == 0:
-                    print("There are no targets that you can target. The spell fizzles out.")
+                    to_display("There are no targets that you can target. The spell fizzles out.")
                     return self.finish_actions()
                 for count, player in enumerate(self.remaining_players):
                     if player == self.remaining_players[self.current_player]:
                         continue  # This should remove the ability to target yourself.
                     elif player.is_protected is True:
-                        print("Sorry that player is protected. Try someone else.")
+                        to_display("Sorry that player is protected. Try someone else.")
                         continue  # This should remove the ability to target a protected player.
                     elif target_player == player.name or target_player == str(count):
                         self.selected_player = player
@@ -389,7 +401,7 @@ class ObjectGame:
 
             if action == "Choose any player":
                 # How much different is this than the previous one?
-                print("Which player would you like to choose?")
+                to_display("Which player would you like to choose?")
                 players = ""
                 # Displays the other players.
                 unprotected_players = 0
@@ -402,14 +414,14 @@ class ObjectGame:
                         players += player.name + " "
                         unprotected_players += 1
                         total_other_players += 1
-
-                target_player = input(players)
+                to_display(players)
+                target_player = to_receive()
                 if unprotected_players == 0:
-                    print("There are no targets that you can target. The spell fizzles out.")
+                    to_display("There are no targets that you can target. The spell fizzles out.")
                     return self.finish_actions()
                 for player in self.remaining_players:
                     if player.is_protected is True:
-                        print("Sorry that player is protected. Try someone else.")
+                        to_display("Sorry that player is protected. Try someone else.")
                         continue  # This should remove the ability to target a protected player.
                     elif target_player == player.name:
                         self.selected_player = player
@@ -418,19 +430,19 @@ class ObjectGame:
             if action == "If player has named card, player out of round":
                 for card in self.selected_player.cards:
                     if card.name.lower() == self.selected_card:
-                        print(self.selected_player.name + "'s card IS " + self.selected_card)
-                        print(self.selected_player.name + " is now out of the round.")
+                        to_display(self.selected_player.name + "'s card IS " + self.selected_card)
+                        to_display(self.selected_player.name + " is now out of the round.")
                         self.remaining_players.remove(self.selected_player)
                     else:
-                        print(self.selected_player.name + "'s card is not " + self.selected_card)
+                        to_display(self.selected_player.name + "'s card is not " + self.selected_card)
                     return self.finish_actions()
 
             if action == "Look at chosen players hand.":
                 # Display target players hand to current player.
-                print("You look at " + self.selected_player.name + " cards.")
+                to_display("You look at " + self.selected_player.name + " cards.")
                 for card in self.selected_player.cards:
-                    print(card, end="")
-                print("")
+                    to_display(card, end="")
+                to_display("")
                 return self.finish_actions()
 
             if action == "Secretly compare hands.":
@@ -438,33 +450,33 @@ class ObjectGame:
                 # only to the current player and target player.
                 current_value = 0
                 selected_value = 0
-                print("You and " + self.selected_player.name + " compare your cards.")
-                print(self.remaining_players[self.current_player].name, "'s cards: ", sep="", end="")
+                to_display("You and " + self.selected_player.name + " compare your cards.")
+                to_display(self.remaining_players[self.current_player].name, "'s cards: ", sep="", end="")
                 for card in self.remaining_players[self.current_player].cards:
-                    print(card.name, end=" ")
+                    to_display(card.name, end=" ")
                     current_value = card.number
-                print("")
-                print(self.selected_player.name, "'s cards: ", sep="", end="")
+                to_display("")
+                to_display(self.selected_player.name, "'s cards: ", sep="", end="")
                 for card in self.selected_player.cards:
-                    print(card.name, end=" ")
+                    to_display(card.name, end=" ")
                     selected_value = card.number
-                print("")
+                to_display("")
                 if selected_value < current_value:
-                    print("Player {selected}'s card has a lower value.".format(selected=self.selected_player.name))
+                    to_display("Player {selected}'s card has a lower value.".format(selected=self.selected_player.name))
                     self.player_removed_from_round(self.selected_player)
                 elif selected_value > current_value:
-                    print("Player {current}'s card has a lower value.".format(current=
-                                                                               self.remaining_players
-                                                                               [self.current_player]))
+                    to_display("Player {current}'s card has a lower value.".format(current=
+                                                                                   self.remaining_players
+                                                                                   [self.current_player]))
                     self.player_removed_from_round(self.remaining_players[self.current_player])
                 else:
-                    print("Both players had cards with the same value.")
+                    to_display("Both players had cards with the same value.")
                 return self.finish_actions()
 
             if action == "The lower value is out of the round.":
                 # THIS SHOULD NOT BE CALLED
                 # Do I want this to be a different one from the previous one?
-                print("THIS SHOULD NOT BE CALLED")
+                to_display("THIS SHOULD NOT BE CALLED")
                 return self.finish_actions()
 
             if action == "Protection from other attacks":
@@ -472,14 +484,14 @@ class ObjectGame:
                 return self.finish_actions()
 
             if action == "Target player discards hand and draws a new card":
-                print(self.selected_player.name + " discared their cards and drew a new card.")
+                to_display(self.selected_player.name + " discared their cards and drew a new card.")
 
                 for card in self.selected_player.cards:
                     fin = self.discard_a_card(self.selected_player, card)
                     if fin == "Finished":
                         return self.finish_actions()
                 if len(self.current_deck) == 0:
-                    print("There are no cards left in the deck.")
+                    to_display("There are no cards left in the deck.")
                     self.deal_a_card(self.selected_player, deck="removed")
                 else:
                     self.deal_a_card(self.selected_player)
