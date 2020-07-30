@@ -17,7 +17,8 @@ import socket as socky
 from Server2 import ServerNetworking as Networking
 from submodule import child
 
-
+# GLOBALS:
+network = Networking()
 
 def make_the_deck():
     new_deck = []
@@ -30,7 +31,10 @@ def make_the_deck():
 
 
 def to_display(message="", sep="", end="\n"):
+    global network
     print(message, sep=sep, end=end)
+    sending = {"SendType": "All", "From": "client", "Message": message}
+    network.send_stack.append(sending)
 
 
 def to_receive():
@@ -45,7 +49,7 @@ def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
     # Starting the SERVER
-    network = Networking()
+    global network
     net_server = Thread(target=make_networking, args=(network,))
     print(network.send_stack)
     print(network.receive_stack)
