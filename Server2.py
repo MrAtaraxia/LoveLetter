@@ -109,6 +109,7 @@ class ServerNetworking():
         self.client_to_close = False
         self.server_to_close = False
         self.clients = []
+        self.receive_stack = []
 
         self.new_key = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         print(self.new_key)
@@ -151,7 +152,10 @@ class ServerNetworking():
             sys.exit(0)  # Closes the thread
 
     def receive(self, conn, client_name):
-        """Handles receiving of messages."""
+        """
+        Handles receiving of messages.
+        Puts the messages on the stack.
+        """
         receive_cypher = AESCipher(self._key)
         self.server_to_close
         try:
@@ -161,15 +165,9 @@ class ServerNetworking():
                 # Insert a new item at the end of the list
                 # print(encrypted_msg)
                 msg = receive_cypher.decrypt(encrypted_msg)
+                self.receive_stack.append([client_name, msg])
 
-                # Now I want to add it to the stack so it can be echoed to everyone.
-                self.send_stack.append({"SendType": "All", "From": client_name, "Message": msg})
-                if isinstance(msg, str):
-                    print("Received message :" + msg)
-                if isinstance(msg, dict):
-                    print("DO THINGS WITH THE DICT!")
-                if isinstance(msg, list):
-                    print("DO THINGS WITH THE LIST!")
+                """
                 if msg == "quit":
                     server_to_close = True
                     conn.close()  # Closes the socket
@@ -178,7 +176,7 @@ class ServerNetworking():
                     # main_window.quit()
                     print('receive ended')
                     break  # This instead of sys.exit(0) ?
-                    # sys.exit(0)  # Closes the thread
+                    # sys.exit(0)  # Closes the thread"""
 
             # finally:
             #  combo.txt1.insert(END, "\n")
