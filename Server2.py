@@ -95,7 +95,7 @@ def hashing():
 
 class ServerNetworking():
 
-    def __init__(self, _host_name='', _key=hashlib.sha256(b'16-character key').digest(), _port=5600, _port2=5700):
+    def __init__(self, _host_name=socky.gethostname(), _key=hashlib.sha256(b'16-character key').digest(), _port=5600, _port2=5700):
         # port3 = 5800
         self._host_name = _host_name
         self._host_ip = socky.gethostbyname(self._host_name)
@@ -105,11 +105,11 @@ class ServerNetworking():
         self._key = _key
         self._key2 = b'16-character key'
         self.send_stack = []
+        self.receive_stack = []
         self.BUFSIZ = 1024
         self.client_to_close = False
         self.server_to_close = False
         self.clients = []
-        self.receive_stack = []
 
         self.new_key = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         print(self.new_key)
@@ -117,8 +117,8 @@ class ServerNetworking():
         # PORT = 5000
         # BUFSIZ = 1024
 
-    def starting_server(self, _host, _port, method_to_run1):
-        _address = (_host, _port)
+    def starting_server(self):
+        _address = (self._host, self._port)
         self.server_to_close = False
         SERVER = socket(AF_INET, SOCK_STREAM)
         SERVER.bind(_address)
@@ -135,7 +135,7 @@ class ServerNetworking():
                     print('Client', count, ' connected IP:', addr)
                     client_name = "Client" + str(count)
                     self.clients.append({"Name": client_name, "Address": addr, "Conn": conn})
-                    thread1 = Thread(target=method_to_run1, args=(conn, client_name))
+                    thread1 = Thread(target=self.receive, args=(conn, client_name))
                     thread1.start()
 
                     count += 1
@@ -245,11 +245,12 @@ class ServerNetworking():
 
 
 def main():
-    host_name = socky.gethostname()
-    myserver = ServerNetworking(host_name)
+    # host_name = socky.gethostname()
+    # myserver = ServerNetworking(host_name)
+    myserver = ServerNetworking()
     try:
         print("Server waiting...")
-        myserver.starting_server(myserver._host, myserver._port, myserver.receive)
+        myserver.starting_server()
         sys.exit()
     except KeyboardInterrupt as k:
         print(k)

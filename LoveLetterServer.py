@@ -8,6 +8,7 @@ TODO - NETWORKING... make it so more than 1 location...
 """
 # Default
 import random
+from threading import Thread
 import json
 import socket as socky
 # Premade
@@ -36,11 +37,19 @@ def to_receive():
     return input()
 
 
+def make_networking(network_server):
+    network_server.starting_server()
+
+
 def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
     # Starting the SERVER
     network = Networking()
+    net_server = Thread(target=make_networking, args=(network,))
+    print(network.send_stack)
+    print(network.receive_stack)
+    net_server.start()
     continue_the_loop = True
     using_exit = False
     # print(game.deck)
@@ -50,6 +59,8 @@ def main_game_loop(*args, **kwargs):
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
+        print(network.send_stack)
+        print(network.receive_stack)
         while not to_next_turn:
             game.draw_other_players()   # Draw the other players
             to_display("")
@@ -299,7 +310,7 @@ class ObjectGame:
         # Draw/ Write the names of the cards in the discard pile.
         to_display("Discarded Cards: ", end="")
         for card in self.discarded_cards:
-            to_display(card + " ", end="")
+            to_display(card.name + " ", end="")
         to_display()
 
     def draw_round_end(self, player):
@@ -307,7 +318,7 @@ class ObjectGame:
         to_display("Player {name} won the round. Their score increased by 1.".format(name=player.name))
         to_display("Player {name}'s current score is {score}".format(name=player.name, score=player.score))
         for card in self.discarded_cards:
-            to_display(card, end=" ")
+            to_display(card.name, end=" ")
         to_display("")
 
     def discard_a_card(self, player, card):
@@ -318,7 +329,7 @@ class ObjectGame:
             to_display(player.name + " discarded the princess. They are removed from the round.")
             self.player_removed_from_round(player)
             return "Finished"
-        to_display("PLAYER: " + player + " discarded a card.")
+        to_display("PLAYER: " + player.name + " discarded a card.")
         self.discarded_cards.append(card)
         player.cards.remove(card)
 
