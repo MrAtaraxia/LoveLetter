@@ -37,7 +37,7 @@ def to_display(message="", sep="", end="\n"):
     global network
     print(message, sep=sep, end=end)
     sending = {"SendType": "All", "From": "client", "Message": message}
-    network.send_stack.append(sending)
+    network._send_stack.append(sending)
 
 
 def to_receive():
@@ -53,9 +53,10 @@ def main_game_loop(*args, **kwargs):
     game = ObjectGame(*args, **kwargs)
     # Starting the SERVER
     global network
+    network.SERVER.listen(5)
     net_server = Thread(target=make_networking, args=(network,))
-    print(network.send_stack)
-    print(network.receive_stack)
+    # print(network._send_stack)
+    # print(network._receive_stack)
     net_server.start()
     continue_the_loop = True
     using_exit = False
@@ -66,8 +67,8 @@ def main_game_loop(*args, **kwargs):
         game.deal_a_card(game.remaining_players[game.current_player])
         # game.deal_a_card(game.remaining_players[game.current_player])
         to_next_turn = False
-        print(network.send_stack)
-        print(network.receive_stack)
+        # print(network._send_stack)
+        # print(network._receive_stack)
         while not to_next_turn:
             game.draw_other_players()   # Draw the other players
             to_display("")

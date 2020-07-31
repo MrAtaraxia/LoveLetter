@@ -183,3 +183,30 @@ OSError: [WinError 10022] An invalid argument was supplied
 2020-07-31_16:43:55 — abc : thing
 2020-07-31_16:43:58 — [WinError 10054] An existing connection was forcibly closed by the remote host
 2020-07-31_16:43:58 — abc : CONNECTION LOST. DISCONNECTED.
+2020-07-31_16:44:08 — ======> Fatal Error....
+[WinError 10022] An invalid argument was supplied
+2020-07-31_16:44:08 — Traceback (most recent call last):
+  File "C:\Users\admin9\Desktop\New folder\pyth2\Current\05 Games\LoveLetter\SimpleServer.py", line 40, in accept_incoming_connections
+    client, client_address = self.SERVER.accept()
+  File "C:\Program Files\Python37\lib\socket.py", line 212, in accept
+    fd, addr = self._accept()
+OSError: [WinError 10022] An invalid argument was supplied
+
+2020-07-31_17:01:08 — ======> Fatal Error....
+[WinError 10022] An invalid argument was supplied
+2020-07-31_17:01:08 — Traceback (most recent call last):
+  File "C:\Users\admin9\Desktop\New folder\pyth2\Current\05 Games\LoveLetter\SimpleServer.py", line 40, in accept_incoming_connections
+    client, client_address = self.SERVER.accept()
+  File "C:\Program Files\Python37\lib\socket.py", line 212, in accept
+    fd, addr = self._accept()
+OSError: [WinError 10022] An invalid argument was supplied
+
+2020-07-31_17:09:19 — ======> Fatal Error....
+[WinError 10022] An invalid argument was supplied
+2020-07-31_17:09:19 — Traceback (most recent call last):
+  File "C:\Users\admin9\Desktop\New folder\pyth2\Current\05 Games\LoveLetter\SimpleServer.py", line 40, in accept_incoming_connections
+    client, client_address = self.SERVER.accept()
+  File "C:\Program Files\Python37\lib\socket.py", line 212, in accept
+    fd, addr = self._accept()
+OSError: [WinError 10022] An invalid argument was supplied
+

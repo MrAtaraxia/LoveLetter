@@ -20,8 +20,8 @@ class SimpleServer:
         self.addresses = {}
         self._host_name = gethostname()
         self._host_ip = gethostbyname(self._host_name)
-        self.send_stack = []
-        self.receive_stack = []
+        self._send_stack = []
+        self._receive_stack = []
 
         self.HOST = self._host_ip
         self.PORT = 30000
@@ -45,17 +45,17 @@ class SimpleServer:
                     Thread(target=self.handle_client, args=(client,)).start()
                 except (SystemExit, KeyboardInterrupt):
                     self.information("Exiting....")
-                    self.stop()
+                    # self.stop()
                     break
                 except Exception as ex:
                     self.information("======> Fatal Error....\n" + str(ex))
                     self.information(traceback.format_exc())
                     self.running = False
-                    self.stop()
+                    # self.stop()
                     raise
         except (SystemExit, KeyboardInterrupt):
             self.information("Force Exiting....")
-            self.stop()
+            # self.stop()
             raise
 
     def stop(self):

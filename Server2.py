@@ -98,8 +98,8 @@ class ServerNetworking():
         self._port2 = _port2
         self._key = _key
         self._key2 = b'16-character key'
-        self.send_stack = []
-        self.receive_stack = []
+        self._send_stack = []
+        self._receive_stack = []
         self.BUFSIZ = 1024
         self.client_to_close = False
         self.server_to_close = False
@@ -159,7 +159,7 @@ class ServerNetworking():
                 # Insert a new item at the end of the list
                 # print(encrypted_msg)
                 msg = receive_cypher.decrypt(encrypted_msg)
-                self.receive_stack.append([client_name, msg])
+                self._receive_stack.append([client_name, msg])
 
                 """
                 if msg == "quit":
@@ -213,8 +213,8 @@ class ServerNetworking():
         try:
             t = currentThread()
             while getattr(t, "do_run", True):
-                if self.send_stack != []:
-                    current_message = self.send_stack.pop()
+                if self._send_stack != []:
+                    current_message = self._send_stack.pop()
                     print(current_message)
                     if current_message["SendType"] == "All":
                         self.send_all(current_message["From"], current_message["Message"])
@@ -235,7 +235,7 @@ class ServerNetworking():
 
     def change_passphrase(self, new_pass):
         self._key2 = new_pass
-        self.send_stack.append(self._key2)
+        self._send_stack.append(self._key2)
 
 
 def main():
