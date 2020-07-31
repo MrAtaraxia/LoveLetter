@@ -63,12 +63,6 @@ TODO - Have a way for the user to SAVE the password when they run it...
 
 """
 
-
-def trial_exit():
-    print("Trying to escape!")
-    sys.exit()
-
-
 def get_hashed_password(plain_text_password):
     # Hash a password for the first time
     #   (Using bcrypt, the salt is saved into the hash itself)
