@@ -60,7 +60,10 @@ class SimpleServer:
 
     def stop(self):
         self.running = False
-        socket(AF_INET, SOCK_STREAM).connect((self.HOST, self.PORT))
+        try:
+            socket(AF_INET, SOCK_STREAM).connect((self.HOST, self.PORT))
+        except ConnectionRefusedError:
+            pass
         self.SERVER.close()
 
     def handle_client(self, client):  # Takes client socket as argument.

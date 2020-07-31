@@ -165,3 +165,21 @@
 2020-07-30_23:19:16 — abc : ok
 2020-07-30_23:24:05 — [WinError 10053] An established connection was aborted by the software in your host machine
 2020-07-30_23:24:05 — abc : CONNECTION LOST. DISCONNECTED.
+2020-07-31_16:42:17 — ======> Fatal Error....
+[WinError 10022] An invalid argument was supplied
+2020-07-31_16:42:17 — Traceback (most recent call last):
+  File "C:\Users\admin9\Desktop\New folder\pyth2\Current\05 Games\LoveLetter\SimpleServer.py", line 40, in accept_incoming_connections
+    client, client_address = self.SERVER.accept()
+  File "C:\Program Files\Python37\lib\socket.py", line 212, in accept
+    fd, addr = self._accept()
+OSError: [WinError 10022] An invalid argument was supplied
+
+2020-07-31_16:43:42 — Waiting for connection...
+2020-07-31_16:43:49 — 25.3.99.2:55131 has connected.
+2020-07-31_16:43:51 — abc has joined the chat!
+2020-07-31_16:43:52 — abc : def
+2020-07-31_16:43:54 — abc : yep
+2020-07-31_16:43:54 — abc : ok
+2020-07-31_16:43:55 — abc : thing
+2020-07-31_16:43:58 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-31_16:43:58 — abc : CONNECTION LOST. DISCONNECTED.
