@@ -66,32 +66,36 @@ class SimpleServer:
     def handle_client(self, client):  # Takes client socket as argument.
         """Handles a single client connection."""
         try:
-            try:
-                name = client.recv(self.BUFSIZ).decode("utf8")
-            except Exception as e:
-                self.information(e)
-                self.information("Client disconnected before giving a name.")
-                client.close()
-            welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % name
-            client.send(bytes(welcome, "utf8"))
-            msg = "%s has joined the chat!" % name
-            self.information(msg)
-            # logging.info(msg)
-            self.broadcast(bytes(msg, "utf8"))
-            self.clients[client] = name
-
-            while self.running:
-                msg = client.recv(self.BUFSIZ)
-                if msg != bytes("{quit}", "utf8"):
-                    self.broadcast(msg, name + ": ")
-                    self.information(name + " : " + msg.decode("utf8"))
-                else:
-                    client.send(bytes("{quit}", "utf8"))
+            running = True
+            while running:
+                try:
+                    name = client.recv(self.BUFSIZ).decode("utf8")
+                except Exception as e:
+                    self.information(e)
+                    self.information("Client disconnected before giving a name.")
                     client.close()
-                    del self.clients[client]
-                    self.broadcast(bytes("%s has left the chat." % name, "utf8"))
                     break
-        except Exception as e:
+                welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % name
+                client.send(bytes(welcome, "utf8"))
+                msg = "%s has joined the chat!" % name
+                self.information(msg)
+                # logging.info(msg)
+                self.broadcast(bytes(msg, "utf8"))
+                self.clients[client] = name
+
+                while self.running:
+                    msg = client.recv(self.BUFSIZ)
+                    if msg != bytes("{quit}", "utf8"):
+                        self.broadcast(msg, name + ": ")
+                        self.information(name + " : " + msg.decode("utf8"))
+                    else:
+                        client.send(bytes("{quit}", "utf8"))
+                        client.close()
+                        del self.clients[client]
+                        self.broadcast(bytes("%s has left the chat." % name, "utf8"))
+                        running = False
+                        break
+        except WindowsError as e:
             self.information(e)
             self.information(name + " : CONNECTION LOST. DISCONNECTED.")
             # logging.info(name + ": CONNECTION LOST. DISCONNECTED.")
@@ -104,9 +108,11 @@ class SimpleServer:
                 sock.send(bytes(prefix, "utf8") + msg)
             except Exception:
                 continue
+
     def information(self, message):
         print(message)
         logging.info(message)
+
 
 if __name__ == "__main__":
     my_server = SimpleServer()
@@ -116,4 +122,3 @@ if __name__ == "__main__":
     ACCEPT_THREAD = Thread(target=my_server.accept_incoming_connections)
     ACCEPT_THREAD.start()
     ACCEPT_THREAD.join()
-

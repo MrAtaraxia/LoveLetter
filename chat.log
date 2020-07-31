@@ -48,3 +48,10 @@
 2020-07-30_22:15:46 — Client disconnected before giving a name.
 2020-07-30_22:15:46 — local variable 'name' referenced before assignment
 2020-07-30_22:15:50 — 25.3.99.2:51743 has connected.
+2020-07-30_22:22:12 — Waiting for connection...
+2020-07-30_22:22:20 — 25.3.99.2:51751 has connected.
+2020-07-30_22:22:34 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:22:34 — Client disconnected before giving a name.
+2020-07-30_22:22:35 — 25.3.99.2:51752 has connected.
+2020-07-30_22:23:22 — Waiting for connection...
+2020-07-30_22:23:27 — 25.3.99.2:51753 has connected.

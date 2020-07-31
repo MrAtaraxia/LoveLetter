@@ -1,14 +1,28 @@
 ### /bin/env python3
 # I like the resources at: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/index.html
 
-# """SimpleChatClientConverted.pyw"""
+# """SimpleClient.py"""
 
-
+import select
 from socket import AF_INET, socket, SOCK_STREAM, gethostname, gethostbyname
-from threading import Thread
 import sys
+from threading import Thread
+import time
 
 
+def get_user_input(msg, timeout=5):
+    print(msg)
+    user_input = []
+    stime = time.time()
+
+    while time.time() - stime <= timeout:
+        readables, _, _ = select.select([sys.stdin], [], [], 0.1)
+        if not readables:
+            continue
+        chr = readables[0].read(1)
+        if chr == '\n':
+            return ''.join(user_input)
+        user_input.append(chr)
 
 class SimpleClient:
 
@@ -17,6 +31,7 @@ class SimpleClient:
         self._host_ip = gethostbyname(self._host_name)
         self._send_stack = []
         self._receive_stack = []
+        self._running = True
 
         self.HOST = self._host_ip
         self.PORT = 30000
@@ -26,14 +41,21 @@ class SimpleClient:
         self.CLIENT = socket(AF_INET, SOCK_STREAM)
         self.CLIENT.connect(self.ADDR)
 
+        # Start turning networking into stacks.
+        self.start_client()
+
+    def start_client(self):
+        send_thread = Thread(target=self.send, args=())
+        send_thread.start()
+        receive_thread = Thread(target=self.receive)
+        receive_thread.start()
+
     def receive(self):
         """Handles receiving of messages."""
-        while True:
-            # combo.txt1.configure(state='disabled')
+        while self._running:
             msg = ""
             try:
                 msg = self.CLIENT.recv(self.BUFSIZ).decode("utf8")
-                # Insert a new item at the end of the list
 
             except OSError:  # Possibly client has left the chat.
                 break
@@ -44,28 +66,35 @@ class SimpleClient:
 
     def send(self):  # event is passed by binders.
         """Handles sending of messages."""
-        while True:
+        while self._running:
             if self._send_stack:
                 msg = self._send_stack.pop(0)
-            self.CLIENT.send(bytes(msg, "utf8"))
-            if msg == "{quit}":
-                self.CLIENT.close()
-                sys.exit(0)
+                self.CLIENT.send(bytes(msg, "utf8"))
+                if msg == "{quit}":
+                    self.stop()
+                    self.CLIENT.close()
+                    sys.exit(0)
         # Look for a way to send the tags and the images.
 
     def sending(self):
-        while True:
-            msg = input()
-            self._send_stack.append(msg)
-            # self.send()
+        while self._running:
+            user_input = get_user_input('please insert something:')
+            self._send_stack.append(user_input)
+            print(self._send_stack)
 
-    def on_closing(self, event=None):
+    def receiving(self):
+        while self._running:
+            if self._receive_stack:
+                msg = self._receive_stack.pop(0)
+                print(msg)
+
+    def stop(self, event=None):
         """This function is to be called when the window is closed."""
+        self._running = False
         try:
-
-            # combo.txt2.set("{quit}")
             self.send()
-        except Exception:
+        except Exception as e:
+            print(e)
             exit(0)
             sys.exit(0)
         exit(0)
@@ -74,11 +103,9 @@ class SimpleClient:
 
 if __name__ == "__main__":
     my_client = SimpleClient()
-    send_thread = Thread(target=my_client.send, args=()).start
-    receive_thread = Thread(target=my_client.receive)
-    receive_thread.start()
     sending_thread = Thread(target=my_client.sending, args=())
     sending_thread.start()
+    receiving_thread = Thread(target=my_client.receiving).start()
 
 
     # tkinter.mainloop() # Starts GUI execution.
