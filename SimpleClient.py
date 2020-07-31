@@ -15,6 +15,8 @@ class SimpleClient:
     def __init__(self):
         self._host_name = gethostname()
         self._host_ip = gethostbyname(self._host_name)
+        self._send_stack = []
+        self._receive_stack = []
 
         self.HOST = self._host_ip
         self.PORT = 30000
@@ -36,23 +38,26 @@ class SimpleClient:
             except OSError:  # Possibly client has left the chat.
                 break
             finally:
-                print(msg)
+                self._receive_stack.append(msg)
         # Update to receive the tags and the images.
         print("receive ended I think")
 
-    def send(self, message):  # event is passed by binders.
+    def send(self):  # event is passed by binders.
         """Handles sending of messages."""
-        msg = message
-        self.CLIENT.send(bytes(msg, "utf8"))
-        if msg == "{quit}":
-            self.CLIENT.close()
-            sys.exit(0)
+        while True:
+            if self._send_stack:
+                msg = self._send_stack.pop(0)
+            self.CLIENT.send(bytes(msg, "utf8"))
+            if msg == "{quit}":
+                self.CLIENT.close()
+                sys.exit(0)
         # Look for a way to send the tags and the images.
 
     def sending(self):
         while True:
             msg = input()
-            self.send(msg)
+            self._send_stack.append(msg)
+            # self.send()
 
     def on_closing(self, event=None):
         """This function is to be called when the window is closed."""
@@ -69,10 +74,11 @@ class SimpleClient:
 
 if __name__ == "__main__":
     my_client = SimpleClient()
+    send_thread = Thread(target=my_client.send, args=()).start
     receive_thread = Thread(target=my_client.receive)
     receive_thread.start()
-    send_thread = Thread(target=my_client.sending, args=())
-    send_thread.start()
+    sending_thread = Thread(target=my_client.sending, args=())
+    sending_thread.start()
 
 
     # tkinter.mainloop() # Starts GUI execution.

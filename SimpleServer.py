@@ -1,5 +1,6 @@
 ##   /usr/bin/env python3
 """Server for multithreaded (asynchronous) chat application."""
+import traceback
 from socket import AF_INET, socket, SOCK_STREAM, gethostbyname, gethostname
 from threading import Thread
 import logging
@@ -9,6 +10,7 @@ class SimpleServer:
 
     def __init__(self, debug=True):
         self.debug = debug
+        self.running = True
         if self.debug:
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(asctime)s — %(message)s',
@@ -30,27 +32,46 @@ class SimpleServer:
         self.SERVER = socket(AF_INET, SOCK_STREAM)
         self.SERVER.bind(self.ADDR)
 
-    def __del__(self):
-        self.SERVER.close()
-        print("Closing server")
-
     def accept_incoming_connections(self):
         """Sets up handling for incoming clients."""
-        while True:
-            client, client_address = self.SERVER.accept()
-            # logging.info("%s:%s has connected." % client_address)
-            self.information("%s:%s has connected." % client_address)
-            client.send(bytes("Greetings from the cave! Now type your name and press enter!", "utf8"))
-            self.addresses[client] = client_address
-            Thread(target=self.handle_client, args=(client,)).start()
+        try:
+            while self.running:
+                try:
+                    client, client_address = self.SERVER.accept()
+                    # logging.info("%s:%s has connected." % client_address)
+                    self.information("%s:%s has connected." % client_address)
+                    client.send(bytes("Greetings from the cave! Now type your name and press enter!", "utf8"))
+                    self.addresses[client] = client_address
+                    Thread(target=self.handle_client, args=(client,)).start()
+                except (SystemExit, KeyboardInterrupt):
+                    self.information("Exiting....")
+                    self.stop()
+                    break
+                except Exception as ex:
+                    self.information("======> Fatal Error....\n" + str(ex))
+                    self.information(traceback.format_exc())
+                    self.running = False
+                    self.stop()
+                    raise
+        except (SystemExit, KeyboardInterrupt):
+            self.information("Force Exiting....")
+            self.stop()
+            raise
+
+    def stop(self):
+        self.running = False
+        socket(AF_INET, SOCK_STREAM).connect((self.HOST, self.PORT))
+        self.SERVER.close()
 
     def handle_client(self, client):  # Takes client socket as argument.
         """Handles a single client connection."""
         try:
             try:
                 name = client.recv(self.BUFSIZ).decode("utf8")
-            except Exception:
-                print("Client disconnected before giving a name.")
+            except Exception as e:
+                self.information(e)
+                self.information("Client disconnected before giving a name.")
+                client.close()
             welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % name
             client.send(bytes(welcome, "utf8"))
             msg = "%s has joined the chat!" % name
@@ -59,7 +80,7 @@ class SimpleServer:
             self.broadcast(bytes(msg, "utf8"))
             self.clients[client] = name
 
-            while True:
+            while self.running:
                 msg = client.recv(self.BUFSIZ)
                 if msg != bytes("{quit}", "utf8"):
                     self.broadcast(msg, name + ": ")
@@ -71,7 +92,7 @@ class SimpleServer:
                     self.broadcast(bytes("%s has left the chat." % name, "utf8"))
                     break
         except Exception as e:
-            print(e)
+            self.information(e)
             self.information(name + " : CONNECTION LOST. DISCONNECTED.")
             # logging.info(name + ": CONNECTION LOST. DISCONNECTED.")
 

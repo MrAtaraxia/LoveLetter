@@ -23,3 +23,28 @@
 2020-07-30_21:32:28 — abc : it to do
 2020-07-30_21:32:32 — abc : it appears to be so
 2020-07-30_21:34:01 — Waiting for connection...
+2020-07-30_21:45:22 — 25.3.99.2:51680 has connected.
+2020-07-30_21:45:34 — my_name has joined the chat!
+2020-07-30_21:45:36 — my_name : yep
+2020-07-30_21:45:38 — my_name : ok
+2020-07-30_21:45:41 — my_name : this is basic
+2020-07-30_21:45:47 — my_name : let us see how this whole thing goes
+2020-07-30_21:45:53 — my_name: CONNECTION LOST. DISCONNECTED.
+2020-07-30_21:46:00 — 25.3.99.2:51681 has connected.
+2020-07-30_21:46:04 — abc has joined the chat!
+2020-07-30_21:51:22 — Waiting for connection...
+2020-07-30_21:51:26 — Waiting for connection...
+2020-07-30_21:51:34 — 25.3.99.2:51686 has connected.
+2020-07-30_21:51:38 — abcde has joined the chat!
+2020-07-30_21:51:40 — abcde : yep
+2020-07-30_21:51:41 — abcde : how
+2020-07-30_21:51:42 — abcde : is that
+2020-07-30_21:51:44 — abcde : handling
+2020-07-30_21:51:45 — abcde : it
+2020-07-30_21:52:01 — abcde : looks like information works just fine
+2020-07-30_22:15:29 — Waiting for connection...
+2020-07-30_22:15:33 — 25.3.99.2:51741 has connected.
+2020-07-30_22:15:46 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:15:46 — Client disconnected before giving a name.
+2020-07-30_22:15:46 — local variable 'name' referenced before assignment
+2020-07-30_22:15:50 — 25.3.99.2:51743 has connected.
