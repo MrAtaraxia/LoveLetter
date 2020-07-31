@@ -86,6 +86,7 @@ class SimpleServer:
                 while self.running:
                     msg = client.recv(self.BUFSIZ)
                     if msg != bytes("{quit}", "utf8"):
+                        print(client)
                         self.broadcast(msg, name + ": ")
                         self.information(name + " : " + msg.decode("utf8"))
                     else:
@@ -93,6 +94,7 @@ class SimpleServer:
                         client.close()
                         del self.clients[client]
                         self.broadcast(bytes("%s has left the chat." % name, "utf8"))
+                        self.information("%s has left the chat." % name)
                         running = False
                         break
         except WindowsError as e:

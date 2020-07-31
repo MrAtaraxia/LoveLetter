@@ -3,26 +3,14 @@
 
 # """SimpleClient.py"""
 
-import select
+# Official
 from socket import AF_INET, socket, SOCK_STREAM, gethostname, gethostbyname
 import sys
 from threading import Thread
 import time
+# Other
+import keyboard
 
-
-def get_user_input(msg, timeout=5):
-    print(msg)
-    user_input = []
-    stime = time.time()
-
-    while time.time() - stime <= timeout:
-        readables, _, _ = select.select([sys.stdin], [], [], 0.1)
-        if not readables:
-            continue
-        chr = readables[0].read(1)
-        if chr == '\n':
-            return ''.join(user_input)
-        user_input.append(chr)
 
 class SimpleClient:
 
@@ -78,7 +66,7 @@ class SimpleClient:
 
     def sending(self):
         while self._running:
-            user_input = get_user_input('please insert something:')
+            user_input = input()
             self._send_stack.append(user_input)
             print(self._send_stack)
 
@@ -91,6 +79,7 @@ class SimpleClient:
     def stop(self, event=None):
         """This function is to be called when the window is closed."""
         self._running = False
+        keyboard.send("enter")
         try:
             self.send()
         except Exception as e:

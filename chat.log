@@ -55,3 +55,108 @@
 2020-07-30_22:22:35 — 25.3.99.2:51752 has connected.
 2020-07-30_22:23:22 — Waiting for connection...
 2020-07-30_22:23:27 — 25.3.99.2:51753 has connected.
+2020-07-30_22:24:16 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:24:16 — Client disconnected before giving a name.
+2020-07-30_22:24:18 — 25.3.99.2:51754 has connected.
+2020-07-30_22:25:26 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:25:26 — Client disconnected before giving a name.
+2020-07-30_22:25:28 — 25.3.99.2:51760 has connected.
+2020-07-30_22:25:59 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:25:59 — Client disconnected before giving a name.
+2020-07-30_22:26:00 — 25.3.99.2:51761 has connected.
+2020-07-30_22:26:37 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:26:37 — Client disconnected before giving a name.
+2020-07-30_22:26:38 — 25.3.99.2:51762 has connected.
+2020-07-30_22:26:44 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:26:44 — Client disconnected before giving a name.
+2020-07-30_22:27:08 — 25.3.99.2:51764 has connected.
+2020-07-30_22:27:15 — send has joined the chat!
+2020-07-30_22:27:17 — send : something
+2020-07-30_22:27:18 — send : ok
+2020-07-30_22:29:31 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:29:31 — send : CONNECTION LOST. DISCONNECTED.
+2020-07-30_22:29:33 — 25.3.99.2:51766 has connected.
+2020-07-30_22:29:35 — ok has joined the chat!
+2020-07-30_22:29:38 — ok : yep
+2020-07-30_22:29:42 — ok : this
+2020-07-30_22:29:43 — ok : is
+2020-07-30_22:29:44 — ok : doing
+2020-07-30_22:29:45 — ok : mostly
+2020-07-30_22:29:46 — ok : what
+2020-07-30_22:29:48 — ok : I expected
+2020-07-30_22:38:45 — ok : something
+2020-07-30_22:39:37 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:39:37 — ok : CONNECTION LOST. DISCONNECTED.
+2020-07-30_22:39:38 — 25.3.99.2:51785 has connected.
+2020-07-30_22:39:43 — name has joined the chat!
+2020-07-30_22:39:44 — name : yep
+2020-07-30_22:39:46 — name : that
+2020-07-30_22:39:47 — name : is
+2020-07-30_22:39:49 — name : the thing
+2020-07-30_22:39:51 — name : totally
+2020-07-30_22:39:56 — name : quit
+2020-07-30_22:40:45 — 25.3.99.2:51796 has connected.
+2020-07-30_22:40:50 — person has joined the chat!
+2020-07-30_22:40:53 — person : ok
+2020-07-30_22:42:26 — 25.3.99.2:51798 has connected.
+2020-07-30_22:42:29 — ok has joined the chat!
+2020-07-30_22:42:30 — ok : does
+2020-07-30_22:42:31 — ok : this
+2020-07-30_22:49:38 — 25.3.99.2:51815 has connected.
+2020-07-30_22:51:03 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:51:03 — Client disconnected before giving a name.
+2020-07-30_22:51:04 — 25.3.99.2:51817 has connected.
+2020-07-30_22:58:41 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_22:58:41 — Client disconnected before giving a name.
+2020-07-30_22:58:42 — 25.3.99.2:51839 has connected.
+2020-07-30_23:06:23 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_23:06:23 — Client disconnected before giving a name.
+2020-07-30_23:06:24 — 25.3.99.2:51903 has connected.
+2020-07-30_23:06:52 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_23:06:52 — Client disconnected before giving a name.
+2020-07-30_23:06:54 — 25.3.99.2:51904 has connected.
+2020-07-30_23:07:56 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_23:07:56 — Client disconnected before giving a name.
+2020-07-30_23:07:58 — 25.3.99.2:51906 has connected.
+2020-07-30_23:08:00 — ok has joined the chat!
+2020-07-30_23:08:01 — ok : does
+2020-07-30_23:08:02 — ok : this
+2020-07-30_23:08:02 — ok : do
+2020-07-30_23:08:03 — ok : what
+2020-07-30_23:08:04 — ok : I want
+2020-07-30_23:08:05 — ok : ?
+2020-07-30_23:11:34 — 25.3.99.2:51912 has connected.
+2020-07-30_23:12:56 — Waiting for connection...
+2020-07-30_23:13:26 — 25.3.99.2:51917 has connected.
+2020-07-30_23:13:30 — abc has joined the chat!
+2020-07-30_23:13:35 — abc : {shutdown}
+2020-07-30_23:14:05 — abc : working
+2020-07-30_23:14:06 — abc : yep
+2020-07-30_23:14:07 — abc : meh
+2020-07-30_23:14:32 — abc : {quit}
+2020-07-30_23:14:48 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_23:14:48 — abc : CONNECTION LOST. DISCONNECTED.
+2020-07-30_23:14:50 — 25.3.99.2:51920 has connected.
+2020-07-30_23:14:52 — o has joined the chat!
+2020-07-30_23:14:53 — o : ok
+2020-07-30_23:14:55 — o : {quit}
+2020-07-30_23:15:14 — Waiting for connection...
+2020-07-30_23:15:21 — 25.3.99.2:51925 has connected.
+2020-07-30_23:15:24 — so has joined the chat!
+2020-07-30_23:15:27 — so : {quit}
+2020-07-30_23:16:12 — [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-07-30_23:16:12 — so : CONNECTION LOST. DISCONNECTED.
+2020-07-30_23:16:13 — 25.3.99.2:51926 has connected.
+2020-07-30_23:16:19 — Waiting for connection...
+2020-07-30_23:16:24 — 25.3.99.2:51927 has connected.
+2020-07-30_23:16:26 — ok has joined the chat!
+2020-07-30_23:17:10 — 25.3.99.2:51929 has connected.
+2020-07-30_23:17:14 — something has joined the chat!
+2020-07-30_23:17:25 — Waiting for connection...
+2020-07-30_23:17:28 — 25.3.99.2:51930 has connected.
+2020-07-30_23:17:29 — abc has joined the chat!
+2020-07-30_23:17:32 — abc : eyp
+2020-07-30_23:17:33 — abc : ok
+2020-07-30_23:17:35 — b'abc has left the chat.'
+2020-07-30_23:19:01 — 25.3.99.2:51931 has connected.
+2020-07-30_23:19:10 — Waiting for connection...
