@@ -160,3 +160,8 @@
 2020-07-30_23:17:35 — b'abc has left the chat.'
 2020-07-30_23:19:01 — 25.3.99.2:51931 has connected.
 2020-07-30_23:19:10 — Waiting for connection...
+2020-07-30_23:19:12 — 25.3.99.2:51932 has connected.
+2020-07-30_23:19:15 — abc has joined the chat!
+2020-07-30_23:19:16 — abc : ok
+2020-07-30_23:24:05 — [WinError 10053] An established connection was aborted by the software in your host machine
+2020-07-30_23:24:05 — abc : CONNECTION LOST. DISCONNECTED.
