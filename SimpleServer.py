@@ -20,8 +20,8 @@ class SimpleServer:
         self.addresses = {}
         self._host_name = gethostname()
         self._host_ip = gethostbyname(self._host_name)
-        self._send_stack = []
-        self._receive_stack = []
+        self.send_stack = []
+        self.receive_stack = []
 
         self.HOST = self._host_ip
         self.PORT = 30000

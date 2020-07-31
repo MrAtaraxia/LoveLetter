@@ -4,6 +4,8 @@ python LoveLetter.py
 A basic LoveLetter Game.
 
 TODO - NETWORKING... make it so more than 1 location...
+TODO - VIEWS - player views.
+
 
 """
 # Default
@@ -14,7 +16,8 @@ import socket as socky
 # Premade
 
 # Mine
-from Server2 import ServerNetworking as Networking
+# from Server2 import ServerNetworking as Networking
+from SimpleServer import SimpleServer as Networking
 from submodule import child
 
 # GLOBALS:
@@ -42,8 +45,8 @@ def to_receive():
 
 
 def make_networking(network_server):
-    network_server.starting_server()
-
+    # network_server.starting_server()
+    network_server.accept_incoming_connections()
 
 def main_game_loop(*args, **kwargs):
     # The main game.
