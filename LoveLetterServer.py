@@ -48,6 +48,7 @@ def make_networking(network_server):
     # network_server.starting_server()
     network_server.accept_incoming_connections()
 
+
 def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
