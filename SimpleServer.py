@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+##   /usr/bin/env python3
 """Server for multithreaded (asynchronous) chat application."""
 from socket import AF_INET, socket, SOCK_STREAM, gethostbyname, gethostname
 from threading import Thread
@@ -18,11 +18,14 @@ class SimpleServer:
         self.addresses = {}
         self._host_name = gethostname()
         self._host_ip = gethostbyname(self._host_name)
+        self._send_stack = []
+        self._receive_stack = []
 
         self.HOST = self._host_ip
         self.PORT = 30000
         self.BUFSIZ = 1024
         self.ADDR = (self.HOST, self.PORT)
+        print(self.ADDR)
 
         self.SERVER = socket(AF_INET, SOCK_STREAM)
         self.SERVER.bind(self.ADDR)
@@ -35,8 +38,8 @@ class SimpleServer:
         """Sets up handling for incoming clients."""
         while True:
             client, client_address = self.SERVER.accept()
-            logging.info("%s:%s has connected." % client_address)
-            print("%s:%s has connected." % client_address)
+            # logging.info("%s:%s has connected." % client_address)
+            self.information("%s:%s has connected." % client_address)
             client.send(bytes("Greetings from the cave! Now type your name and press enter!", "utf8"))
             self.addresses[client] = client_address
             Thread(target=self.handle_client, args=(client,)).start()
@@ -51,8 +54,8 @@ class SimpleServer:
             welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % name
             client.send(bytes(welcome, "utf8"))
             msg = "%s has joined the chat!" % name
-            print(msg)
-            logging.info(msg)
+            self.information(msg)
+            # logging.info(msg)
             self.broadcast(bytes(msg, "utf8"))
             self.clients[client] = name
 
@@ -60,8 +63,7 @@ class SimpleServer:
                 msg = client.recv(self.BUFSIZ)
                 if msg != bytes("{quit}", "utf8"):
                     self.broadcast(msg, name + ": ")
-                    print(name + " : " + msg.decode("utf8"))
-                    logging.info(name + " : " + msg.decode("utf8"))
+                    self.information(name + " : " + msg.decode("utf8"))
                 else:
                     client.send(bytes("{quit}", "utf8"))
                     client.close()
@@ -70,8 +72,8 @@ class SimpleServer:
                     break
         except Exception as e:
             print(e)
-            print(name + ": CONNECTION LOST. DISCONNECTED.")
-            logging.info(name + ": CONNECTION LOST. DISCONNECTED.")
+            self.information(name + " : CONNECTION LOST. DISCONNECTED.")
+            # logging.info(name + ": CONNECTION LOST. DISCONNECTED.")
 
     def broadcast(self, msg, prefix=""):  # prefix is for name identification.
         """Broadcasts a message to all the clients."""
@@ -81,7 +83,9 @@ class SimpleServer:
                 sock.send(bytes(prefix, "utf8") + msg)
             except Exception:
                 continue
-
+    def information(self, message):
+        print(message)
+        logging.info(message)
 
 if __name__ == "__main__":
     my_server = SimpleServer()
