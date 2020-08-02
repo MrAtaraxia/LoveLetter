@@ -21,7 +21,6 @@ import json
 from submodule import child
 
 
-
 def make_the_deck():
     new_deck = []
     with open('data.json') as json_file:
@@ -33,15 +32,14 @@ def make_the_deck():
 
 
 def to_display(message="", sep="", end="\n"):
-    global network
+    # global network
     print(message, sep=sep, end=end)
-    sending = {"SendType": "All", "From": "client", "Message": message}
+    # sending = {"SendType": "All", "From": "client", "Message": message}
     # network._send_stack.append(sending)
 
 
 def to_receive():
     return input()
-
 
 
 def main_game_loop(*args, **kwargs):
@@ -59,11 +57,11 @@ def main_game_loop(*args, **kwargs):
         # print(network._send_stack)
         # print(network._receive_stack)
         while not to_next_turn:
-            game.draw_other_players()   # Draw the other players
+            game.draw_other_players()  # Draw the other players
             to_display("")
             game.draw_the_card_hands()  # Draw the cards in your hand
             to_display("")
-            game.draw_the_discard()     # Draw the discard pile
+            game.draw_the_discard()  # Draw the discard pile
             to_display(game.remaining_players[game.current_player].name +
                        " Please type the name or number of the card you \n"
                        "want to play or type Exit to end the program.", end="")
@@ -71,7 +69,7 @@ def main_game_loop(*args, **kwargs):
 
             if the_input.lower() == "exit":
                 continue_the_loop = False
-                to_next_turn = True
+                # to_next_turn = True
                 using_exit = True
                 break
             # has_countess = False
@@ -274,11 +272,6 @@ class ObjectGame:
             player.cards = []
             self.deal_a_card(player)
 
-        #for x in range(len(self.remaining_players)):
-        #    if self.remaining_players[x] == winning_player:
-        #        self.current_player = x
-        #        break
-
     def next_player(self):
         self.current_player += 1
         self.current_player = self.current_player % len(self.remaining_players)
@@ -288,9 +281,9 @@ class ObjectGame:
             if player == self.remaining_players[self.current_player]:
                 continue  # This should remove the showing yourself.
             if player.is_protected:
-                to_display("(" + str(count) + " : " + player.name + "*"*player.score + ")", sep="", end="   ")
+                to_display("(" + str(count) + " : " + player.name + "*" * player.score + ")", sep="", end="   ")
             else:
-                to_display(str(count) + " : " + player.name + "*"*player.score, sep="", end="   ")
+                to_display(str(count) + " : " + player.name + "*" * player.score, sep="", end="   ")
                 for card in player.cards:
                     to_display(" " + card.name, end="")
                 to_display("   ", end="")
@@ -349,7 +342,6 @@ class ObjectGame:
         elif deck == "removed":
             to_display("Player {name} was dealt the hidden card".format(name=player.name))
             player.cards.append(self.hidden_cards.pop(0))
-
 
     def finish_actions(self) -> str:
         self.selected_player = None
@@ -459,12 +451,12 @@ class ObjectGame:
                 current_value = 0
                 selected_value = 0
                 to_display("You and " + self.selected_player.name + " compare your cards.")
-                to_display(self.remaining_players[self.current_player].name, "'s cards: ", sep="", end="")
+                to_display(self.remaining_players[self.current_player].name + "'s cards: ", sep="", end="")
                 for card in self.remaining_players[self.current_player].cards:
                     to_display(card.name, end=" ")
                     current_value = card.number
                 to_display("")
-                to_display(self.selected_player.name, "'s cards: ", sep="", end="")
+                to_display(self.selected_player.name + "'s cards: ", sep="", end="")
                 for card in self.selected_player.cards:
                     to_display(card.name, end=" ")
                     selected_value = card.number
@@ -473,8 +465,7 @@ class ObjectGame:
                     to_display("Player {selected}'s card has a lower value.".format(selected=self.selected_player.name))
                     self.player_removed_from_round(self.selected_player)
                 elif selected_value > current_value:
-                    to_display("Player {current}'s card has a lower value.".format(current=
-                                                                                   self.remaining_players
+                    to_display("Player {current}'s card has a lower value.".format(current=self.remaining_players
                                                                                    [self.current_player]))
                     self.player_removed_from_round(self.remaining_players[self.current_player])
                 else:
@@ -492,7 +483,7 @@ class ObjectGame:
                 return self.finish_actions()
 
             if action == "Target player discards hand and draws a new card":
-                to_display(self.selected_player.name + " discared their cards and drew a new card.")
+                to_display(self.selected_player.name + " discarded their cards and drew a new card.")
 
                 for card in self.selected_player.cards:
                     fin = self.discard_a_card(self.selected_player, card)
