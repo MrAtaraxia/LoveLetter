@@ -1,6 +1,7 @@
 from threading import Thread
 
 import SimpleServer as Networking
+import LoveLetterServer as Game
 
 
 def make_networking(network_server):
