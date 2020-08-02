@@ -10,18 +10,17 @@ TODO - VIEWS - player views.
 """
 # Default
 import random
-from threading import Thread
+# from threading import Thread
 import json
-import socket as socky
+# import socket as socky
 # Premade
 
 # Mine
 # from Server2 import ServerNetworking as Networking
-from SimpleServer import SimpleServer as Networking
+# from SimpleServer import SimpleServer as Networking
 from submodule import child
 
-# GLOBALS:
-network = Networking()
+
 
 def make_the_deck():
     new_deck = []
@@ -37,28 +36,17 @@ def to_display(message="", sep="", end="\n"):
     global network
     print(message, sep=sep, end=end)
     sending = {"SendType": "All", "From": "client", "Message": message}
-    network._send_stack.append(sending)
+    # network._send_stack.append(sending)
 
 
 def to_receive():
     return input()
 
 
-def make_networking(network_server):
-    # network_server.starting_server()
-    network_server.accept_incoming_connections()
-
 
 def main_game_loop(*args, **kwargs):
     # The main game.
     game = ObjectGame(*args, **kwargs)
-    # Starting the SERVER
-    global network
-    network.SERVER.listen(5)
-    net_server = Thread(target=make_networking, args=(network,))
-    # print(network._send_stack)
-    # print(network._receive_stack)
-    net_server.start()
     continue_the_loop = True
     using_exit = False
     # print(game.deck)
