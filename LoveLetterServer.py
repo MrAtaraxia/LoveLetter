@@ -57,9 +57,9 @@ def main_game_loop(*args, **kwargs):
         # print(network._send_stack)
         # print(network._receive_stack)
         while not to_next_turn:
-            game.draw_other_players()  # Draw the other players
+            game.draw_other_players(game.remaining_players[game.current_player])  # Draw the other players
             to_display("")
-            game.draw_the_card_hands()  # Draw the cards in your hand
+            game.draw_the_card_hands(game.remaining_players[game.current_player])  # Draw the cards in your hand
             to_display("")
             game.draw_the_discard()  # Draw the discard pile
             to_display(game.remaining_players[game.current_player].name +
@@ -169,6 +169,7 @@ class ObjectPlayer:
         self.score = 0
         self.cards = []
         self.ai = ai
+        self.items = []
         self.is_protected = False
         if self.ai:
             self.ai.owner = self
@@ -179,6 +180,12 @@ class ObjectPlayer:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
+
+    def get_items(self):
+        return self.items
+
+    def set_items(self, items):
+        self.items = items
 
 
 class ObjectGame:
@@ -276,9 +283,9 @@ class ObjectGame:
         self.current_player += 1
         self.current_player = self.current_player % len(self.remaining_players)
 
-    def draw_other_players(self):
+    def draw_other_players(self, drawn_player):
         for count, player in enumerate(self.remaining_players):
-            if player == self.remaining_players[self.current_player]:
+            if player == drawn_player:
                 continue  # This should remove the showing yourself.
             if player.is_protected:
                 to_display("(" + str(count) + " : " + player.name + "*" * player.score + ")", sep="", end="   ")
@@ -289,9 +296,9 @@ class ObjectGame:
                 to_display("   ", end="")
         to_display("")
 
-    def draw_the_card_hands(self):
+    def draw_the_card_hands(self, drawn_player):
         for player in self.remaining_players:
-            if player == self.remaining_players[self.current_player]:
+            if player == drawn_player:
                 for count, card in enumerate(player.cards):
                     to_display("   " + str(count) + " : " + card.name + "(" + str(card.number) + ")")
                     to_display(card.description)

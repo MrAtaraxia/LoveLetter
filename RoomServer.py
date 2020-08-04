@@ -1,6 +1,6 @@
 from threading import Thread
 
-import SimpleServer as Networking
+from SimpleServer import SimpleServer as Networking
 import LoveLetterServer as Game
 
 
