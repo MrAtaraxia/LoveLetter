@@ -45,13 +45,13 @@ class SimpleServer:
                     Thread(target=self.handle_client, args=(client,)).start()
                 except (SystemExit, KeyboardInterrupt):
                     self.information("Exiting....")
-                    # self.stop()
+                    self.stop()
                     break
                 except Exception as ex:
                     self.information("======> Fatal Error....\n" + str(ex))
                     self.information(traceback.format_exc())
                     self.running = False
-                    # self.stop()
+                    self.stop()
                     raise
         except (SystemExit, KeyboardInterrupt):
             self.information("Force Exiting....")
