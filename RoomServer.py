@@ -19,3 +19,5 @@ net_server = Thread(target=make_networking, args=(network,))
 # print(network._send_stack)
 # print(network._receive_stack)
 net_server.start()
+
+print("hi")
