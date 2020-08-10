@@ -187,7 +187,7 @@ class ObjectPlayer:
         self.score = 0
         self.cards = []
         self.ai = ai
-        self.items = []
+        self.items = {}
         self.is_protected = False
         if self.ai:
             self.ai.owner = self
@@ -199,23 +199,29 @@ class ObjectPlayer:
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r}, ai={self.ai!r})"
 
-    def get_items(self):
+    def set_items(self, items: dict):
+        self.items = items
+
+    def get_items(self) -> dict:
         return self.items
 
-    def set_items(self, items):
-        self.items = items
+    def change_score(self, amount: int):
+        self.score += amount
+
+    def get_score(self) -> int:
+        return self.score
 
 
 class ObjectGame:
-    def __init__(self, number_of_players=2, player_names=None):
+    def __init__(self, number_of_players: int = 2, players: dict = None):
         self.number_of_players = number_of_players
-        if player_names is None:
+        if players is None:
             self.players = [ObjectPlayer("Player " + str(x)) for x in range(self.number_of_players)]
         else:
             self.players = []
             for x in range(self.number_of_players):
                 try:
-                    self.players.append(ObjectPlayer(player_names[x]))
+                    self.players.append(ObjectPlayer(players[x]["Name"]))
                 except IndexError:
                     self.players.append(ObjectPlayer("Player" + str(x)))
             # self.players = [ObjectPlayer(name) for name in player_names]
@@ -491,7 +497,7 @@ class ObjectGame:
                     self.player_removed_from_round(self.selected_player)
                 elif selected_value > current_value:
                     to_display("Player {current}'s card has a lower value.".format(current=self.remaining_players
-                                                                                   [self.current_player]))
+                    [self.current_player]))
                     self.player_removed_from_round(self.remaining_players[self.current_player])
                 else:
                     to_display("Both players had cards with the same value.")
@@ -586,4 +592,4 @@ class ComponentBasicAI:
 
 
 if __name__ == "__main__":
-    main_game_loop(number_of_players=3, player_names=["Chris", "Dan"])
+    main_game_loop(number_of_players=3, players={0: {"Name": "Chris"}, 1: {"Name": "Dan"}, 2: {"Name": "Brad"}})
