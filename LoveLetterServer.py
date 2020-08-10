@@ -195,12 +195,13 @@ def end_game(if_exit):
 
 
 class ObjectPlayer:
-    def __init__(self, name, ai=None):
+    def __init__(self, name, connection=None, ai=None):
         self.name = name
         self.score = 0
         self.cards = []
         self.ai = ai
         self.items = {}
+        self.connection = connection
         self.is_protected = False
         if self.ai:
             self.ai.owner = self
@@ -258,6 +259,8 @@ class ObjectGame:
         #     print(card.name)
         # Shuffle the deck
         self.current_deck = self.shuffle_the_deck()
+        # Hides a card.
+        self.hidden_cards.append(self.current_deck.pop(0))
         # Deal a card to each player
         for player in self.players:
             self.deal_a_card(player)
@@ -564,12 +567,39 @@ class ObjectGame:
         deck = []
         for carda in self.current_deck:
             deck.append(carda.index)
+        play = []
+        for player in self.players:
+            car = []
+            for playcard in player.cards:
+                car.append(playcard.index)
+            play.append([player.name,
+                         car,
+                         player.score,
+                         player.discarded_amount,
+                         player.items,
+                         player.is_protected,
+                         player.ai,
+                         player.connection]
+                        )
+        try:
+            current = self.current_card.index
+        except Exception as e:
+            print(e)
+            current = []
+        #for cur in self.current_card:
+        hidden = []
+        for carda in self.hidden_cards:
+            hidden.append(carda.index)
+
+        discard = []
+        for carda in self.discarded_cards:
+            discard.append(carda.index)
 
         to_save = {"current_deck": deck,
-                   "current_players": self.remaining_players,
-                   "current_card": self.current_card,
-                   "hidden_cards": self.hidden_cards,
-                   "discarded_cards": self.discarded_cards,
+                   "players": play,
+                   "current_card": current,
+                   "hidden_cards": hidden,
+                   "discarded_cards": discard,
                    }
 
         with open('save_game.json', 'w') as outfile:
@@ -579,8 +609,14 @@ class ObjectGame:
         loaded = {}
         with open('save_game.json', 'r') as file:
             loaded = json.load(file)
-        self.current_deck = loaded["current_deck"]
-        self.remaining_players = loaded["current_players"]
+        deck = loaded["current_deck"]
+        self.current_deck = []
+        for indexnumber in deck:
+            for car in self.deck:
+                if car.index == indexnumber:
+                    self.current_deck.append(car)
+        # print(self.current_deck)
+        self.remaining_players = loaded["players"]
         self.current_card = loaded["current_card"]
         self.hidden_cards = loaded["hidden_cards"]
         self.discarded_cards = loaded["discarded_cards"]
@@ -595,8 +631,8 @@ class ObjectCard:
         self.actions = actions
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(number={self.number!r}, name={self.name!r}, description=" \
-               f"{self.description!r}, actions={self.actions!r}"
+        return f"{self.__class__.__name__}(number={self.number!r}, name={self.name!r}, index={self.index!r}," \
+               f" description={self.description!r}, actions={self.actions!r}"
 
     def __str__(self) -> str:
         return f"{self.name}"
