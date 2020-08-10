@@ -547,6 +547,15 @@ class ObjectGame:
     def help(self):
         to_display("Help file about Love Letter")
 
+    def save_game(self):
+        new_deck = []
+        with open('save_game.json') as json_file:
+            data = json.dump
+            for p in data['cards']:
+                for i in range(p["Count"]):
+                    new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
+        return new_deck
+
 
 class ObjectCard:
     def __init__(self, number, name, description, actions):
