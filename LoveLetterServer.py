@@ -27,11 +27,13 @@ def unrelated():
 
 def make_the_deck():
     new_deck = []
+    indexing = 0
     with open('data.json') as json_file:
         data = json.load(json_file)
         for p in data['cards']:
             for i in range(p["Count"]):
-                new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
+                new_deck.append(ObjectCard(p["Number"], p["Name"], indexing, p["Description"], p["Actions"]))
+                indexing += 1
     return new_deck
 
 
@@ -43,6 +45,11 @@ def make_the_help_file():
             for i in range(p["Count"]):
                 new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
     return new_deck
+
+
+def merge_json(json1, json2):
+    merged = {**json1, **json2}
+    return merged
 
 
 def to_display(message="", sep="", end="\n"):
@@ -90,6 +97,12 @@ def main_game_loop(*args, **kwargs):
                 break
             if the_input.lower() == "help":
                 game.help()
+
+            if the_input.lower() == "save":
+                game.save_game()
+
+            if the_input.lower() == "load":
+                game.load_game()
             # has_countess = False
             # discard_princess = False
             # CHECK FOR Countess!!!
@@ -548,17 +561,34 @@ class ObjectGame:
         to_display("Help file about Love Letter")
 
     def save_game(self):
-        new_deck = []
-        with open('save_game.json') as json_file:
-            data = json.dump
-            for p in data['cards']:
-                for i in range(p["Count"]):
-                    new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
-        return new_deck
+        deck = []
+        for carda in self.current_deck:
+            deck.append(carda.index)
+
+        to_save = {"current_deck": deck,
+                   "current_players": self.remaining_players,
+                   "current_card": self.current_card,
+                   "hidden_cards": self.hidden_cards,
+                   "discarded_cards": self.discarded_cards,
+                   }
+
+        with open('save_game.json', 'w') as outfile:
+            json.dump(to_save, outfile, indent=4)
+
+    def load_game(self):
+        loaded = {}
+        with open('save_game.json', 'r') as file:
+            loaded = json.load(file)
+        self.current_deck = loaded["current_deck"]
+        self.remaining_players = loaded["current_players"]
+        self.current_card = loaded["current_card"]
+        self.hidden_cards = loaded["hidden_cards"]
+        self.discarded_cards = loaded["discarded_cards"]
 
 
 class ObjectCard:
-    def __init__(self, number, name, description, actions):
+    def __init__(self, number, name, index, description, actions):
+        self.index = index
         self.number = number
         self.name = name
         self.description = description
