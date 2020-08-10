@@ -1,7 +1,15 @@
 from threading import Thread
 
 from SimpleServer import SimpleServer as Networking
-# import LoveLetterServer as Game
+
+
+def make_love_letter():
+    import LoveLetterServer as Game
+    Game.main_game_loop()
+
+
+def make_tic_tac_toe():
+    pass
 
 
 def make_networking(network_server):
@@ -45,11 +53,16 @@ class ObjectMenu:
         to_display("-"*(len(self.sub_title)+8))
         to_display("-" + " " + "1:" + self.button1 + "                 -")
         to_display("-" + " " + "2:" + self.button2 + "                   -")
+        to_display("-" + " " + "quit to quit." + "                 -")
         to_display("-" * (len(self.sub_title) + 8))
 
     def button_one(self):
-        pass
+        print("Now starting: " + self.button1)
+        make_love_letter()
 
+    def button_two(self):
+        print("Now starting: " + self.button2)
+        make_tic_tac_toe()
 
 def main_menu_loop(*args, **kwargs):
     # The main game.
@@ -61,10 +74,13 @@ def main_menu_loop(*args, **kwargs):
         menu.draw_menu()
         to_display("What do you want to do?")
         the_input = to_receive()
+        if the_input == "1":
+            make_love_letter()
         if the_input == "quit":
             continue_the_game = False
+            using_exit = True
 
-    # end_menu(using_exit)
+    end_menu(using_exit)
 
 
 def end_menu(if_exit):
