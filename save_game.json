@@ -1,50 +1,59 @@
 {
     "current_deck": [
-        4,
-        6,
-        0,
-        13,
-        1,
-        15,
         10,
-        8,
+        0,
         14,
-        3,
-        9
+        6,
+        13,
+        12,
+        1,
+        8,
+        5,
+        11,
+        3
     ],
     "players": [
         [
             "Chris",
             [
-                12,
-                2
+                7,
+                9
             ],
             0,
             0,
-            {}
+            {},
+            false,
+            null,
+            null
         ],
         [
             "Dan",
             [
-                5
+                15
             ],
             0,
             0,
-            {}
+            {},
+            false,
+            null,
+            null
         ],
         [
             "Brad",
             [
-                11
+                4
             ],
             0,
             0,
-            {}
+            {},
+            false,
+            null,
+            null
         ]
     ],
     "current_card": [],
     "hidden_cards": [
-        7
+        2
     ],
     "discarded_cards": []
 }

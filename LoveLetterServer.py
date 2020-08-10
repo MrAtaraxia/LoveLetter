@@ -605,6 +605,8 @@ class ObjectGame:
         with open('save_game.json', 'w') as outfile:
             json.dump(to_save, outfile, indent=4)
 
+        to_display("YOU HAVE SAVED THE GAME!")
+
     def load_game(self):
         loaded = {}
         with open('save_game.json', 'r') as file:
@@ -617,9 +619,19 @@ class ObjectGame:
                     self.current_deck.append(car)
         # print(self.current_deck)
         self.players = loaded["players"]
+        self.remaining_players = self.players
+        self.number_of_players = len(self.players)
         self.current_card = loaded["current_card"]
-        self.hidden_cards = loaded["hidden_cards"]
+        hidden = loaded["hidden_cards"]
+        self.hidden_cards = []
+        for indexnumber in hidden:
+            for car in self.deck:
+                if car.index == indexnumber:
+                    self.hidden_cards.append(car)
+        # print(self.current_deck)
         self.discarded_cards = loaded["discarded_cards"]
+
+        to_display("YOU HAVE LOADED THE SAVE!")
 
 
 class ObjectCard:
