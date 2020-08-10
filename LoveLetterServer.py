@@ -616,7 +616,7 @@ class ObjectGame:
                 if car.index == indexnumber:
                     self.current_deck.append(car)
         # print(self.current_deck)
-        self.remaining_players = loaded["players"]
+        self.players = loaded["players"]
         self.current_card = loaded["current_card"]
         self.hidden_cards = loaded["hidden_cards"]
         self.discarded_cards = loaded["discarded_cards"]
