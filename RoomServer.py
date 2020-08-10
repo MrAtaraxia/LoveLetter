@@ -1,7 +1,7 @@
 from threading import Thread
 
 from SimpleServer import SimpleServer as Networking
-import LoveLetterServer as Game
+# import LoveLetterServer as Game
 
 
 def make_networking(network_server):
@@ -30,13 +30,24 @@ def to_receive():
 
 
 class ObjectMenu:
-    def __init__(self, name):
-        self.name = name
-        self.title = "Text Tabletop"
+    def __init__(self, title="Text Tabletop"):
+        # self.name = name
+        self.title = title
+        self.sub_title = "Welcome to tha main menu."
         self.sub_menu = "submenu"
-        
+        self.button1 = "Love Letter"
+        self.button2 = "TicTacToe"
 
     def draw_menu(self):
+        to_display("-"*(len(self.sub_title)+8))
+        to_display("-" + " " * int((len(self.sub_title)+8-len(self.title))/2) + self.title +
+                   int((len(self.sub_title)+4-len(self.title))/2) * " " + "-")
+        to_display("-"*(len(self.sub_title)+8))
+        to_display("-" + " " + "1:" + self.button1 + "                 -")
+        to_display("-" + " " + "2:" + self.button2 + "                   -")
+        to_display("-" * (len(self.sub_title) + 8))
+
+    def button_one(self):
         pass
 
 
@@ -48,7 +59,12 @@ def main_menu_loop(*args, **kwargs):
     # print(game.deck)
     while continue_the_game:
         menu.draw_menu()
-    end_menu(using_exit)
+        to_display("What do you want to do?")
+        the_input = to_receive()
+        if the_input == "quit":
+            continue_the_game = False
+
+    # end_menu(using_exit)
 
 
 def end_menu(if_exit):
@@ -73,6 +89,5 @@ def thing():
     pass
 
 
-
 if __name__ == "__main__":
-    thing()
+    main_menu_loop()
