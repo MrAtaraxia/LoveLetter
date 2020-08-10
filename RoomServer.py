@@ -1,5 +1,5 @@
+import math
 from threading import Thread
-
 from SimpleServer import SimpleServer as Networking
 
 
@@ -45,16 +45,20 @@ class ObjectMenu:
         self.sub_menu = "submenu"
         self.button1 = "Love Letter"
         self.button2 = "TicTacToe"
+        self.button3 = "Log"
 
     def draw_menu(self):
-        to_display("-"*(len(self.sub_title)+8))
-        to_display("-" + " " * int((len(self.sub_title)+8-len(self.title))/2) + self.title +
-                   int((len(self.sub_title)+4-len(self.title))/2) * " " + "-")
-        to_display("-"*(len(self.sub_title)+8))
-        to_display("-" + " " + "1:" + self.button1 + "                 -")
-        to_display("-" + " " + "2:" + self.button2 + "                   -")
-        to_display("-" + " " + "quit to quit." + "                 -")
-        to_display("-" * (len(self.sub_title) + 8))
+        to_display("-"*41)
+        to_display("-" + " " * math.floor((40-len(self.title))/2) + self.title +
+                   math.floor((40-len(self.title))/2) * " " + "-")
+        to_display("-"*41)
+        # Draw buttons with a for loop?
+        # Depending on how I set up the buttons?
+        to_display("-" + " " + "1 : " + self.button1 + (34-len(self.button1))*" "+"-")
+        to_display("-" + " " + "2 : " + self.button2 + (34-len(self.button2))*" "+"-")
+        to_display("-" + " " + "3 : " + self.button3 + (34-len(self.button3))*" "+"-")
+        to_display("-" + " " + "quit to quit." + 25*" "+"-")
+        to_display("-"*41)
 
     def button_one(self):
         print("Now starting: " + self.button1)
@@ -64,20 +68,23 @@ class ObjectMenu:
         print("Now starting: " + self.button2)
         make_tic_tac_toe()
 
+
 def main_menu_loop(*args, **kwargs):
-    # The main game.
+    # The main menu.
     menu = ObjectMenu(*args, **kwargs)
-    continue_the_game = True
+    continue_the_menu = True
     using_exit = False
     # print(game.deck)
-    while continue_the_game:
+    while continue_the_menu:
         menu.draw_menu()
         to_display("What do you want to do?")
         the_input = to_receive()
         if the_input == "1":
-            make_love_letter()
-        if the_input == "quit":
-            continue_the_game = False
+            menu.button_one()
+        if the_input == "2":
+            menu.button_two()
+        if (the_input.lower()) == "quit":
+            continue_the_menu = False
             using_exit = True
 
     end_menu(using_exit)
