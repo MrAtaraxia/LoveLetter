@@ -9,9 +9,9 @@ TODO - VIEWS - player views.
 
 """
 # Default
+import json
 import random
 # from threading import Thread
-import json
 # import socket as socky
 # Premade
 
@@ -19,6 +19,11 @@ import json
 # from Server2 import ServerNetworking as Networking
 # from SimpleServer import SimpleServer as Networking
 from submodule import child
+
+
+def unrelated():
+    print(child.Child)
+    
 
 
 def make_the_deck():
@@ -63,8 +68,10 @@ def main_game_loop(*args, **kwargs):
             to_display("")
             game.draw_the_discard()  # Draw the discard pile
             to_display(game.remaining_players[game.current_player].name +
-                       " Please type the name or number of the card you \n"
-                       "want to play or type Exit to end the program.", end="")
+                       " Please type the name or number \n"
+                       "of the card you want to play, \n"
+                       "Help for help, or \n"
+                       "Exit to end the program.", end="")
             the_input = to_receive()
 
             if the_input.lower() == "exit":
@@ -72,6 +79,8 @@ def main_game_loop(*args, **kwargs):
                 # to_next_turn = True
                 using_exit = True
                 break
+            if the_input.lower() == "help":
+                game.help()
             # has_countess = False
             # discard_princess = False
             # CHECK FOR Countess!!!
@@ -519,6 +528,9 @@ class ObjectGame:
 
             if action == "None":
                 return self.finish_actions()
+
+    def help(self):
+        to_display("Help file about Love Letter")
 
 
 class ObjectCard:
