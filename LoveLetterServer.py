@@ -23,7 +23,6 @@ from submodule import child
 
 def unrelated():
     print(child.Child)
-    
 
 
 def make_the_deck():
@@ -31,6 +30,16 @@ def make_the_deck():
     with open('data.json') as json_file:
         data = json.load(json_file)
         for p in data['cards']:
+            for i in range(p["Count"]):
+                new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
+    return new_deck
+
+
+def make_the_help_file():
+    new_deck = []
+    with open('data.json') as json_file:
+        data = json.load(json_file)
+        for p in data['help']:
             for i in range(p["Count"]):
                 new_deck.append(ObjectCard(p["Number"], p["Name"], p["Description"], p["Actions"]))
     return new_deck
