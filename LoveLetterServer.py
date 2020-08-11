@@ -608,7 +608,6 @@ class ObjectGame:
         to_display("YOU HAVE SAVED THE GAME!")
 
     def load_game(self):
-        loaded = {}
         with open('save_game.json', 'r') as file:
             loaded = json.load(file)
         deck = loaded["current_deck"]
