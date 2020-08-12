@@ -37,6 +37,10 @@ def to_receive():
     return input()
 
 
+def something():
+    pass
+
+
 class ObjectMenu:
     def __init__(self, title="Text Tabletop"):
         # self.name = name
