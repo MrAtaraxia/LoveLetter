@@ -14,7 +14,7 @@ and not have it cause any issues. as it will continue when they log back in.
 
 - DB or JSON file?
 
-- 
+-
 
 """
 
