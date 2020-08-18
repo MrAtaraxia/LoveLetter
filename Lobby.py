@@ -14,7 +14,9 @@ and not have it cause any issues. as it will continue when they log back in.
 
 - DB or JSON file?
 
--
+- Other things?
+
+- How do I want to have the user show they are correct/ 
 
 """
 
