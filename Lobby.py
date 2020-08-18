@@ -16,7 +16,7 @@ and not have it cause any issues. as it will continue when they log back in.
 
 - Other things?
 
-- How do I want to have the user show they are correct/ 
+- How do I want to have the user show they are correct/
 
 """
 
