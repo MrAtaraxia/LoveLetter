@@ -18,6 +18,12 @@ and not have it cause any issues. as it will continue when they log back in.
 
 - How do I want to have the user show they are correct/
 
+- Downloading files that you do not have when you need them.
+
+- Hmm... I guess everything would be a try except clause with downloading it if not there...
+
+- 
+
 """
 
 
