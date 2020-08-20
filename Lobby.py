@@ -1,4 +1,12 @@
 """
+The actual Docstring.
+Usage python Lobby.py
+
+
+
+"""
+
+"""
 - Have the user connect to this when they turn on.
 
 - Have the user authenticate that they are a user.
