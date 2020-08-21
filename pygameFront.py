@@ -58,10 +58,14 @@ time.sleep(1)
 
 
 def until_paren(words):
-    return words
     current = ""
     for char in words:
         if char == "(":
+            # return current
+            current += char
+            continue
+        if char == ")":
+            current += char
             return current
         current += char
     return current
