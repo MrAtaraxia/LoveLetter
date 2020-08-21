@@ -53,10 +53,12 @@ time.sleep(1)
 #print(s.getvalue())
 #my_profile.dump_stats('mypygame.txt')
 
+os.environ["PATH"] += os.pathsep + "C:/Program Files/Graphviz 2.44.1/bin"
 from graphviz import Digraph
-sys.path.append(r"C:\Program Files\Graphviz 2.44.1\bin")
-print(sys.path)
+# sys.path.append(r"C:\Program Files\Graphviz 2.44.1\bin")
+# print(sys.path)
 dot = Digraph(comment='The Round Table')
+dot  #doctest: +ELLIPSIS
 dot.node('A', 'King Arthur')
 dot.node('B', 'Dude 1')
 dot.node('L', 'Dude L')
@@ -64,7 +66,9 @@ dot.node('L', 'Dude L')
 dot.edges(['AB', 'AL'])
 dot.edge('B', 'L', constraint='false')
 os.path
-print(dot.source)
-dot.render('round-table.gv', view=True)  # doctest: +SKIP
-'round-table.gv.pdf'
+print(dot.source)  # doctest: +NORMALIZE_WHITESPACE
 
+# dot.render('test-output/round-table.gv', view=True)  # doctest: +SKIP
+# 'test-output/round-table.gv.pdf'
+dot.render('test-output/round-table.gv', view=True)
+'test-output/round-table.gv.pdf'
