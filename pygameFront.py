@@ -131,14 +131,149 @@ def create_doc(stop_at_paren=True):
     print("ALL CLASSES: ", all_classes)
     struct_name = "struct"
     current_struct = ""
-    for number, cur_class in enumerate(all_classes):
-        current_struct += "{" + cur_class["name"] + "|"
-        for meth in cur_class["methods"]:
-            current_struct += meth + "|"
-        current_struct = current_struct[:-1] + "}"  # removes the last | and adds the close
-        s.node(struct_name + str(number), current_struct)
-        current_struct = ""
+    s.node(struct_name + "_origin", file_name)
+    with s.subgraph(name="sub1") as sub:
+        for number, cur_class in enumerate(all_classes):
+            current_struct += "{" + cur_class["name"] + "|"
+            for meth in cur_class["methods"]:
+                current_struct += meth + "|"
+            current_struct = current_struct[:-1] + "}"  # removes the last | and adds the close
+            sub.node(struct_name + str(number), current_struct)
+            current_struct = ""
+
     s.view()
+
+
+def traffic():
+    # traffic_lights.py - http://www.graphviz.org/content/traffic_lights
+
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Digraph
+
+    t = Digraph('TrafficLights', filename='traffic_lights.gv', engine='neato')
+
+    t.attr('node', shape='box')
+    for i in (2, 1):
+        t.node('gy%d' % i)
+        t.node('yr%d' % i)
+        t.node('rg%d' % i)
+
+    t.attr('node', shape='circle', fixedsize='true', width='0.9')
+    for i in (2, 1):
+        t.node('green%d' % i)
+        t.node('yellow%d' % i)
+        t.node('red%d' % i)
+        t.node('safe%d' % i)
+
+    for i, j in [(2, 1), (1, 2)]:
+        t.edge('gy%d' % i, 'yellow%d' % i)
+        t.edge('rg%d' % i, 'green%d' % i)
+        t.edge('yr%d' % i, 'safe%d' % j)
+        t.edge('yr%d' % i, 'red%d' % i)
+        t.edge('safe%d' % i, 'rg%d' % i)
+        t.edge('green%d' % i, 'gy%d' % i)
+        t.edge('yellow%d' % i, 'yr%d' % i)
+        t.edge('red%d' % i, 'rg%d' % i)
+
+    t.attr(overlap='false')
+    t.attr(label=r'PetriNet Model TrafficLights\n'
+                 r'Extracted from ConceptBase and layed out by Graphviz')
+    t.attr(fontsize='12')
+
+    t.view()
+
+
+def struct1():
+    # structs.py - http://www.graphviz.org/doc/info/shapes.html#html
+
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Digraph
+
+    s = Digraph('structs', node_attr={'shape': 'plaintext'})
+
+    s.node('struct1', '''<
+    <TABLE BORDER="0" CELLSPACING="0">
+      <TR>
+        <TD BORDER="1">left</TD>
+        <TD PORT="f1" BORDER="1">middle</TD>
+        <TD PORT="f2" BORDER="1">right</TD>
+      </TR>
+    </TABLE>>''')
+    s.node('struct2', '''<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+      <TR>
+        <TD PORT="f0" >one</TD>
+        <TD>two</TD>
+      </TR>
+    </TABLE>>''')
+    s.node('struct3', '''<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD ROWSPAN="3">hello<BR/>world</TD>
+        <TD COLSPAN="3">b</TD>
+        <TD ROWSPAN="3">g</TD>
+        <TD ROWSPAN="3">h</TD>
+      </TR>
+      <TR>
+        <TD>c</TD>
+        <TD PORT="here">d</TD>
+        <TD>e</TD>
+      </TR>
+      <TR>
+        <TD COLSPAN="3">f</TD>
+      </TR>
+    </TABLE>>''')
+
+    s.edges([('struct1:f1', 'struct2:f0'), ('struct1:f2', 'struct3:here')])
+
+    s.view()
+
+
+def struct2():
+    # structs_revisited.py - http://www.graphviz.org/pdf/dotguide.pdf Figure 12
+
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Digraph
+
+    s = Digraph('structs', filename='structs_revisited.gv',
+                node_attr={'shape': 'record'})
+
+    s.node('struct1', '<f0> left|<f1> middle|<f2> right')
+    s.node('struct2', '<f0> one|<f1> two')
+    s.node('struct3', r'hello\nworld |{ b |{c|<here> {aa|{cc|dd}bb}d|e}| f}| g | h')
+
+    s.edges([('struct1:f1', 'struct2:f0'), ('struct1:f2', 'struct3:here')])
+
+    s.view()
+
+def fdp():
+    # fdpclust.py - http://www.graphviz.org/content/fdpclust
+    import os
+    # os.environ["PATH"] += os.pathsep + "C:/Program Files/Graphviz 2.44.1/bin"
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Graph
+
+    g = Graph('G', filename='basic-docs/examples/fdpclust.gv', engine='fdp')
+
+    g.node('e')
+
+    with g.subgraph(name='clusterA') as a:
+        a.edge('a', 'b')
+        with a.subgraph(name='clusterC') as c:
+            c.edge('C', 'D')
+
+    with g.subgraph(name='clusterB') as b:
+        b.edge('d', 'f')
+
+    g.edge('d', 'D')
+    g.edge('e', 'clusterB')
+    g.edge('clusterC', 'clusterB')
+
+    g.view()
+
 
 def basic_graphviz():
     import os
@@ -167,5 +302,6 @@ def example_graphviz1():
 
 
 if __name__ == "__main__":
-    create_doc(stop_at_paren=False)
+    struct2()
+    # create_doc(stop_at_paren=False)
 

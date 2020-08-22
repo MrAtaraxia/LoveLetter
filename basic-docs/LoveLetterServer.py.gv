@@ -1,8 +1,11 @@
 digraph structs {
 	node [shape=record]
-	struct0 [label="{ObjectPlayer|__init__(self, name, connection=None, ai=None)|__str__(self)|__repr__(self)|set_items(self, items: dict)|get_items(self)|change_score(self, amount: int)|get_score(self)}"]
-	struct1 [label="{ObjectGame|__init__(self, number_of_players: int = 2, players: dict = None)|player_removed_from_round(self, player_to_remove)|setup_round(self, winning_player)|next_player(self)|draw_other_players(self, drawn_player)|draw_the_card_hands(self, drawn_player)|draw_the_discard(self)|draw_round_end(self, player)|discard_a_card(self, player, card)|shuffle_the_deck(self)|deal_a_card(self, player, deck=\"deck\")|finish_actions(self)|card_actions(self, action)|help(self)|save_game(self)|load_game(self)}"]
-	struct2 [label="{ObjectCard|__init__(self, number, name, index, description, actions)|__repr__(self)|__str__(self)}"]
-	struct3 [label="{ComponentBasicAI|__init__(self, player=None)|take_turn(self, board)}"]
-	struct4 [label="{Global|unrelated()|make_the_deck()|make_the_help_file()|merge_json(json1, json2)|to_display(message=\"\", sep=\"\", end=\"\n\")|to_receive()|main_game_loop(*args, **kwargs)|check_for_round_end(current_players, current_deck)|check_for_game_end(all_players, winning_score=3)|end_game(if_exit)}"]
+	struct_origin [label=LoveLetterServer]
+	subgraph sub1 {
+		struct0 [label="{ObjectPlayer|__init__(self, name, connection=None, ai=None)|__str__(self)|__repr__(self)|set_items(self, items: dict)|get_items(self)|change_score(self, amount: int)|get_score(self)}"]
+		struct1 [label="{ObjectGame|__init__(self, number_of_players: int = 2, players: dict = None)|player_removed_from_round(self, player_to_remove)|setup_round(self, winning_player)|next_player(self)|draw_other_players(self, drawn_player)|draw_the_card_hands(self, drawn_player)|draw_the_discard(self)|draw_round_end(self, player)|discard_a_card(self, player, card)|shuffle_the_deck(self)|deal_a_card(self, player, deck=\"deck\")|finish_actions(self)|card_actions(self, action)|help(self)|save_game(self)|load_game(self)}"]
+		struct2 [label="{ObjectCard|__init__(self, number, name, index, description, actions)|__repr__(self)|__str__(self)}"]
+		struct3 [label="{ComponentBasicAI|__init__(self, player=None)|take_turn(self, board)}"]
+		struct4 [label="{Global|unrelated()|make_the_deck()|make_the_help_file()|merge_json(json1, json2)|to_display(message=\"\", sep=\"\", end=\"\n\")|to_receive()|main_game_loop(*args, **kwargs)|check_for_round_end(current_players, current_deck)|check_for_game_end(all_players, winning_score=3)|end_game(if_exit)}"]
+	}
 }
