@@ -211,7 +211,7 @@ def struct1():
     s.node('struct3', '''<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
       <TR>
-        <TD ROWSPAN="3">hello<BR/>world</TD>
+        <TD ROWSPAN="4">hello<BR/>world</TD>
         <TD COLSPAN="3">b</TD>
         <TD ROWSPAN="3">g</TD>
         <TD ROWSPAN="3">h</TD>
@@ -305,7 +305,7 @@ def struct2():
     s.attr(rankdir='LR', size='8,5')
 
     s.attr('node', shape='record')
-    s.node('struct2', '<f0> one|<f1> two')
+    s.node('struct2', '<f0> one|<f1> two', _attributes={"style": "rounded", "border": "0"})
     s.node('struct4', r'<top>top|{a| {t1|{t2|{t3|<f1>bot\ntom}}}}')
     s.node('struct3', r'hello\nworld |{ b |{c|<here> d|e}| f}| g | h')
     s.node('struct1', '{<f0> left|<f1> middle|<f2> right}', _attributes={"color": "Blue"})
@@ -332,6 +332,15 @@ def struct2():
     s.attr('node', shape='record')
     s.node('struct5', '<f0> ABC|<f1> 123')
 
+    s.attr('node', shape='plaintext')
+    s.node('struct6', '''<
+    <TABLE BORDER="0" CELLSPACING="0">
+      <TR>
+        <TD BORDER="1">left</TD>
+        <TD PORT="f1" BORDER="1">middle</TD>
+        <TD PORT="f2" BORDER="1">right</TD>
+      </TR>
+    </TABLE>>''')
     s.view()
 
 
@@ -554,6 +563,7 @@ if __name__ == "__main__":
     # cluster()
     # neato()
     # gcn()
+    # struct1()
     struct2()
     # create_doc(stop_at_paren=False)
 

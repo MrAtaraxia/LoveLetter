@@ -18,7 +18,7 @@ digraph structs {
 	struct3 [label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
       <TR>
-        <TD ROWSPAN="3">hello<BR/>world</TD>
+        <TD ROWSPAN="4">hello<BR/>world</TD>
         <TD COLSPAN="3">b</TD>
         <TD ROWSPAN="3">g</TD>
         <TD ROWSPAN="3">h</TD>
