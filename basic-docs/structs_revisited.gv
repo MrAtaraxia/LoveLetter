@@ -5,10 +5,10 @@ digraph structs {
 	struct4 [label="<top>top|{a| {t1|{t2|{t3|<f1>bot\ntom}}}}"]
 	struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"]
 	struct1 [label="{<f0> left|<f1> middle|<f2> right}" color=Blue]
-	struct1:f1 -> struct2:f0 [label=abc color=Red]
-	struct1:f2 -> struct3:here
-	struct1:f2 -> struct4:f1
-	struct2 -> struct4
+	struct1:f1 -> struct2:f0 [label=abc color=Red dir=none]
+	struct1:f2 -> struct3:here [color=Purple concentrate=true dir=both]
+	struct1:f2 -> struct4:f1 [arrowhead=diamond]
+	struct2 -> struct4 [fontcolor=Gold headlabel=head taillabel=tail]
 	node [shape=doublecircle]
 	LR_0
 	LR_3

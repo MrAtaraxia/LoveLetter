@@ -295,7 +295,9 @@ def struct2():
 
     import os
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
-    from graphviz import Digraph
+    from graphviz import Graph  # Graph - no arrows
+    from graphviz import Digraph  # Digraph - arrows
+
     #s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
     #            node_attr={'shape': 'record'})
     s = Digraph('structs', filename='basic-docs/structs_revisited.gv')
@@ -308,10 +310,13 @@ def struct2():
     s.node('struct3', r'hello\nworld |{ b |{c|<here> d|e}| f}| g | h')
     s.node('struct1', '{<f0> left|<f1> middle|<f2> right}', _attributes={"color": "Blue"})
 
-    s.edge('struct1:f1', 'struct2:f0', label="abc", _attributes={"color": "Red"})
-    s.edge('struct1:f2', 'struct3:here')
-    s.edge('struct1:f2', 'struct4:f1')
-    s.edge('struct2', 'struct4')
+    # REMOVE THE ARROWS!
+    s.edge('struct1:f1', 'struct2:f0', label="abc", _attributes={"dir": "none", "color": "Red"})
+    # DOUBLE ENDED ARROWS!
+    s.edge('struct1:f2', 'struct3:here', _attributes={"concentrate": "true", "dir": "both", "color": "Purple"})
+    # DIAMOND ARROW HEAD!
+    s.edge('struct1:f2', 'struct4:f1', _attributes={"arrowhead": "diamond"})
+    s.edge('struct2', 'struct4', _attributes={'taillabel': 'tail', 'headlabel': 'head', 'fontcolor': 'Gold'})
 
 
     s.attr('node', shape='doublecircle')
@@ -328,6 +333,7 @@ def struct2():
     s.node('struct5', '<f0> ABC|<f1> 123')
 
     s.view()
+
 
 def fdp():
     # fdpclust.py - http://www.graphviz.org/content/fdpclust
@@ -479,6 +485,7 @@ def neato():
 
     e.view()
 
+
 def more_graphs():
     # fsm.py - http://www.graphviz.org/content/fsm
     import os
@@ -546,7 +553,7 @@ def gcn():
 if __name__ == "__main__":
     # cluster()
     # neato()
-    gcn()
-    #struct2()
+    # gcn()
+    struct2()
     # create_doc(stop_at_paren=False)
 
