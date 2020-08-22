@@ -1,0 +1,8 @@
+digraph structs {
+	node [shape=record]
+	struct0 [label="{ObjectPlayer|__init__|__str__|__repr__|set_items|get_items|change_score|get_score}"]
+	struct1 [label="{ObjectGame|__init__|player_removed_from_round|setup_round|next_player|draw_other_players|draw_the_card_hands|draw_the_discard|draw_round_end|discard_a_card|shuffle_the_deck|deal_a_card|finish_actions|card_actions|help|save_game|load_game}"]
+	struct2 [label="{ObjectCard|__init__|__repr__|__str__}"]
+	struct3 [label="{ComponentBasicAI|__init__|take_turn}"]
+	struct4 [label="{Global|unrelated|make_the_deck|make_the_help_file|merge_json|to_display|to_receive|main_game_loop|check_for_round_end|check_for_game_end|end_game}"]
+}
