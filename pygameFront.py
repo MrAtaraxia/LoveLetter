@@ -231,26 +231,88 @@ def struct1():
     s.view()
 
 
+def zombie():
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Graph
+
+    g = Graph('G', filename='process.gv', engine='sfdp')
+    g.edge('run', 'intr')
+    g.edge('intr', 'runbl')
+    g.edge('runbl', 'run')
+    g.edge('run', 'kernel')
+    g.edge('kernel', 'zombie')
+    g.edge('kernel', 'sleep')
+    g.edge('kernel', 'runmem')
+    g.edge('sleep', 'swap')
+    g.edge('swap', 'runswap')
+    g.edge('runswap', 'new')
+    g.edge('runswap', 'runmem')
+    g.edge('new', 'runmem')
+    g.edge('sleep', 'runmem')
+
+    g.view()
+
+
+def cluster():
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Digraph
+
+    g = Digraph('G', filename='cluster.gv')
+
+    # NOTE: the subgraph name needs to begin with 'cluster' (all lowercase)
+    #       so that Graphviz recognizes it as a special cluster subgraph
+
+    with g.subgraph(name='cluster_0') as c:
+        c.attr(style='filled', color='lightgrey')
+        c.node_attr.update(style='filled', color='white')
+        c.edges([('a0', 'a1'), ('a1', 'a2'), ('a2', 'a3')])
+        c.attr(label='process #1')
+
+    with g.subgraph(name='cluster_1') as c:
+        c.attr(color='blue')
+        c.node_attr['style'] = 'filled'
+        c.edges([('b0', 'b1'), ('b1', 'b2'), ('b2', 'b3')])
+        c.attr(label='process #2')
+
+    g.edge('start', 'a0')
+    g.edge('start', 'b0')
+    g.edge('a1', 'b3')
+    g.edge('b2', 'a3')
+    g.edge('a3', 'a0')
+    g.edge('a3', 'end')
+    g.edge('b3', 'end')
+
+    g.node('start', shape='Mdiamond')
+    g.node('end', shape='Msquare')
+
+    g.view()
+
+
 def struct2():
     # structs_revisited.py - http://www.graphviz.org/pdf/dotguide.pdf Figure 12
 
     import os
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
     from graphviz import Digraph
+    #s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
+    #            node_attr={'shape': 'record'})
+    s = Digraph('structs', filename='basic-docs/structs_revisited.gv')
 
-    s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
-                node_attr={'shape': 'record'})
+    s.attr(rankdir='LR', size='8,5')
 
-    s.node('struct1', '{<f0> left|<f1> middle|<f2> right}', _attributes={"color": "Blue"})
+    s.attr('node', shape='record')
     s.node('struct2', '<f0> one|<f1> two')
     s.node('struct4', r'<top>top|{a| {t1|{t2|{t3|<f1>bot\ntom}}}}')
     s.node('struct3', r'hello\nworld |{ b |{c|<here> d|e}| f}| g | h')
+    s.node('struct1', '{<f0> left|<f1> middle|<f2> right}', _attributes={"color": "Blue"})
 
     s.edge('struct1:f1', 'struct2:f0', label="abc", _attributes={"color": "Red"})
     s.edge('struct1:f2', 'struct3:here')
     s.edge('struct1:f2', 'struct4:f1')
+    s.edge('struct2', 'struct4')
 
-    s.attr(rankdir='LR', size='8,5')
 
     s.attr('node', shape='doublecircle')
     s.node('LR_0')
@@ -262,6 +324,9 @@ def struct2():
     s.edge('LR_2', 'LR_0')
     s.edge('LR_0', 'struct4:top', _attributes={"color": "Green"})
 
+    s.attr('node', shape='record')
+    s.node('struct5', '<f0> ABC|<f1> 123')
+
     s.view()
 
 def fdp():
@@ -271,7 +336,7 @@ def fdp():
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
     from graphviz import Graph
 
-    g = Graph('G', filename='basic-docs/examples/fdpclust.gv', engine='fdp')
+    g = Graph('G', filename='basic-docs/examples/fdpclust.gv')  # , engine='fdp')
 
     g.node('e')
 
@@ -369,6 +434,51 @@ def unix():
     u.view()
 
 
+def neato():
+    # er.py - http://www.graphviz.org/content/ER
+
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Graph
+
+    e = Graph('ER', filename='er.gv') # engine='neato')
+
+    e.attr('node', shape='box')
+    e.node('course')
+    e.node('institute')
+    e.node('student')
+
+    e.attr('node', shape='ellipse')
+    e.node('name0', label='name')
+    e.node('name1', label='name')
+    e.node('name2', label='name')
+    e.node('code')
+    e.node('grade')
+    e.node('number')
+
+    e.attr('node', shape='diamond', style='filled', color='lightgrey')
+    e.node('C-I')
+    e.node('S-C')
+    e.node('S-I')
+
+    e.edge('name0', 'course')
+    e.edge('code', 'course')
+    e.edge('course', 'C-I', label='n', len='1.00')
+    e.edge('C-I', 'institute', label='1', len='1.00')
+    e.edge('institute', 'name1')
+    e.edge('institute', 'S-I', label='1', len='1.00')
+    e.edge('S-I', 'student', label='n', len='1.00')
+    e.edge('student', 'grade')
+    e.edge('student', 'name2')
+    e.edge('student', 'number')
+    e.edge('student', 'S-C', label='m', len='1.00')
+    e.edge('S-C', 'course', label='n', len='1.00')
+
+    e.attr(label=r'\n\nEntity Relation Diagram\ndrawn by NEATO')
+    e.attr(fontsize='20')
+
+    e.view()
+
 def more_graphs():
     # fsm.py - http://www.graphviz.org/content/fsm
     import os
@@ -414,7 +524,29 @@ def example_graphviz1():
     g.view()
 
 
+def gcn():
+    # http://www.graphviz.org/Gallery/gradient/g_c_n.html
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+
+    from graphviz import Graph
+
+    g = Graph('G', filename='g_c_n.gv')
+    g.attr(bgcolor='purple:pink', label='agraph', fontcolor='white')
+
+    with g.subgraph(name='cluster1') as c:
+        c.attr(fillcolor='blue:cyan', label='acluster', fontcolor='white',
+               style='filled', gradientangle='270')
+        c.attr('node', shape='box', fillcolor='red:yellow',
+               style='filled', gradientangle='90')
+        c.node('anode')
+
+    g.view()
+
 if __name__ == "__main__":
-    struct2()
+    # cluster()
+    # neato()
+    gcn()
+    #struct2()
     # create_doc(stop_at_paren=False)
 

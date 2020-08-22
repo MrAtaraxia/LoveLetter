@@ -1,13 +1,14 @@
 digraph structs {
+	rankdir=LR size="8,5"
 	node [shape=record]
-	struct1 [label="{<f0> left|<f1> middle|<f2> right}" color=Blue]
 	struct2 [label="<f0> one|<f1> two"]
 	struct4 [label="<top>top|{a| {t1|{t2|{t3|<f1>bot\ntom}}}}"]
 	struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"]
+	struct1 [label="{<f0> left|<f1> middle|<f2> right}" color=Blue]
 	struct1:f1 -> struct2:f0 [label=abc color=Red]
 	struct1:f2 -> struct3:here
 	struct1:f2 -> struct4:f1
-	rankdir=LR size="8,5"
+	struct2 -> struct4
 	node [shape=doublecircle]
 	LR_0
 	LR_3
@@ -16,4 +17,6 @@ digraph structs {
 	struct1:f0 -> LR_3
 	LR_2 -> LR_0
 	LR_0 -> struct4:top [color=Green]
+	node [shape=record]
+	struct5 [label="<f0> ABC|<f1> 123"]
 }
