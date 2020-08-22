@@ -238,14 +238,29 @@ def struct2():
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
     from graphviz import Digraph
 
-    s = Digraph('structs', filename='structs_revisited.gv',
+    s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
                 node_attr={'shape': 'record'})
 
-    s.node('struct1', '<f0> left|<f1> middle|<f2> right')
+    s.node('struct1', '{<f0> left|<f1> middle|<f2> right}', _attributes={"color": "Blue"})
     s.node('struct2', '<f0> one|<f1> two')
-    s.node('struct3', r'hello\nworld |{ b |{c|<here> {aa|{cc|dd}bb}d|e}| f}| g | h')
+    s.node('struct4', r'<top>top|{a| {t1|{t2|{t3|<f1>bot\ntom}}}}')
+    s.node('struct3', r'hello\nworld |{ b |{c|<here> d|e}| f}| g | h')
 
-    s.edges([('struct1:f1', 'struct2:f0'), ('struct1:f2', 'struct3:here')])
+    s.edge('struct1:f1', 'struct2:f0', label="abc", _attributes={"color": "Red"})
+    s.edge('struct1:f2', 'struct3:here')
+    s.edge('struct1:f2', 'struct4:f1')
+
+    s.attr(rankdir='LR', size='8,5')
+
+    s.attr('node', shape='doublecircle')
+    s.node('LR_0')
+    s.node('LR_3')
+
+    s.attr('node', shape='circle')
+    s.edge('struct1:f0', 'LR_2', _attributes={"color": "Orange"})
+    s.edge('struct1:f0', 'LR_3')
+    s.edge('LR_2', 'LR_0')
+    s.edge('LR_0', 'struct4:top', _attributes={"color": "Green"})
 
     s.view()
 
@@ -289,6 +304,104 @@ def basic_graphviz():
     s.view()
     # s.render('basic-docs/round-table.gv', view=True)
 
+
+def unix():
+    # unix.py - http://www.graphviz.org/content/unix
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+
+    from graphviz import Digraph
+
+    u = Digraph('unix', filename='unix.gv',
+                node_attr={'color': 'lightblue2', 'style': 'filled'})
+    u.attr(size='6,6')
+
+    u.edge('5th Edition', '6th Edition')
+    u.edge('5th Edition', 'PWB 1.0')
+    u.edge('6th Edition', 'LSX')
+    u.edge('6th Edition', '1 BSD')
+    u.edge('6th Edition', 'Mini Unix')
+    u.edge('6th Edition', 'Wollongong')
+    u.edge('6th Edition', 'Interdata')
+    u.edge('Interdata', 'Unix/TS 3.0')
+    u.edge('Interdata', 'PWB 2.0')
+    u.edge('Interdata', '7th Edition')
+    u.edge('7th Edition', '8th Edition')
+    u.edge('7th Edition', '32V')
+    u.edge('7th Edition', 'V7M')
+    u.edge('7th Edition', 'Ultrix-11')
+    u.edge('7th Edition', 'Xenix')
+    u.edge('7th Edition', 'UniPlus+')
+    u.edge('V7M', 'Ultrix-11')
+    u.edge('8th Edition', '9th Edition')
+    u.edge('1 BSD', '2 BSD')
+    u.edge('2 BSD', '2.8 BSD')
+    u.edge('2.8 BSD', 'Ultrix-11')
+    u.edge('2.8 BSD', '2.9 BSD')
+    u.edge('32V', '3 BSD')
+    u.edge('3 BSD', '4 BSD')
+    u.edge('4 BSD', '4.1 BSD')
+    u.edge('4.1 BSD', '4.2 BSD')
+    u.edge('4.1 BSD', '2.8 BSD')
+    u.edge('4.1 BSD', '8th Edition')
+    u.edge('4.2 BSD', '4.3 BSD')
+    u.edge('4.2 BSD', 'Ultrix-32')
+    u.edge('PWB 1.0', 'PWB 1.2')
+    u.edge('PWB 1.0', 'USG 1.0')
+    u.edge('PWB 1.2', 'PWB 2.0')
+    u.edge('USG 1.0', 'CB Unix 1')
+    u.edge('USG 1.0', 'USG 2.0')
+    u.edge('CB Unix 1', 'CB Unix 2')
+    u.edge('CB Unix 2', 'CB Unix 3')
+    u.edge('CB Unix 3', 'Unix/TS++')
+    u.edge('CB Unix 3', 'PDP-11 Sys V')
+    u.edge('USG 2.0', 'USG 3.0')
+    u.edge('USG 3.0', 'Unix/TS 3.0')
+    u.edge('PWB 2.0', 'Unix/TS 3.0')
+    u.edge('Unix/TS 1.0', 'Unix/TS 3.0')
+    u.edge('Unix/TS 3.0', 'TS 4.0')
+    u.edge('Unix/TS++', 'TS 4.0')
+    u.edge('CB Unix 3', 'TS 4.0')
+    u.edge('TS 4.0', 'System V.0')
+    u.edge('System V.0', 'System V.2')
+    u.edge('System V.2', 'System V.3')
+
+    u.view()
+
+
+def more_graphs():
+    # fsm.py - http://www.graphviz.org/content/fsm
+    import os
+    os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
+    from graphviz import Digraph
+
+    f = Digraph('finite_state_machine', filename='fsm.gv')
+    f.attr(rankdir='LR', size='8,5')
+
+    f.attr('node', shape='doublecircle')
+    f.node('LR_0')
+    f.node('LR_3')
+    f.node('LR_4')
+    f.node('LR_8')
+
+    f.attr('node', shape='circle')
+    f.edge('LR_0', 'LR_2')
+    f.edge('LR_2', 'LR_0')
+    f.edge('LR_0', 'LR_1', label='SS(S)')
+    f.edge('LR_1', 'LR_3', label='S($end)')
+    f.edge('LR_2', 'LR_6', label='SS(b)')
+    f.edge('LR_2', 'LR_5', label='SS(a)')
+    f.edge('LR_2', 'LR_4', label='S(A)')
+    f.edge('LR_5', 'LR_7', label='S(b)')
+    f.edge('LR_5', 'LR_5', label='S(a)')
+    f.edge('LR_6', 'LR_6', label='S(b)')
+    f.edge('LR_6', 'LR_5', label='S(a)')
+    f.edge('LR_7', 'LR_8', label='S(b)')
+    f.edge('LR_7', 'LR_5', label='S(a)')
+    f.edge('LR_8', 'LR_6', label='S(b)')
+    f.edge('LR_8', 'LR_5', label='S(a)')
+
+    f.view()
 
 def example_graphviz1():
     # hello.py - http://www.graphviz.org/content/hello
