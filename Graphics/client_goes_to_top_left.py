@@ -1,11 +1,6 @@
 """
 Client
-- A little issue with moving toward the corners
-As It does not stop all the time when I am moving the mouse
-while clicking on it.
 
-- Now I have to figure out HOW to get it so the OTHER ones do something when
-a different one is clicked.
 """
 # Original Imports
 import inspect
@@ -96,7 +91,6 @@ class Button:
         self.current_y = self.y
         self.count = 0
         self.forward = True
-        self.pause = False
 
     def draw(self, window):
         """
@@ -109,7 +103,7 @@ class Button:
 
         if self.updating:
             cur_x, cur_y = self.current_x, self.current_y
-            print(cur_x, cur_y, self.pause)
+            print(cur_x, cur_y)
 
         if not self.is_clicked:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
@@ -132,17 +126,9 @@ class Button:
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
-        cur_x, cur_y = self.x, self.y
-        if self.updating:
-            cur_x, cur_y = self.current_x, self.current_y
-        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+        if self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height:
             self.is_clicked = True
-
-            if self.updating:
-                self.pause = True
-            else:
-                self.was_clicked = True
-
+            self.was_clicked = True
             self.action()
             return True
         else:
@@ -160,11 +146,7 @@ class Button:
             y1 = pos[1]
             if (self.x > x1 or x1 > self.x + self.width) or \
                     (self.y > y1 or y1 > self.y + self.height):
-                # self.is_clicked = False
-                self.release()  # That SHOULD take care of all of that I believe
-            else:
-                if self.pause:
-                    self.pause = True
+                self.is_clicked = False
 
     def release(self):
         """
@@ -173,8 +155,6 @@ class Button:
         :return: None
         """
         self.is_clicked = False
-        if self.pause:
-            self.pause = False
 
     def update(self):
         if self.was_clicked:
@@ -185,8 +165,6 @@ class Button:
             # self.current_x = self.x + generated[0][0]
             # self.current_y = self.y + generated[0][0]
             self.count = 1
-        if self.pause:
-            return
         if self.count == 0:
             self.updating = False
             self.forward = True
