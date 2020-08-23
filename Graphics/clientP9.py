@@ -82,12 +82,15 @@ class Button:
         self.rotation = rotation
         self.scale = scale
         self.is_clicked = False
+
         self.was_clicked = False
         self.updating = False
         self.d_x = 0
         self.d_y = 0
         self.current_x = self.x
         self.current_y = self.y
+        self.count = 0
+        self.forward = True
 
     def draw(self, window):
         """
@@ -96,22 +99,29 @@ class Button:
         :param window: The surface that is going to be drawn on.
         :return: None
         """
+        cur_x, cur_y = self.x, self.y
+
+        if self.updating:
+            cur_x, cur_y = self.current_x, self.current_y
+            print(cur_x, cur_y)
+
         if not self.is_clicked:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
-                pygame.draw.rect(window, self.bg_up, (self.x, self.y, self.width, self.height))
+                pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, self.width, self.height))
             else:
-                window.blit(self.bg_up, (self.x, self.y))
+                window.blit(self.bg_up, (cur_x, cur_y))
             text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (self.x + round(self.width / 2) - round(text.get_width() / 2),
-                               self.y + round(self.height / 2) - round(text.get_height() / 2)))
+            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+
         else:
             if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                pygame.draw.rect(window, self.bg_down, (self.x, self.y, self.width, self.height))
+                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
             else:
-                window.blit(self.bg_down, (self.x, self.y))
+                window.blit(self.bg_down, (cur_x, cur_y))
             text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (self.x + round(self.width / 2) - round(text.get_width() / 2),
-                               self.y + round(self.height / 2) - round(text.get_height() / 2)))
+            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
 
     def click(self, pos):
         x1 = pos[0]
@@ -150,18 +160,33 @@ class Button:
         if self.was_clicked:
             print("updating?")
             self.updating = True
-            [v for v in self.generator_moving_to(0, 0, 50)]
-            # self.x = self.generator_moving_to(0, 0, 100)
+            self.was_clicked = False
+            # generated = [[u, v] for u, v in self.generator_moving_to(0, 0, 50)]
+            self.making_changes(0, 0, 100)
+            # self.current_x = self.x + generated[0][0]
+            # self.current_y = self.y + generated[0][0]
+            self.count = 1
+        if self.count == 0:
+            self.updating = False
+            self.forward = True
+        if self.updating:
+            print(self.count)
+            if self.count >= 100 and self.forward:
+                self.forward = False
+            self.current_x = self.x - self.d_x * self.count
+            self.current_y = self.y - self.d_y * self.count
+            if self.forward:
+                self.count += 1
+            else:
+                self.count -= 1
 
-    def generator_moving_to(self, des_x, des_y, steps):
-        change_x = self.x - des_x
-        change_y = self.y - des_y
-        print(change_x, change_y)
-        for i in range(1, steps):
-            current_x = ((change_x / steps) * i)
-            current_y = int((change_y / steps) * i)
-            print("CURRENT X: ", current_x)
-            yield current_x, current_y
+
+
+
+    def making_changes(self, des_x, des_y, steps):
+        self.d_x = ((self.x - des_x) / steps)
+        self.d_y = ((self.y - des_y) / steps)
+        print("DX and DY:",self.d_x, self.d_y)
 
 
 def button1_action():
