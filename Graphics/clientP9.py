@@ -61,7 +61,6 @@ class Button:
         elif type(bg) == tuple:
             self.bg_down = self.bg_up = bg
         elif type(bg) == list:
-            print("LIST")
             self.bg = bg
             self.bg_up = pygame.transform.scale(self.bg[0], (self.width, self.height))
             self.bg_down = pygame.transform.scale(self.bg[1], (self.width, self.height))
@@ -149,20 +148,25 @@ class Button:
 
     def update(self):
         if self.was_clicked:
+            print("updating?")
             self.updating = True
-            self.was_clicked = False
+            [v for v in self.generator_moving_to(0, 0, 50)]
+            # self.x = self.generator_moving_to(0, 0, 100)
 
-    def moving_to(self, des_x, des_y):
+    def generator_moving_to(self, des_x, des_y, steps):
         change_x = self.x - des_x
         change_y = self.y - des_y
         print(change_x, change_y)
-
-
+        for i in range(1, steps):
+            current_x = ((change_x / steps) * i)
+            current_y = int((change_y / steps) * i)
+            print("CURRENT X: ", current_x)
+            yield current_x, current_y
 
 
 def button1_action():
     print("Button 1 was clicked!")
-    move_sprite()
+    # move_sprite()
 
 
 def button2_action():
@@ -335,7 +339,7 @@ def menu_screen():
 
     while not quit_game:
         while on_menu:
-            clock.tick(60)
+            clock.tick(30)
             screen.fill((128, 128, 128))
             # text = font.render("Click to Play!", 1, (255, 0, 0))
             # screen.blit(text, ((width / 2 - text.get_width() / 2), 200))
@@ -370,7 +374,8 @@ def menu_screen():
                     pos = pygame.mouse.get_pos()
                     for button in menu_buttons:
                         button.move_release(pos)
-
+            for button in menu_buttons:
+                button.update()
 
 
         if not quit_game:
