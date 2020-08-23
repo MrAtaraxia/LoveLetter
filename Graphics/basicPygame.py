@@ -1,3 +1,5 @@
+import gc  # garbage collection!
+gc.enable()
 
 
 """
@@ -22,7 +24,16 @@ AKA moving the cards to show that one better.
 - What graphics do I want to use for this?
 
 
+ALSO:
 
+- Look into garbage collection!
+
+It should be interesting to do that.
+
+ALSO:
+
+- Look into how to remove something else from the stack!
+C calls A calls B. B removes A from the stack so after B finishes C continues
 
 
 """
