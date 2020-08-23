@@ -140,10 +140,11 @@ class Button:
 
             if self.updating:
                 self.pause = True
-            else:
-                self.was_clicked = True
+            # else:
+            #    self.was_clicked = True
 
-            self.action()
+            if self.action:
+                self.action()
             return True
         else:
             return False
@@ -160,7 +161,7 @@ class Button:
             y1 = pos[1]
             if (self.x > x1 or x1 > self.x + self.width) or \
                     (self.y > y1 or y1 > self.y + self.height):
-                # self.is_clicked = False
+                self.is_clicked = False
                 self.release()  # That SHOULD take care of all of that I believe
             else:
                 if self.pause:
@@ -200,13 +201,61 @@ class Button:
             else:
                 self.count -= 1
 
-
-
-
     def making_changes(self, des_x, des_y, steps):
         self.d_x = ((self.x - des_x) / steps)
         self.d_y = ((self.y - des_y) / steps)
-        print("DX and DY:",self.d_x, self.d_y)
+        print("DX and DY:", self.d_x, self.d_y)
+
+
+class InputTextBox:
+    def __init__(self, text, x, y, w, h,
+                 bg=None, text_color=None, font=None, ):
+        self.displayed_text = text
+        self.active = False
+        self.inputted_text = ""
+        self.x = x
+        self.y = y
+        self.width = w
+        self.height = h
+        if bg is None:
+            self.bg_down = (50, 50, 50)
+            self.bg_up = (0, 0, 0)
+        elif type(bg) == tuple:
+            self.bg_up = bg
+            new_bg = []
+            for num in bg:
+                new_bg.append((num + 50) % 256)
+            self.bg_down = tuple(new_bg)
+        elif type(bg) == list:
+            self.bg = bg
+            self.bg_up = pygame.transform.scale(self.bg[0], (self.width, self.height))
+            self.bg_down = pygame.transform.scale(self.bg[1], (self.width, self.height))
+
+        elif type(bg) == pygame.sprite():
+            pass
+
+        if text_color is None:
+            self.text_color = (0, 0, 0)
+        else:
+            self.text_color = text_color
+        if font is None:
+            self.font = pygame.font.SysFont("comicsans", 25)
+        else:
+            self.font = font
+
+    def adding_to_string(self, event):
+        self.inputted_text += event.unicode
+
+    def click(self, pos):
+        x1 = pos[0]
+        y1 = pos[1]
+        cur_x, cur_y = self.x, self.y
+        # if self.updating:
+        #    cur_x, cur_y = self.current_x, self.current_y
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            self.active = True
+        else:
+            self.active = False
 
 
 def button1_action():
@@ -332,7 +381,6 @@ def game_main_loop():
 
 
 def game_handle_keys(buttons, connect, game_name, player_number):
-
     event_list = pygame.event.get()
     for event in event_list:
         if event.type == pygame.QUIT:
@@ -360,6 +408,8 @@ def menu_screen():
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
+    menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100,
+                                  (0, 0, 0), (255, 255, 255), font_regular)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action),
                     Button("Rules", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button2_action),
@@ -421,7 +471,6 @@ def menu_screen():
                         button.move_release(pos)
             for button in menu_buttons:
                 button.update()
-
 
         if not quit_game:
             quit_game = game_main_loop()
