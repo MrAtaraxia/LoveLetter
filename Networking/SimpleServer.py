@@ -12,7 +12,7 @@ class SimpleServer:
         self.debug = debug
         self.running = True
         if self.debug:
-            logging.basicConfig(level=logging.DEBUG,
+            logging.basicConfig(level=logging.INFO,
                                 format='%(asctime)s — %(message)s',
                                 datefmt='%Y-%m-%d_%H:%M:%S',
                                 handlers=[logging.FileHandler('chat.log', encoding='utf-8')])
