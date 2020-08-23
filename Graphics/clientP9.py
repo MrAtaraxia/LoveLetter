@@ -140,8 +140,8 @@ class Button:
 
             if self.updating:
                 self.pause = True
-            # else:
-            #    self.was_clicked = True
+            else:
+                self.was_clicked = True
 
             if self.action:
                 self.action()
@@ -244,7 +244,45 @@ class InputTextBox:
             self.font = font
 
     def adding_to_string(self, event):
-        self.inputted_text += event.unicode
+        print(event.unicode)
+        if self.active:
+            if event.key == pygame.K_BACKSPACE:
+                self.inputted_text = self.inputted_text[0:-1]
+            elif event.key == pygame.K_RETURN:
+                print(self.inputted_text)
+                self.inputted_text = ""
+            else:
+                self.inputted_text += event.unicode
+
+    def draw(self, window):
+        """
+        Drawing the text box on the window.
+
+        :param window: The surface that is going to be drawn on.
+        :return: None
+        """
+        cur_x, cur_y = self.x, self.y
+
+        if not self.active:
+            if type(self.bg_up) == tuple or type(self.bg_up) == str:
+                pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, self.width, self.height))
+            else:
+                window.blit(self.bg_up, (cur_x, cur_y))
+            if self.inputted_text != "":
+                text = self.font.render(self.inputted_text, 1, self.text_color)
+            else:
+                text = self.font.render(self.displayed_text, 1, self.text_color)
+            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+
+        else:
+            if type(self.bg_down) == tuple or type(self.bg_down) == str:
+                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
+            else:
+                window.blit(self.bg_down, (cur_x, cur_y))
+            text = self.font.render(self.inputted_text, 1, self.text_color)
+            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
 
     def click(self, pos):
         x1 = pos[0]
@@ -256,6 +294,7 @@ class InputTextBox:
             self.active = True
         else:
             self.active = False
+
 
 
 def button1_action():
@@ -440,6 +479,8 @@ def menu_screen():
             # screen.blit(text, ((width / 2 - text.get_width() / 2), 200))
             for button in menu_buttons:
                 button.draw(screen)
+            for box in menu_text_box:
+                box.draw(screen)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -447,11 +488,16 @@ def menu_screen():
                     on_menu = False
                     quit_game = True
                 if event.type == pygame.KEYDOWN:
+                    for box in menu_text_box:
+                        box.adding_to_string(event)
                     if event.key == pygame.K_ESCAPE:
                         on_menu = False
                         quit_game = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
+                    for box in menu_text_box:
+                        box.click(pos)
+
                     for button in menu_buttons:
                         if button.click(pos):
                             if button.text == "Click to Play!":
