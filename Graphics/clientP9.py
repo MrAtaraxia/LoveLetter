@@ -187,6 +187,7 @@ class Button:
         self.count = 0
         self.forward = True
         self.pause = False
+        self.hovering = False
 
     def draw(self, window):
         """
@@ -204,13 +205,12 @@ class Button:
             pygame.draw.rect(window, self.current_border_color, (cur_x, cur_y, wid, hei))
             cur_x = cur_x + self.border_width
             cur_y = cur_y + self.border_width
-            wid   = self.width - self.border_width * 2
-            hei   = self.height - self.border_width * 2
+            wid = self.width - self.border_width * 2
+            hei = self.height - self.border_width * 2
             self.bg_up = pygame.transform.scale(self.bg[0], (wid, hei))
             self.bg_down = pygame.transform.scale(self.bg[1], (wid, hei))
 
             # print(cur_x, cur_y, self.pause)
-
 
         if not self.is_clicked:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
@@ -255,8 +255,10 @@ class Button:
         y1 = pos[1]
         cur_x, cur_y = self.x, self.y
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            self.hovering = True
             return True
         else:
+            self.hovering = False
             return False
 
     def move_release(self, pos):
@@ -327,8 +329,13 @@ class Button:
         self.updating = True
         self.count = 1
 
-    def change_border_color(self):
-        self.
+    def change_border_color(self, change):
+        change_by = -5
+        if change:
+            if type(self.current_border_color) == tuple:
+                self.current_border_color = tuple((i + change_by) % 256 for i in list(self.current_border_color))
+        else:
+            self.current_border_color = self.border_color
 
 
 class InputTextBox:
@@ -715,6 +722,9 @@ def menu_screen():
                     pos = pygame.mouse.get_pos()
                     for button in menu_buttons:
                         button.move_release(pos)
+                        button.hover(pos)
+            for button in menu_buttons:
+                button.change_border_color(button.hovering)
             if buttons_clicked:
                 for button in menu_buttons:
                     if button.count < 1:
