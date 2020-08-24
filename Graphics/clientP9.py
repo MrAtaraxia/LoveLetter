@@ -487,6 +487,7 @@ class InputTextBox:
                         # self.inputted_text.
                         pass
                 elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
+                    self.cursor_start_location = None
                     print(self.inputted_text, self.cursor_location)
                     self.inputted_text = ""
                     self.cursor_location = 0
@@ -494,6 +495,7 @@ class InputTextBox:
                                    pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9,
                                    pygame.K_F10, pygame.K_F11, pygame.K_F12, pygame.K_F13, pygame.K_F14,
                                    pygame.K_F15]:
+                    self.cursor_start_location = None
                     return
                 elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
                                    pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
@@ -502,9 +504,11 @@ class InputTextBox:
                                    pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
                                    pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
                                    pygame.K_SPACE]:
+                    self.cursor_start_location = None
                     self.inputted_text += event.unicode
                     self.cursor_location += 1
                 elif event.key in [pygame.K_LEFT]:
+                    print("lshift?", self.cursor_start_location)
                     if self.shift:
                         if self.cursor_start_location is None:
                             self.cursor_start_location = self.cursor_location
@@ -528,8 +532,8 @@ class InputTextBox:
 
             elif event.type == pygame.KEYUP:
                 if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
-                    print("Unshift")
                     self.shift = False
+                    print("Unshift", self.shift)
 
 
 
@@ -582,7 +586,8 @@ class InputTextBox:
 
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
                 window.blit(cursor, (text_left + left_width - 2, text_top))
-                window.blit(cursor, (text_left + start_width - 2, text_top))
+                if self.cursor_start_location is not None:
+                    window.blit(cursor, (text_left + start_width - 2, text_top))
                 window.blit(text, (text_left, text_top))
 
             self.count = (self.count + 1) % 30
