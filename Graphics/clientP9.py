@@ -64,6 +64,10 @@ Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
 TODO - Add more of the keyboard to this!
 all the special characters I think...
 
+TODO - DO i WANT a right click menu here?
+
+
+
 
 Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
@@ -77,6 +81,7 @@ TODO - Make a scroll bar location.
 
 TODO - Put a sprite on it that can only move up and down.
 
+TODO - I do REALLY want a log that can be viewed through this...
 
 
 
@@ -115,6 +120,12 @@ if drag and dropping thing.
 
 
 TODO - make right click menu thing.
+Is this just a bunch of organized buttons???
+I REALLY REALLY REALLY NEED to pull the functions OUT of the button class...
+Have them as other methods that can be CALLED so that not every button is FORCED
+to do that SAME THING. Yep!
+
+
 might be able to do it with how i did the on click for the buttons.
 each thing is going to need a menu defined after that...
 OR JUST A REGULAR MENU!?!
@@ -241,7 +252,9 @@ class Button:
         self.rotation = {"is": False, "amount": rotation, "bgs": bg}
         self.scale = {"is": False, "amount": scale, "bgs": bg}
         self.border = {"color": b_color, "width": b_width, "current": b_color, "forward": True}
-        self.action = {"click": c_action, "hover": h_action}
+        self.action = {"click": c_action, "hover": h_action, "move": c_action,
+                       "c_hand": c_action, "h_hand": h_action, "m_hand": c_action,
+                       "c_table": c_action, "h_table": h_action, "m_table": c_action}
 
         temp = (0, 0, 0)
         self.bg = {"o_u": temp, "o_h": temp, "o_d": temp,
