@@ -72,15 +72,7 @@ TODO - bring in drag and drop from other one.
 
 TODO - bring in hand of cards.
 
-
 TODO - make stackable things!
-PUT A NUMBER OF COUNT ABOVE THINGS
-How...
-if drag and dropping thing.
-    if hover stack.
-        (show color to indicate stacking if release)
-        release to stack
-
 
 TODO - make right click menu thing.
 might be able to do it with how i did the on click for the buttons.
