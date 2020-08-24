@@ -249,14 +249,43 @@ class InputTextBox:
     def adding_to_string(self, event):
         if self.active:
             if event.key == pygame.K_BACKSPACE:
+                if self.cursor_location > 0:
+                    self.inputted_text = self.inputted_text[::self.cursor_location] + \
+                                         self.inputted_text[self.cursor_location::]
                 self.inputted_text = self.inputted_text[0:-1]
-            elif event.key == pygame.K_RETURN:
-                print(self.inputted_text)
+                self.cursor_location -= 1
+            if event.key in [pygame.K_DELETE]:
+                if self.cursor_location < len(self.inputted_text):
+                    # self.inputted_text.
+                    pass
+            elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
+                print(self.inputted_text, self.cursor_location)
                 self.inputted_text = ""
-            elif event.key == pygame.K_ESCAPE:
+                self.cursor_location = 0
+            elif event.key in [pygame.K_ESCAPE, pygame.K_F1, pygame.K_F2, pygame.K_F3, pygame.K_F4,
+                               pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9,
+                               pygame.K_F10, pygame.K_F11, pygame.K_F12, pygame.K_F13, pygame.K_F14,
+                               pygame.K_F15]:
                 return
-            else:
+            elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
+                               pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
+                               pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
+                               pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
+                               pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
+                               pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
+                               pygame.K_SPACE]:
                 self.inputted_text += event.unicode
+                self.cursor_location += 1
+            elif event.key in [pygame.K_LEFT]:
+                if self.cursor_location > 0:
+                    self.cursor_location -= 1
+            elif event.key in [pygame.K_RIGHT]:
+                if self.cursor_location < len(self.inputted_text):
+                    self.cursor_location += 1
+
+
+            else:
+                print("Else Input!")
 
     def draw(self, window):
         """
@@ -278,10 +307,10 @@ class InputTextBox:
             else:
                 window.blit(self.bg_up, (cur_x, cur_y))
             text = self.font.render(using_text, 1, self.text_color)
+            text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
             if not align_left:
                 text_left = cur_x + round(self.width / 2) - round(text.get_width() / 2)
-            window.blit(text, (text_left,
-                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            window.blit(text, (text_left, text_top))
 
         else:
             if self.count < 15:
@@ -290,17 +319,17 @@ class InputTextBox:
                 else:
                     window.blit(self.bg_down, (cur_x, cur_y))
                 text = self.font.render(using_text, 1, self.text_color)
-                window.blit(text, (cur_x + 5,
-                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+                window.blit(text, (text_left, text_top))
             else:
-                using_text = using_text + "|"
+                using_text = using_text + "|" #  self.cursor_location
                 if type(self.bg_down) == tuple or type(self.bg_down) == str:
                     pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
                 else:
                     window.blit(self.bg_down, (cur_x, cur_y))
                 text = self.font.render(using_text, 1, self.text_color)
-                window.blit(text, (cur_x + 5,
-                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+                window.blit(text, (text_left, text_top))
 
             self.count = (self.count + 1) % 30
 
