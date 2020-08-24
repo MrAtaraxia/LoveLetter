@@ -1,0 +1,9 @@
+digraph structs {
+	node [shape=record]
+	node [shape=record]
+	subgraph sub1 {
+		struct0 [label="{Button|__init__|draw|click|hover|move_release|release|update|making_changes|animate|change_border_color|move_while_true}"]
+		struct1 [label="{InputTextBox|__init__|adding_to_string|draw|click|get_text_height|get_text_width}"]
+		struct2 [label="{Global|button1_action|button2_action|button3_action|button4_action|redrawWindow|game_main_loop|game_handle_keys|menu_screen|main}"]
+	}
+}

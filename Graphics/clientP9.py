@@ -98,6 +98,33 @@ TODO - Make it so it automatically downloads the files that it needs if it does 
 
 I do have a LONG todo list now so this will hopefully be interesting!
 
+TODO - LOOK INTO how to make it so the buttons run from the mouse!
+Like if within 20 pixels will move in the other direction.
+Would be interesting.
+
+
+END GOAL:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+I want 2 + sets of actions:
+
+if in_hand:
+    hovering -> moves it up, spreads other cards
+    (if I'm too lazy I can just have it project up above the cards)
+    left clicking -> selects it. (have be outside of card size?)
+    right clicking -> ?
+    click+drag -> drags it. (to be played)
+
+
+if on board:
+    hovering -> zooms in?
+    left clicking -> select it?
+    right click -> produce menu about it.
+    click + drag -> move it.
+    drag onto similar -> stack it
+
+OHHHHH Modify them so the boarder is CLEAR!!!
+That actually sounds VERY interesting!
+
 
 
 
@@ -425,7 +452,6 @@ class InputTextBox:
             elif event.key in [pygame.K_RIGHT]:
                 if self.cursor_location < len(self.inputted_text):
                     self.cursor_location += 1
-
 
             else:
                 print("Else Input!")

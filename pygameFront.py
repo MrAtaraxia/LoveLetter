@@ -3,6 +3,11 @@ pygameFront.py
 # This goes over how to make the pygame window appear in a certain location.
 # This only works on windows!
 
+
+I will have to look into subgraphing a bit more if I want to have it
+do what I want of having the classes/functions inside of the file name object
+
+Or I could just have the text added after and call it a day...
 # """
 
 
@@ -15,16 +20,15 @@ def pygame_windowing():
     #  My imports
     DEBUG = False
 
-    if os.name == "nt":     # Windows
-        from win32api import GetSystemMetrics   # pip install pypiwin32 OR pip install pywin32
+    if os.name == "nt":  # Windows
+        from win32api import GetSystemMetrics  # pip install pypiwin32 OR pip install pywin32
     if os.name == "posix":  # Linux
         print("This does not currently work on linux.")
-    if os.name == "mac?":   # Mac?
+    if os.name == "mac?":  # Mac?
         print("This does not currently work on mac.")
     my_prof = ""
     if DEBUG:
         my_prof = profile_start()
-
 
     screen_width = 640
     screen_height = 480
@@ -35,9 +39,9 @@ def pygame_windowing():
 
     width = 320
     height = 240
-    x, y = screen_width-width-2, 2
+    x, y = screen_width - width - 2, 2
 
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x,y)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
     pygame.init()
     screen = pygame.display.set_mode((width, height))
 
@@ -83,14 +87,14 @@ def until_paren(words, paren):
     return current
 
 
-def create_doc(stop_at_paren=True):
+def create_doc(f_folder="Graphics/", f_name="clientP9", stop_at_paren=True):
     import os
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
     from graphviz import Digraph
 
     save_folder = "basic-docs/"
-    file_folder = "Networking/"
-    file_name = "LoveLetterServer"
+    file_folder = f_folder
+    file_name = f_name
     open_ext = ".py"
     save_ext = ".gv"
 
@@ -131,7 +135,9 @@ def create_doc(stop_at_paren=True):
     print("ALL CLASSES: ", all_classes)
     struct_name = "struct"
     current_struct = ""
-    s.node(struct_name + "_origin", file_name)
+    # s.attr('node', shape='circle')
+    # s.node(struct_name + "_origin", file_name)
+    s.attr('node', shape='record')
     with s.subgraph(name="sub1") as sub:
         for number, cur_class in enumerate(all_classes):
             current_struct += "{" + cur_class["name"] + "|"
@@ -298,7 +304,7 @@ def struct2():
     from graphviz import Graph  # Graph - no arrows
     from graphviz import Digraph  # Digraph - arrows
 
-    #s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
+    # s = Digraph('structs', filename='basic-docs/structs_revisited.gv',
     #            node_attr={'shape': 'record'})
     s = Digraph('structs', filename='basic-docs/structs_revisited.gv')
 
@@ -317,7 +323,6 @@ def struct2():
     # DIAMOND ARROW HEAD!
     s.edge('struct1:f2', 'struct4:f1', _attributes={"arrowhead": "diamond"})
     s.edge('struct2', 'struct4', _attributes={'taillabel': 'tail', 'headlabel': 'head', 'fontcolor': 'Gold'})
-
 
     s.attr('node', shape='doublecircle')
     s.node('LR_0')
@@ -456,7 +461,7 @@ def neato():
     os.environ["PATH"] += os.pathsep + "C:/Users/admin9/Downloads/Graphviz/bin"
     from graphviz import Graph
 
-    e = Graph('ER', filename='er.gv') # engine='neato')
+    e = Graph('ER', filename='er.gv')  # engine='neato')
 
     e.attr('node', shape='box')
     e.node('course')
@@ -529,6 +534,7 @@ def more_graphs():
 
     f.view()
 
+
 def example_graphviz1():
     # hello.py - http://www.graphviz.org/content/hello
     import os
@@ -559,11 +565,11 @@ def gcn():
 
     g.view()
 
+
 if __name__ == "__main__":
     # cluster()
     # neato()
     # gcn()
     # struct1()
-    struct2()
-    # create_doc(stop_at_paren=False)
-
+    # struct2()
+    create_doc("Graphics/", "clientP9", stop_at_paren=True)
