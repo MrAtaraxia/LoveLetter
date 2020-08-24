@@ -79,7 +79,7 @@ class Button:
     def __init__(self, text: str, x: int, y: int, w: int, h: int,
                  bg=None, text_color=None, font=None,
                  action=None,
-                 border=None, border_width=0,
+                 border_width=0, border=None,
                  rotation=None, scale=1):
         """
         SO MANY PARAMAMTERS... omg...
@@ -93,8 +93,8 @@ class Button:
         :param text_color: The color of the text on the button
         :param font: The font of the text on the button
         :param action: The action that happens when you click the button
-        :param border: The border color around the button
         :param border_width: The border width around the button
+        :param border: The border color around the button
         :param rotation: The amount of rotation on the button
         :param scale: The scale of the button
         """
@@ -124,7 +124,10 @@ class Button:
         else:
             self.font = font
         self.action = action
-        self.border = border
+        if border is None:
+            self.border = (255, 255, 255)
+        else:
+            self.border = border
         self.border_width = border_width
         self.rotation = rotation
         self.scale = scale
@@ -147,29 +150,40 @@ class Button:
         :param window: The surface that is going to be drawn on.
         :return: None
         """
-        cur_x, cur_y = self.x, self.y
+        # cur_x, cur_y = self.current_x, self.current_x
+        wid, hei = self.width, self.height
+        if self.border_width > 0:
+            print(self.border_width, self.x)
+            pygame.draw.rect(window, self.border, (cur_x, cur_y, wid, hei))
+            cur_x = self.x + self.border_width
+            cur_y = self.y + self.border_width
+            wid   = self.width - self.border_width * 2
+            hei   = self.height - self.border_width * 2
+            self.bg_up = pygame.transform.scale(self.bg[0], (wid, hei))
+            self.bg_down = pygame.transform.scale(self.bg[1], (wid, hei))
 
         if self.updating:
             cur_x, cur_y = self.current_x, self.current_y
             # print(cur_x, cur_y, self.pause)
 
+
         if not self.is_clicked:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
-                pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, self.width, self.height))
+                pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, wid, hei))
             else:
                 window.blit(self.bg_up, (cur_x, cur_y))
             text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
-                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            window.blit(text, (cur_x + round(wid / 2) - round(text.get_width() / 2),
+                               cur_y + round(hei / 2) - round(text.get_height() / 2)))
 
         else:
             if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
+                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, wid, hei))
             else:
                 window.blit(self.bg_down, (cur_x, cur_y))
             text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
-                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            window.blit(text, (cur_x + round(wid / 2) - round(text.get_width() / 2),
+                               cur_y + round(hei / 2) - round(text.get_height() / 2)))
 
     def click(self, pos):
         x1 = pos[0]
@@ -209,9 +223,10 @@ class Button:
         """
         # Still has issues with holding down and moving the mouse
         # to maintain the paused effect... Not sure why though.
-        if not self.hover(pos):
-            self.is_clicked = False
-            self.release()
+        # if not self.hover(pos):
+        #    self.is_clicked = False
+        #    self.release()
+        pass
 
         """
         if self.is_clicked:
@@ -263,7 +278,7 @@ class Button:
         # print("DX and DY:", self.d_x, self.d_y)
 
     def animate(self):
-        self.making_changes(width-self.width, 0, 100)
+        self.making_changes(width - self.width, 0, 100)
         self.updating = True
         self.count = 1
 
@@ -285,8 +300,8 @@ class InputTextBox:
             self.bg_up = (0, 0, 0)
         elif type(bg) == tuple:
             self.bg_up = bg
-            #new_bg = []
-            #for num in bg:
+            # new_bg = []
+            # for num in bg:
             #    new_bg.append((num + 50) % 256)
             self.bg_down = tuple((i - 25) % 256 for i in list(bg))
         elif type(bg) == list:
@@ -314,14 +329,14 @@ class InputTextBox:
                 if self.cursor_location > 0:
                     print(self.inputted_text[:self.cursor_location])
                     print(self.inputted_text[self.cursor_location:])
-                    self.inputted_text = self.inputted_text[:self.cursor_location-1] + \
+                    self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
                                          self.inputted_text[self.cursor_location:]
                 # self.inputted_text = self.inputted_text[0:-1]
                 self.cursor_location -= 1
             elif event.key in [pygame.K_DELETE]:
                 if self.cursor_location < len(self.inputted_text):
                     self.inputted_text = self.inputted_text[:self.cursor_location] + \
-                                         self.inputted_text[self.cursor_location+1:]
+                                         self.inputted_text[self.cursor_location + 1:]
                     # self.inputted_text.
                     pass
             elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
@@ -401,7 +416,7 @@ class InputTextBox:
 
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
                 window.blit(text, (text_left, text_top))
-                window.blit(cursor, (text_left+left_width-2, text_top))
+                window.blit(cursor, (text_left + left_width - 2, text_top))
 
             self.count = (self.count + 1) % 30
 
@@ -584,9 +599,10 @@ def menu_screen():
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
-                                  (0, 0, 0),  font_regular)]
+                                  (0, 0, 0), font_regular)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action),
+                    Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action, 5,
+                           (0, 0, 0)),
                     Button("Rules", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button2_action),
                     Button("Print", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button3_action),
                     Button("Quit", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button4_action)
