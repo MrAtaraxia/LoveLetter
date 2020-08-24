@@ -233,9 +233,12 @@ class Button:
                        "s_d": pygame.transform.scale(bg["down"], (self.xy["width"], self.xy["height"])),
                        "s_h": pygame.transform.scale(bg["up"], (self.xy["width"], self.xy["height"]))}
 
-        self.clicked = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
-        self.hovered = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
-        self.updated = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
+        self.clicked = {"is": False, "was": False, "forward": True,
+                        "pause": False, "count": 0, "max": 0, "update": False}
+        self.hovered = {"is": False, "was": False, "forward": True,
+                        "pause": False, "count": 0, "max": 0, "update": False}
+        self.updated = {"is": False, "was": False, "forward": True,
+                        "pause": False, "count": 0, "max": 0, "update": False}
         # self.bg = bg
         # self.bg_up = pygame.transform.scale(self.bg[0], (self.xy["width"], self.xy["height"]))
         # self.bg_down = pygame.transform.scale(self.bg[1], (self.xy["width"], self.xy["height"]))
@@ -273,45 +276,44 @@ class Button:
             cur_y = cur_y + self.border["width"]
             wid = self.xy["width"] - self.border["width"] * 2
             hei = self.xy["height"] - self.border["width"] * 2
-            self.bg["c_u"] = pygame.transform.scale(self.bg["o_u"], (wid, hei))
-            self.bg["c_d"] = pygame.transform.scale(self.bg["o_d"], (wid, hei))
+            self.bg["s_u"] = pygame.transform.scale(self.bg["o_u"], (wid, hei))
+            self.bg["s_d"] = pygame.transform.scale(self.bg["o_d"], (wid, hei))
 
             # print(cur_x, cur_y, self.pause)
 
-        if not self.is_clicked:
-            if type(self.bg_up) == tuple or type(self.bg_up) == str:
-                pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, wid, hei))
+        if not self.clicked["is"]:
+            if type(self.bg["s_u"]) == tuple or type(self.bg["s_u"]) == str:
+                pygame.draw.rect(window, self.bg["s_u"], (cur_x, cur_y, wid, hei))
             else:
-                window.blit(self.bg_up, (cur_x, cur_y))
-            text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (cur_x + round(wid / 2) - round(text.get_width() / 2),
-                               cur_y + round(hei / 2) - round(text.get_height() / 2)))
+                window.blit(self.bg["s_u"], (cur_x, cur_y))
 
         else:
-            if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, wid, hei))
+            if type(self.bg["s_d"]) == tuple or type(self.bg["s_d"]) == str:
+                pygame.draw.rect(window, self.bg["s_d"], (cur_x, cur_y, wid, hei))
             else:
-                window.blit(self.bg_down, (cur_x, cur_y))
-            text = self.font.render(self.text, 1, self.text_color)
-            window.blit(text, (cur_x + round(wid / 2) - round(text.get_width() / 2),
-                               cur_y + round(hei / 2) - round(text.get_height() / 2)))
+                window.blit(self.bg["s_d"], (cur_x, cur_y))
+        text = self.text["font"].render(self.text["text"], 1, self.text["color"])
+        window.blit(text, (cur_x + round(wid / 2) - round(text.get_width() / 2),
+                           cur_y + round(hei / 2) - round(text.get_height() / 2)))
 
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
-        cur_x, cur_y = self.x, self.y
-        if self.updating:
-            cur_x, cur_y = self.current_x, self.current_y
-        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
-            self.is_clicked = True
+        cur_x, cur_y = self.xy["x"], self.xy["y"]
+        if self.clicked["update"]:  # Still not sure about this one
+            cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
+        if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
+            if self.clicked["is"] is False:
+                self.clicked["is"] = True
+                # self.clicked["was"] = True
 
-            if self.updating:
-                self.pause = True
+            if self.clicked["update"]:
+                self.clicked["pause"] = True
             else:
-                self.was_clicked = True
+                self.clicked["was"] = True
 
-            if self.action:
-                self.action()
+            if self.action["click"]:
+                self.action["click"]()
             return True
         else:
             return False
@@ -319,14 +321,14 @@ class Button:
     def hover(self, pos):
         x1 = pos[0]
         y1 = pos[1]
-        cur_x, cur_y = self.x, self.y
-        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
-            if not self.is_hovered:
-                self.is_hovered = True
-                self.was_hovered = True
+        cur_x, cur_y = self.xy["x"], self.xy["y"]
+        if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
+            if not self.hovered["is"]:
+                self.hovered["is"] = True
+                self.hovered["was"] = True
             return True
         else:
-            self.is_hovered = False
+            self.hovered["is"] = False
             return False
 
     def move_release(self, pos):
@@ -349,52 +351,54 @@ class Button:
 
         :return: None
         """
-        self.is_clicked = False
-        if self.pause:
-            self.pause = False
+        self.clicked["is"] = False
+        if self.clicked["pause"]:
+            self.clicked["pause"] = False
 
     def update(self):
-        if self.was_clicked:
-            self.updating = True
-            self.was_clicked = False
+        if self.clicked["was"]:
+            self.clicked["update"] = True
+            self.clicked["was"] = False
             self.making_changes(0, 0, 100)
-            self.count = 1
-        if self.was_hovered:
-            self.updating = True
+            self.clicked["count"] = 1
+        if self.hovered["was"]:
+            self.hovered["update"] = True
 
-        if self.pause:
+        if self.clicked["pause"]:
             return
-        if self.count == 0:
-            self.updating = False
-            self.forward = True
-        if self.updating:
-            if self.count >= self.max_count and self.forward:
-                self.forward = False
-            self.current_x = self.x - self.d_x * self.count
-            self.current_y = self.y - self.d_y * self.count
-            if self.forward:
-                self.count += 1
+
+        if self.clicked["count"] == 0:
+            self.clicked["update"] = False
+            self.clicked["forward"] = True
+
+        if self.clicked["update"]:
+            if self.clicked["count"] >= self.clicked["max"] and self.clicked["forward"]:
+                self.clicked["forward"] = False
+            self.xy["cur_x"] = self.xy["x"] - self.xy["d_x"] * self.clicked["count"]
+            self.xy["cur_y"] = self.xy["y"] - self.xy["d_y"] * self.clicked["count"]
+            if self.clicked["forward"]:
+                self.clicked["count"] += 1
             else:
-                self.count -= 1
+                self.clicked["count"] -= 1
 
     def making_changes(self, des_x, des_y, steps):
-        self.d_x = ((self.x - des_x) / steps)
-        self.d_y = ((self.y - des_y) / steps)
-        self.max_count = steps
-        self.count = 1
-        self.updating = True
+        self.xy["d_x"] = ((self.xy["x"] - des_x) / steps)
+        self.xy["d_y"] = ((self.xy["y"] - des_y) / steps)
+        self.clicked["max"] = steps
+        self.clicked["count"] = 1
+        self.clicked["update"] = True
         # print("DX and DY:", self.d_x, self.d_y)
 
     def animate(self):
-        self.making_changes(width - self.width, 0, 100)
+        self.making_changes(width - self.xy["width"], 0, 100)
 
     def change_border_color(self, change):
         change_by = -5
         if change:
-            if type(self.current_border_color) == tuple:
-                self.current_border_color = tuple((i + change_by) % 256 for i in list(self.current_border_color))
+            if type(self.border["current"]) == tuple:
+                self.border["current"] = tuple((i + change_by) % 256 for i in list(self.border["current"]))
         else:
-            self.current_border_color = self.border_color
+            self.border["current"] = self.border["color"]
 
     def move_while_true(self, condition):
         if condition:
@@ -717,22 +721,22 @@ def menu_screen():
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
                                   (0, 0, 0), font_regular)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action,
+                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button1_action,
                            b_width=5, b_color=(0, 0, 0)),
-                    Button("Rules", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button2_action),
-                    Button("Print", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button3_action),
-                    Button("Quit", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button4_action)
+                    Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button2_action),
+                    Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, button3_action),
+                    Button("Quit", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, button4_action)
                     ]
-    menu_buttons[0].x = int(width / 10 - menu_buttons[0].width / 10) * 5
-    menu_buttons[0].y = int(height / 10 - menu_buttons[0].height / 10) * 3
-    menu_buttons[1].x = int(width / 10 - menu_buttons[1].width / 10) * 3
-    menu_buttons[1].y = int(height / 10 - menu_buttons[1].height / 10) * 6
-    menu_buttons[2].x = int(width / 10 - menu_buttons[2].width / 10) * 7
-    menu_buttons[2].y = int(height / 10 - menu_buttons[2].height / 10) * 6
-    menu_buttons[3].x = int(width / 10 - menu_buttons[3].width / 10) * 3
-    menu_buttons[3].y = int(height / 10 - menu_buttons[3].height / 10) * 8
-    menu_buttons[4].x = int(width / 10 - menu_buttons[4].width / 10) * 7
-    menu_buttons[4].y = int(height / 10 - menu_buttons[4].height / 10) * 8
+    menu_buttons[0].xy["x"] = int(width / 10 - menu_buttons[0].xy["width"] / 10) * 5
+    menu_buttons[0].xy["y"] = int(height / 10 - menu_buttons[0].xy["height"] / 10) * 3
+    menu_buttons[1].xy["x"] = int(width / 10 - menu_buttons[1].xy["width"] / 10) * 3
+    menu_buttons[1].xy["y"] = int(height / 10 - menu_buttons[1].xy["height"] / 10) * 6
+    menu_buttons[2].xy["x"] = int(width / 10 - menu_buttons[2].xy["width"] / 10) * 7
+    menu_buttons[2].xy["y"] = int(height / 10 - menu_buttons[2].xy["height"] / 10) * 6
+    menu_buttons[3].xy["x"] = int(width / 10 - menu_buttons[3].xy["width"] / 10) * 3
+    menu_buttons[3].xy["y"] = int(height / 10 - menu_buttons[3].xy["height"] / 10) * 8
+    menu_buttons[4].xy["x"] = int(width / 10 - menu_buttons[4].xy["width"] / 10) * 7
+    menu_buttons[4].xy["y"] = int(height / 10 - menu_buttons[4].xy["height"] / 10) * 8
 
     on_menu = True
     quit_game = False
