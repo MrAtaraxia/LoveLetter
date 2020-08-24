@@ -18,6 +18,7 @@ to actually GO BACK AND DO THAT!...
 
 
 TODO - Clicking one button, have the other buttons do other things.
+Yeah I forgot about that... I will have to see how that goes...
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH IS A DISASTER IN AND OF ITSELF!) probably...
@@ -31,6 +32,15 @@ Probably the login screen next. To have it DO what I want it to do!
 (Able to login and CONTINUE a game!
 
 TODO - Make a settings menu!
+I will have to see how I want all of my menus to be...
+
+TODO - Make more button images!
+I want different / more button images so I can see what I like the best.
+I will have to look into how the ones I am using are designed and go from there?
+Other shapes for the buttons? Would that cause issues with the collisions?
+IDK
+
+
 
 
 
@@ -138,7 +148,7 @@ class Button:
 
         if self.updating:
             cur_x, cur_y = self.current_x, self.current_y
-            print(cur_x, cur_y, self.pause)
+            # print(cur_x, cur_y, self.pause)
 
         if not self.is_clicked:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
@@ -178,12 +188,28 @@ class Button:
         else:
             return False
 
+    def hover(self, pos):
+        x1 = pos[0]
+        y1 = pos[1]
+        cur_x, cur_y = self.x, self.y
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            return True
+        else:
+            return False
+
     def move_release(self, pos):
         """
         Not sure if I want this or if I want to have "this" be more about moving them around...
 
         :param pos: The position of the mouse
         :return: None
+        """
+        # Still has issues with holding down and moving the mouse
+        # to maintain the paused effect... Not sure why though.
+        if not self.hover(pos):
+            self.is_clicked = False
+            self.release()
+
         """
         if self.is_clicked:
             x1 = pos[0]
@@ -194,7 +220,7 @@ class Button:
                 self.release()  # That SHOULD take care of all of that I believe
             else:
                 if self.pause:
-                    self.pause = True
+                    self.pause = True"""
 
     def release(self):
         """
@@ -210,10 +236,7 @@ class Button:
         if self.was_clicked:
             self.updating = True
             self.was_clicked = False
-            # generated = [[u, v] for u, v in self.generator_moving_to(0, 0, 50)]
             self.making_changes(0, 0, 100)
-            # self.current_x = self.x + generated[0][0]
-            # self.current_y = self.y + generated[0][0]
             self.count = 1
         if self.pause:
             return
@@ -233,7 +256,12 @@ class Button:
     def making_changes(self, des_x, des_y, steps):
         self.d_x = ((self.x - des_x) / steps)
         self.d_y = ((self.y - des_y) / steps)
-        print("DX and DY:", self.d_x, self.d_y)
+        # print("DX and DY:", self.d_x, self.d_y)
+
+    def animate(self):
+        self.making_changes(width-self.width, 0, 100)
+        self.updating = True
+        self.count = 1
 
 
 class InputTextBox:
@@ -547,6 +575,7 @@ def menu_screen():
     font_regular = pygame.font.SysFont("comicsans", 30)
     menu_title = font_big
     menu_font = font_regular
+    buttons_clicked = False
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
@@ -603,8 +632,9 @@ def menu_screen():
 
                     for button in menu_buttons:
                         if button.click(pos):
+                            buttons_clicked = True
+                            print("button clicked!")
                             if button.text == "Click to Play!":
-                                print("button clicked!")
                                 on_menu = False
                                 break
                             if button.text == "Quit":
@@ -618,6 +648,14 @@ def menu_screen():
                     pos = pygame.mouse.get_pos()
                     for button in menu_buttons:
                         button.move_release(pos)
+            if buttons_clicked:
+                for button in menu_buttons:
+                    if button.count < 1:
+                        buttons_clicked = False
+                    if button.updating:
+                        continue
+                    button.animate()
+
             for button in menu_buttons:
                 button.update()
 
