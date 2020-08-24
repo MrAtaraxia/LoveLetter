@@ -178,11 +178,11 @@ class Button:
         :param rotation: The amount of rotation on the button
         :param scale: The scale of the button
         """
-        self.text = text
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h
+        # self.text = text
+        # self.x = x
+        # self.y = y
+        # self.width = w
+        # self.height = h
         if bg is None:
             self.bg_down = self.bg_up = (0, 0, 0)
         elif type(bg) == tuple:
@@ -208,17 +208,24 @@ class Button:
             self.border_color = (255, 255, 255)
         else:
             self.border_color = border
-        self.border_width = border_width
-        self.current_border_color = self.border_color
-        self.rotation = rotation
-        self.scale = scale
+        # self.border_width = border_width
+        # self.current_border_color = self.border_color
+        self.xy = {"x": x, "y": y, "cur_x": x, "cur_y": y,"width": w, "height": h, "dx": 0, "dy": 0, "count": 0}
+        self.text = {"text": text, "color": text_color, "text_back_color": None, "font": font}
+        self.rotation = {"is": False, "amount": scale, "bgs": bg}
+        self.scale = {"is": False, "amount": scale, "bgs": bg}
+        self.border = {"color": border, "width": border_width, "current": border}
+        if border is None:
+            self.border["color"] = (255, 255, 255)
+        self.clicked = {"is": False, "was": False, "count": 0, "forward": True, "pause": False}
+        self.hovered = {"is": False, "was": False, "count": 0, "forward": True, "pause": False}
         self.is_clicked = False
         self.was_clicked = False
-        self.updating = False
-        self.d_x = 0
-        self.d_y = 0
-        self.current_x = self.x
-        self.current_y = self.y
+        self.updating = False   # WHERE DO I WANT THIS TO GO?!?
+        # self.d_x = 0
+        # self.d_y = 0
+        # self.current_x = self.x
+        # self.current_y = self.y
         self.count = 0
         self.max_count = 0
         self.forward = True
@@ -234,10 +241,11 @@ class Button:
         :return: None
         """
 
-        cur_x, cur_y = self.x, self.y
+        cur_x, cur_y = self.xy["x"], self.xy["y"]
+
         if self.updating:
             cur_x, cur_y = self.current_x, self.current_y
-        wid, hei = self.width, self.height
+        wid, hei = self.xy["width"], self.xy["height"]
         if self.border_width > 0:
             pygame.draw.rect(window, self.current_border_color, (cur_x, cur_y, wid, hei))
             cur_x = cur_x + self.border_width
