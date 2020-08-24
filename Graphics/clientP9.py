@@ -19,7 +19,13 @@ to actually GO BACK AND DO THAT!...
 
 DONE - Clicking one button, have the other buttons do other things.
 Yeah I forgot about that... I will have to see how that goes...
-TODO - make it on hover?
+DONE - Added borders/border width. it appears to be working correctly now.
+TODO - make it on adjust the border on hover?
+TODO - make it stop or go on hover?
+Since I WILL want it to go on hover I will probably need to do that completely
+Hmm...
+make them go into a row on hover?
+
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
@@ -27,6 +33,7 @@ Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
 Or looking for collisions with the text elements? IDK...
 I will have to look into it more!
+ADD COPYING AND PASTING Ctrl + C / Ctrl + V / Ctrl + Z
 
 TODO - make a scrolling location of the log?
 
@@ -43,7 +50,18 @@ I will have to look into how the ones I am using are designed and go from there?
 Other shapes for the buttons? Would that cause issues with the collisions?
 IDK
 
+TODO - bring in drag and drop from other one.
 
+TODO - bring in hand of cards.
+
+TODO - make stackable things!
+
+TODO - make right click menu thing.
+might be able to do it with how i did the on click for the buttons.
+each thing is going to need a menu defined after that...
+
+TODO - yep there is still a LOT to do and this isnt even at the game stage yet!
+we shall see how it goes!
 
 
 
@@ -150,20 +168,20 @@ class Button:
         :param window: The surface that is going to be drawn on.
         :return: None
         """
-        # cur_x, cur_y = self.current_x, self.current_x
+
+        cur_x, cur_y = self.x, self.y
+        if self.updating:
+            cur_x, cur_y = self.current_x, self.current_y
         wid, hei = self.width, self.height
         if self.border_width > 0:
-            print(self.border_width, self.x)
             pygame.draw.rect(window, self.border, (cur_x, cur_y, wid, hei))
-            cur_x = self.x + self.border_width
-            cur_y = self.y + self.border_width
+            cur_x = cur_x + self.border_width
+            cur_y = cur_y + self.border_width
             wid   = self.width - self.border_width * 2
             hei   = self.height - self.border_width * 2
             self.bg_up = pygame.transform.scale(self.bg[0], (wid, hei))
             self.bg_down = pygame.transform.scale(self.bg[1], (wid, hei))
 
-        if self.updating:
-            cur_x, cur_y = self.current_x, self.current_y
             # print(cur_x, cur_y, self.pause)
 
 
@@ -449,7 +467,6 @@ class InputTextBox:
 
 def button1_action():
     print("Button 1 was clicked!")
-    # move_sprite()
 
 
 def button2_action():
