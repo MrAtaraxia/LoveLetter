@@ -151,15 +151,15 @@ B_DOWN = pygame.image.load(os.path.join("moreimages", "button_down.png")).conver
 B_UP = pygame.image.load(os.path.join("moreimages", "button_normal.png")).convert_alpha()
 R_DOWN = pygame.image.load(os.path.join("moreimages", "red_button_down.png")).convert_alpha()
 R_UP = pygame.image.load(os.path.join("moreimages", "red_button_normal.png")).convert_alpha()
-BLUE_BUTTON = [B_UP, B_DOWN]
-RED_BUTTON = [R_UP, R_DOWN]
+B_BUTTON = {"up": B_UP, "down": B_DOWN}
+R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 
 class Button:
     def __init__(self, text: str, x: int, y: int, w: int, h: int,
                  bg=None, text_color=None, font=None,
-                 action=None,
-                 border_width=0, border=None,
+                 c_action=None, h_action=None,
+                 b_width=0, b_color=None,
                  rotation=None, scale=1):
         """
         SO MANY PARAMAMTERS... omg...
@@ -172,9 +172,10 @@ class Button:
         :param bg: The background of the button (sprite or color)
         :param text_color: The color of the text on the button
         :param font: The font of the text on the button
-        :param action: The action that happens when you click the button
-        :param border_width: The border width around the button
-        :param border: The border color around the button
+        :param c_action: The action that happens when you click the button
+        :param h_action: The action that happens when you click the button
+        :param b_width: The border width around the button
+        :param b_color: The border color around the button
         :param rotation: The amount of rotation on the button
         :param scale: The scale of the button
         """
@@ -183,7 +184,7 @@ class Button:
         # self.y = y
         # self.width = w
         # self.height = h
-        if bg is None:
+        """if bg is None:
             self.bg_down = self.bg_up = (0, 0, 0)
         elif type(bg) == tuple:
             self.bg_down = self.bg_up = bg
@@ -191,47 +192,67 @@ class Button:
             self.bg = bg
             self.bg_up = pygame.transform.scale(self.bg[0], (self.width, self.height))
             self.bg_down = pygame.transform.scale(self.bg[1], (self.width, self.height))
-
-        elif type(bg) == pygame.sprite():
-            pass
-
-        if text_color is None:
-            self.text_color = (0, 0, 0)
-        else:
-            self.text_color = text_color
-        if font is None:
-            self.font = pygame.font.SysFont("comicsans", 25)
-        else:
-            self.font = font
-        self.action = action
-        if border is None:
-            self.border_color = (255, 255, 255)
-        else:
-            self.border_color = border
+            """
+        #if text_color is None:
+        #    self.text_color = (0, 0, 0)
+        #else:
+        #    self.text_color = text_color
+        # if font is None:
+        #    self.font = pygame.font.SysFont("comicsans", 25)
+        # else:
+        #     self.font = font
+        # self.action = action
+        # if b_color is None:
+        #     self.border_color = (255, 255, 255)
+        # else:
+        #     self.border_color = b_color
         # self.border_width = border_width
         # self.current_border_color = self.border_color
-        self.xy = {"x": x, "y": y, "cur_x": x, "cur_y": y,"width": w, "height": h, "dx": 0, "dy": 0, "count": 0}
+        self.xy = {"x": x, "y": y, "cur_x": x, "cur_y": y, "width": w, "height": h, "dx": 0, "dy": 0, "count": 0}
         self.text = {"text": text, "color": text_color, "text_back_color": None, "font": font}
+        if self.text["color"] is None:
+            self.text["color"] = (0, 0, 0)
+        if self.text["font"] is None:
+            self.text["font"] = pygame.font.SysFont("comicsans", 25)
         self.rotation = {"is": False, "amount": scale, "bgs": bg}
         self.scale = {"is": False, "amount": scale, "bgs": bg}
-        self.border = {"color": border, "width": border_width, "current": border}
-        if border is None:
-            self.border["color"] = (255, 255, 255)
-        self.clicked = {"is": False, "was": False, "count": 0, "forward": True, "pause": False}
-        self.hovered = {"is": False, "was": False, "count": 0, "forward": True, "pause": False}
-        self.is_clicked = False
-        self.was_clicked = False
-        self.updating = False   # WHERE DO I WANT THIS TO GO?!?
+        self.border = {"color": b_color, "width": b_width, "current": b_color}
+        self.action = {"click": c_action, "hover": h_action}
+        # if b_color is None:
+        #     self.border["color"] = (255, 255, 255)
+        if bg is None:
+            temp = (0, 0, 0)
+            self.bg = {"o_u": temp, "o_h": temp, "o_d": temp,
+                       "s_u": temp, "s_h": temp, "s_d": temp}
+        elif type(bg) == tuple or type(bg) == str:
+            self.bg = {"o_u": bg, "o_h": bg, "o_d": bg,
+                       "s_u": bg, "s_h": bg, "s_d": bg}
+        elif type(bg) == list:
+            self.bg = {"o_u": bg["up"], "o_h": bg["up"], "o_d": bg["down"],
+                       "s_u": pygame.transform.scale(bg["up"], (self.xy["width"], self.xy["height"])),
+                       "s_d": pygame.transform.scale(bg["down"], (self.xy["width"], self.xy["height"])),
+                       "s_h": pygame.transform.scale(bg["up"], (self.xy["width"], self.xy["height"]))}
+
+        self.clicked = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
+        self.hovered = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
+        self.updated = {"is": False, "was": False, "forward": True, "pause": False, "count": 0, "max": 0}
+        # self.bg = bg
+        # self.bg_up = pygame.transform.scale(self.bg[0], (self.xy["width"], self.xy["height"]))
+        # self.bg_down = pygame.transform.scale(self.bg[1], (self.xy["width"], self.xy["height"]))
+
+        # self.is_clicked = False
+        # self.was_clicked = False
+        # self.updating = False   # WHERE DO I WANT THIS TO GO?!?
         # self.d_x = 0
         # self.d_y = 0
         # self.current_x = self.x
         # self.current_y = self.y
-        self.count = 0
-        self.max_count = 0
-        self.forward = True
-        self.pause = False
-        self.is_hovered = False
-        self.was_hovered = False
+        # self.count = 0
+        # self.max_count = 0
+        # self.forward = True
+        # self.pause = False
+        # self.is_hovered = False
+        # self.was_hovered = False
 
     def draw(self, window):
         """
@@ -243,17 +264,17 @@ class Button:
 
         cur_x, cur_y = self.xy["x"], self.xy["y"]
 
-        if self.updating:
-            cur_x, cur_y = self.current_x, self.current_y
+        if self.updated["is"]:  # I think this is right... I will have to try it to find out!
+            cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
         wid, hei = self.xy["width"], self.xy["height"]
-        if self.border_width > 0:
-            pygame.draw.rect(window, self.current_border_color, (cur_x, cur_y, wid, hei))
-            cur_x = cur_x + self.border_width
-            cur_y = cur_y + self.border_width
-            wid = self.width - self.border_width * 2
-            hei = self.height - self.border_width * 2
-            self.bg_up = pygame.transform.scale(self.bg[0], (wid, hei))
-            self.bg_down = pygame.transform.scale(self.bg[1], (wid, hei))
+        if self.border["width"] > 0:
+            pygame.draw.rect(window, self.border["color"], (cur_x, cur_y, wid, hei))
+            cur_x = cur_x + self.border["width"]
+            cur_y = cur_y + self.border["width"]
+            wid = self.xy["width"] - self.border["width"] * 2
+            hei = self.xy["height"] - self.border["width"] * 2
+            self.bg["c_u"] = pygame.transform.scale(self.bg["o_u"], (wid, hei))
+            self.bg["c_d"] = pygame.transform.scale(self.bg["o_d"], (wid, hei))
 
             # print(cur_x, cur_y, self.pause)
 
@@ -696,8 +717,8 @@ def menu_screen():
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
                                   (0, 0, 0), font_regular)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action, 5,
-                           (0, 0, 0)),
+                    Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action,
+                           b_width=5, b_color=(0, 0, 0)),
                     Button("Rules", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button2_action),
                     Button("Print", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button3_action),
                     Button("Quit", 0, 0, 120, 80, BLUE_BUTTON, menu_color2, menu_font, button4_action)
