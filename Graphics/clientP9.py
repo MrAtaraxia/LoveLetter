@@ -25,6 +25,8 @@ I used x instead of cur_x etc.
 DONE - make it on adjust the border on hover?
 Now it does the basic of things.
 TODO - make it go on hover or back when removed.
+MOVE and STAY THERE WHILE HOVERING!
+
 My opinion of the problem with this is:
 The fact that I have multiple things I want them to do.
 Well not exactly that. Its more that I have things that I WANT them to do
@@ -276,11 +278,14 @@ class Button:
         x1 = pos[0]
         y1 = pos[1]
         cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
-        if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
+        if cur_x <= x1 <= (cur_x + self.xy["width"]) and cur_y <= y1 <= (cur_y + self.xy["height"]):
+            print("hover IS")
             if not self.hovered["is"]:
+                print("Not hover is", cur_x, cur_y)
                 self.hovered["is"] = True
                 self.hovered["was"] = True
                 self.hovered["forward"] = True
+                print("was", self.hovered["was"])
             return True
         else:
             self.hovered["is"] = False
@@ -320,8 +325,12 @@ class Button:
 
     def update(self):
         if self.hovered["was"]:
+            print("UPDATE hover WAS")
             self.hovered["update"] = True
+            self.hovered["was"] = False
+            self.making_changes(width / 2, height, 50, self.hovered)
             self.hovered["count"] = 1
+        # print("hovered was", self.hovered["update"], self.hovered["was"], self.hovered["is"], self.hovered["count"])
 
         if self.clicked["was"]:
             self.clicked["update"] = True
@@ -329,10 +338,10 @@ class Button:
             self.making_changes(0, 0, 100, self.clicked)
             self.clicked["count"] = 1
 
-        if self.hovered["pause"]:
-            return
-        if self.clicked["pause"]:
-            return
+        # if self.hovered["pause"]:
+        #     return
+        # if self.clicked["pause"]:
+        #     return
 
         if self.hovered["count"] == 0:
             self.hovered["update"] = False
@@ -351,6 +360,21 @@ class Button:
                 self.clicked["count"] += 1
             else:
                 self.clicked["count"] -= 1
+
+        if self.hovered["update"]:
+            if self.hovered["count"] >= self.hovered["max"] and self.hovered["forward"]:
+                self.hovered["forward"] = False
+            self.xy["cur_x"] = self.xy["x"] - self.xy["d_x"] * self.hovered["count"]
+            self.xy["cur_y"] = self.xy["y"] - self.xy["d_y"] * self.hovered["count"]
+            if self.hovered["forward"] and self.hovered["count"] < self.hovered["max"]:
+                self.hovered["count"] += 1
+            else:
+                self.hovered["count"] -= 1
+
+        if not self.hovered["update"] and not self.clicked["update"] and not self.updated["update"]:
+            self.xy["cur_x"] = self.xy["x"]
+            self.xy["cur_y"] = self.xy["y"]
+
 
     def making_changes(self, des_x, des_y, steps, my_dict):
         self.xy["d_x"] = ((self.xy["x"] - des_x) / steps)
