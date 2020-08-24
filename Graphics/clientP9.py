@@ -17,15 +17,18 @@ I am GLAD I wrote that down before or I would have probably NEVER remembered
 to actually GO BACK AND DO THAT!...
 
 
-TODO - Clicking one button, have the other buttons do other things.
+DONE - Clicking one button, have the other buttons do other things.
 Yeah I forgot about that... I will have to see how that goes...
+TODO - make it on hover?
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
-Selecting (WHICH IS A DISASTER IN AND OF ITSELF!) probably...
+Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
 Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
 Or looking for collisions with the text elements? IDK...
 I will have to look into it more!
+
+TODO - make a scrolling location of the log?
 
 TODO - Make another menu!
 Probably the login screen next. To have it DO what I want it to do!
@@ -220,7 +223,8 @@ class Button:
                 self.release()  # That SHOULD take care of all of that I believe
             else:
                 if self.pause:
-                    self.pause = True"""
+                    self.pause = True
+                    # """
 
     def release(self):
         """
