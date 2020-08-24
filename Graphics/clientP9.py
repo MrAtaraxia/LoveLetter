@@ -169,10 +169,11 @@ class Button:
             self.font = font
         self.action = action
         if border is None:
-            self.border = (255, 255, 255)
+            self.border_color = (255, 255, 255)
         else:
-            self.border = border
+            self.border_color = border
         self.border_width = border_width
+        self.current_border_color = self.border_color
         self.rotation = rotation
         self.scale = scale
         self.is_clicked = False
@@ -200,7 +201,7 @@ class Button:
             cur_x, cur_y = self.current_x, self.current_y
         wid, hei = self.width, self.height
         if self.border_width > 0:
-            pygame.draw.rect(window, self.border, (cur_x, cur_y, wid, hei))
+            pygame.draw.rect(window, self.current_border_color, (cur_x, cur_y, wid, hei))
             cur_x = cur_x + self.border_width
             cur_y = cur_y + self.border_width
             wid   = self.width - self.border_width * 2
@@ -325,6 +326,9 @@ class Button:
         self.making_changes(width - self.width, 0, 100)
         self.updating = True
         self.count = 1
+
+    def change_border_color(self):
+        self.
 
 
 class InputTextBox:
