@@ -20,7 +20,8 @@ to actually GO BACK AND DO THAT!...
 DONE - Clicking one button, have the other buttons do other things.
 Yeah I forgot about that... I will have to see how that goes...
 DONE - Added borders/border width. it appears to be working correctly now.
-TODO - Not working correctly. Has wrong hover location when moving.
+DONE - Not working correctly. Has wrong hover location when moving.
+I used x instead of cur_x etc.
 DONE - make it on adjust the border on hover?
 Now it does the basic of things.
 TODO - make it go on hover or back when removed.
@@ -187,7 +188,7 @@ class Button:
             self.text["font"] = pygame.font.SysFont("comicsans", 25)
         self.rotation = {"is": False, "amount": rotation, "bgs": bg}
         self.scale = {"is": False, "amount": scale, "bgs": bg}
-        self.border = {"color": b_color, "width": b_width, "current": b_color}
+        self.border = {"color": b_color, "width": b_width, "current": b_color, "forward": True}
         self.action = {"click": c_action, "hover": h_action}
 
         temp = (0, 0, 0)
@@ -209,6 +210,7 @@ class Button:
                         "pause": False, "count": 0, "max": 0, "update": False}
         self.updated = {"is": False, "was": False, "forward": True,
                         "pause": False, "count": 0, "max": 0, "update": False}
+        self.all_mod = [self.clicked, self.hovered, self.updated]
 
     def draw(self, window):
         """
@@ -273,14 +275,16 @@ class Button:
     def hover(self, pos):
         x1 = pos[0]
         y1 = pos[1]
-        cur_x, cur_y = self.xy["x"], self.xy["y"]
+        cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
         if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
             if not self.hovered["is"]:
                 self.hovered["is"] = True
                 self.hovered["was"] = True
+                self.hovered["forward"] = True
             return True
         else:
             self.hovered["is"] = False
+            self.hovered["forward"] = False
             return False
 
     def move_release(self, pos):
@@ -307,6 +311,13 @@ class Button:
         if self.clicked["pause"]:
             self.clicked["pause"] = False
 
+    @staticmethod
+    def other_update(my_dics):
+        if my_dics["was"]:
+            my_dics["update"] = True
+            my_dics["was"] = False
+            my_dics["count"] = 1
+
     def update(self):
         if self.hovered["was"]:
             self.hovered["update"] = True
@@ -315,7 +326,7 @@ class Button:
         if self.clicked["was"]:
             self.clicked["update"] = True
             self.clicked["was"] = False
-            self.making_changes(0, 0, 100)
+            self.making_changes(0, 0, 100, self.clicked)
             self.clicked["count"] = 1
 
         if self.hovered["pause"]:
@@ -341,16 +352,16 @@ class Button:
             else:
                 self.clicked["count"] -= 1
 
-    def making_changes(self, des_x, des_y, steps):
+    def making_changes(self, des_x, des_y, steps, my_dict):
         self.xy["d_x"] = ((self.xy["x"] - des_x) / steps)
         self.xy["d_y"] = ((self.xy["y"] - des_y) / steps)
-        self.clicked["max"] = steps
-        self.clicked["count"] = 1
-        self.clicked["update"] = True
+        my_dict["max"] = steps
+        my_dict["count"] = 1
+        my_dict["update"] = True
         # print("DX and DY:", self.d_x, self.d_y)
 
     def animate(self):
-        self.making_changes(width - self.xy["width"], 0, 100)
+        self.making_changes(width - self.xy["width"], 0, 100, self.clicked)
 
     def change_border_color(self, change):
         change_by = -5
