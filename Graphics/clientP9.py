@@ -25,6 +25,12 @@ TODO - make it stop or go on hover?
 Since I WILL want it to go on hover I will probably need to do that completely
 Hmm...
 make them go into a row on hover?
+I might want to make things like that...
+Where I can make lots of functions and mix and match them to work how I want them to
+aka Have an on hover method that I would put a call to the change border method
+Or the move around method.
+It would be interesting to see how it all works out.
+Well I should probably also add a method for changing between images as well.
 
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
@@ -62,6 +68,26 @@ each thing is going to need a menu defined after that...
 
 TODO - yep there is still a LOT to do and this isnt even at the game stage yet!
 we shall see how it goes!
+
+
+
+I DO ALSO REALLY WANT TO FIX THE STUPID ISSUES WITH it saying all the pygame things are errors!
+And figure out how to get / adjust like I was able to with the guy in the bottom right corner
+in this version of pycharm!
+
+Oh and look into what potato has put out recently. I did like his old videos.
+
+TODO - ALSO get it so I can move around the map like I used to.
+
+TODO - Look at A LOT of old projects and see how they are / if I want to use any parts of them or not!
+
+TODO - Look at how this uses pickle, and look into YAML / JSON and see if I want to use those instead.
+
+TODO - Decide how I want to break this program up for client / server things.
+
+TODO - Make it so it automatically downloads the files that it needs if it does not have them!
+
+I do have a LONG todo list now so this will hopefully be interesting!
 
 
 
