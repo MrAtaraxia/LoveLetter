@@ -53,7 +53,13 @@ Or looking for collisions with the text elements? IDK...
 I will have to look into it more!
 ADD COPYING AND PASTING Ctrl + C / Ctrl + V / Ctrl + Z
 
+
 TODO - make a scrolling location of the log?
+I can do what was in video for a basic one. Last x messages
+But for the full log... I am not sure yet how to do the scroll bar for it.
+I suppose I should make a 'scroll bar' first
+and then try and use it for other things afterwards.
+Also the ability to hide chat!
 
 TODO - Make another menu!
 Probably the login screen next. To have it DO what I want it to do!
@@ -85,6 +91,16 @@ if drag and dropping thing.
 TODO - make right click menu thing.
 might be able to do it with how i did the on click for the buttons.
 each thing is going to need a menu defined after that...
+OR JUST A REGULAR MENU!?!
+create menu with top left at mouse point.
+stays until clicked on other part of screen.
+
+TODO - Make escape bring up the menu instead of exiting the game. From there there will be a quit button!
+Continue
+Other
+IDK
+Quit
+
 
 TODO - yep there is still a LOT to do and this isnt even at the game stage yet!
 we shall see how it goes!
@@ -416,10 +432,14 @@ class InputTextBox:
         self.active = False
         self.inputted_text = ""
         self.cursor_location = 0
+        self.cursor_start_location = None
         self.x = x
         self.y = y
         self.width = w
         self.height = h
+        self.shift = False
+        self.ctrl = False
+        self.alt = False
         self.cursor_color = (100, 100, 100)
         if bg is None:
             self.bg_down = (50, 50, 50)
@@ -451,47 +471,67 @@ class InputTextBox:
 
     def adding_to_string(self, event):
         if self.active:
-            if event.key in [pygame.K_BACKSPACE]:
-                if self.cursor_location > 0:
-                    print(self.inputted_text[:self.cursor_location])
-                    print(self.inputted_text[self.cursor_location:])
-                    self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
-                                         self.inputted_text[self.cursor_location:]
-                # self.inputted_text = self.inputted_text[0:-1]
-                self.cursor_location -= 1
-            elif event.key in [pygame.K_DELETE]:
-                if self.cursor_location < len(self.inputted_text):
-                    self.inputted_text = self.inputted_text[:self.cursor_location] + \
-                                         self.inputted_text[self.cursor_location + 1:]
-                    # self.inputted_text.
-                    pass
-            elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
-                print(self.inputted_text, self.cursor_location)
-                self.inputted_text = ""
-                self.cursor_location = 0
-            elif event.key in [pygame.K_ESCAPE, pygame.K_F1, pygame.K_F2, pygame.K_F3, pygame.K_F4,
-                               pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9,
-                               pygame.K_F10, pygame.K_F11, pygame.K_F12, pygame.K_F13, pygame.K_F14,
-                               pygame.K_F15]:
-                return
-            elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
-                               pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
-                               pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
-                               pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
-                               pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
-                               pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
-                               pygame.K_SPACE]:
-                self.inputted_text += event.unicode
-                self.cursor_location += 1
-            elif event.key in [pygame.K_LEFT]:
-                if self.cursor_location > 0:
+            if event.type == pygame.KEYDOWN:
+                if event.key in [pygame.K_BACKSPACE]:
+                    if self.cursor_location > 0:
+                        print(self.inputted_text[:self.cursor_location])
+                        print(self.inputted_text[self.cursor_location:])
+                        self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
+                                             self.inputted_text[self.cursor_location:]
+                    # self.inputted_text = self.inputted_text[0:-1]
                     self.cursor_location -= 1
-            elif event.key in [pygame.K_RIGHT]:
-                if self.cursor_location < len(self.inputted_text):
+                elif event.key in [pygame.K_DELETE]:
+                    if self.cursor_location < len(self.inputted_text):
+                        self.inputted_text = self.inputted_text[:self.cursor_location] + \
+                                             self.inputted_text[self.cursor_location + 1:]
+                        # self.inputted_text.
+                        pass
+                elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
+                    print(self.inputted_text, self.cursor_location)
+                    self.inputted_text = ""
+                    self.cursor_location = 0
+                elif event.key in [pygame.K_ESCAPE, pygame.K_F1, pygame.K_F2, pygame.K_F3, pygame.K_F4,
+                                   pygame.K_F5, pygame.K_F6, pygame.K_F7, pygame.K_F8, pygame.K_F9,
+                                   pygame.K_F10, pygame.K_F11, pygame.K_F12, pygame.K_F13, pygame.K_F14,
+                                   pygame.K_F15]:
+                    return
+                elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
+                                   pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
+                                   pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
+                                   pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
+                                   pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
+                                   pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
+                                   pygame.K_SPACE]:
+                    self.inputted_text += event.unicode
                     self.cursor_location += 1
+                elif event.key in [pygame.K_LEFT]:
+                    if self.shift:
+                        if self.cursor_start_location is None:
+                            self.cursor_start_location = self.cursor_location
+                    else:
+                        self.cursor_start_location = None
+                    if self.cursor_location > 0:
+                        self.cursor_location -= 1
+                elif event.key in [pygame.K_RIGHT]:
+                    if self.shift:
+                        if self.cursor_start_location is None:
+                            self.cursor_start_location = self.cursor_location
+                    else:
+                        self.cursor_start_location = None
+                    if self.cursor_location < len(self.inputted_text):
+                        self.cursor_location += 1
+                elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+                    self.shift = True
 
-            else:
-                print("Else Input!")
+                else:
+                    print("Else Input!")
+
+            elif event.type == pygame.KEYUP:
+                if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
+                    print("Unshift")
+                    self.shift = False
+
+
 
     def draw(self, window):
         """
@@ -531,6 +571,7 @@ class InputTextBox:
             else:
                 # using_text = using_text + "|" #  self.cursor_location
                 left_width = self.get_text_width(using_text[:self.cursor_location])
+                start_width = self.get_text_width(using_text[:self.cursor_start_location])
                 # using_text = using_text[:self.cursor_location] + "|" + using_text[self.cursor_location:]
                 if type(self.bg_down) == tuple or type(self.bg_down) == str:
                     pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
@@ -540,8 +581,9 @@ class InputTextBox:
                 cursor = self.font.render("|", 1, self.cursor_color)
 
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                window.blit(text, (text_left, text_top))
                 window.blit(cursor, (text_left + left_width - 2, text_top))
+                window.blit(cursor, (text_left + start_width - 2, text_top))
+                window.blit(text, (text_left, text_top))
 
             self.count = (self.count + 1) % 30
 
@@ -760,12 +802,12 @@ def menu_screen():
             pygame.display.update()
 
             for event in pygame.event.get():
+                for box in menu_text_box:
+                    box.adding_to_string(event)
                 if event.type == pygame.QUIT:
                     on_menu = False
                     quit_game = True
                 if event.type == pygame.KEYDOWN:
-                    for box in menu_text_box:
-                        box.adding_to_string(event)
                     if event.key == pygame.K_ESCAPE:
                         on_menu = False
                         quit_game = True
