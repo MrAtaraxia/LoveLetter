@@ -43,10 +43,12 @@ aka Have an on hover method that I would put a call to the change border method
 Or the move around method.
 It would be interesting to see how it all works out.
 Well I should probably also add a method for changing between images as well.
-
+DONE - BASIC selecting... kind of... it has both of the sides of the 'select' there now
+I have to make it fill in soon though.
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
+
 Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
 Or looking for collisions with the text elements? IDK...
@@ -534,8 +536,6 @@ class InputTextBox:
                 if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
                     self.shift = False
                     print("Unshift", self.shift)
-
-
 
     def draw(self, window):
         """
