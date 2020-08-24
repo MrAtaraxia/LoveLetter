@@ -45,15 +45,39 @@ It would be interesting to see how it all works out.
 Well I should probably also add a method for changing between images as well.
 DONE - BASIC selecting... kind of... it has both of the sides of the 'select' there now
 I have to make it fill in soon though.
+DONE - FILL IN the selection
+adjusted the order of things to blit so it shows the indicator while selecting
+DONE - Can type characters at any point in the string now, based on the indicatior.
+
+TODO - Clicking on a location to put the cursor there...
+
+TODO - Shift clicking a location to select the text.
+(should be the same as the other once I get the clicking down.. I think)
+
+TODO - Add copying / cuting and pasting...
+I don't think this should be too bad once I have my selection...
+but we will see...
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
+
+TODO - Add more of the keyboard to this!
+all the special characters I think...
+
 
 Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
 Or looking for collisions with the text elements? IDK...
 I will have to look into it more!
 ADD COPYING AND PASTING Ctrl + C / Ctrl + V / Ctrl + Z
+
+TODO - Make a scroll bar!
+
+TODO - Make a scroll bar location.
+
+TODO - Put a sprite on it that can only move up and down.
+
+
 
 
 TODO - make a scrolling location of the log?
@@ -442,7 +466,8 @@ class InputTextBox:
         self.shift = False
         self.ctrl = False
         self.alt = False
-        self.cursor_color = (100, 100, 100)
+        self.select_color = (100, 100, 100)
+        self.cursor_color = (20, 20, 20)
         if bg is None:
             self.bg_down = (50, 50, 50)
             self.bg_up = (0, 0, 0)
@@ -507,7 +532,10 @@ class InputTextBox:
                                    pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
                                    pygame.K_SPACE]:
                     self.cursor_start_location = None
-                    self.inputted_text += event.unicode
+                    self.inputted_text = self.inputted_text[:self.cursor_location] + \
+                                         event.unicode + \
+                                         self.inputted_text[self.cursor_location:]
+                    # self.inputted_text += event.unicode
                     self.cursor_location += 1
                 elif event.key in [pygame.K_LEFT]:
                     print("lshift?", self.cursor_start_location)
@@ -564,7 +592,7 @@ class InputTextBox:
             window.blit(text, (text_left, text_top))
 
         else:
-            if self.count < 15:
+            """if self.count < 15:
                 if type(self.bg_down) == tuple or type(self.bg_down) == str:
                     pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
                 else:
@@ -572,23 +600,34 @@ class InputTextBox:
                 text = self.font.render(using_text, 1, self.text_color)
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
                 window.blit(text, (text_left, text_top))
+            else:"""
+            # using_text = using_text + "|" #  self.cursor_location
+            left_width = self.get_text_width(using_text[:self.cursor_location])
+            start_width = self.get_text_width(using_text[:self.cursor_start_location])
+            # using_text = using_text[:self.cursor_location] + "|" + using_text[self.cursor_location:]
+            if type(self.bg_down) == tuple or type(self.bg_down) == str:
+                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
             else:
-                # using_text = using_text + "|" #  self.cursor_location
-                left_width = self.get_text_width(using_text[:self.cursor_location])
-                start_width = self.get_text_width(using_text[:self.cursor_start_location])
-                # using_text = using_text[:self.cursor_location] + "|" + using_text[self.cursor_location:]
-                if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                    pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
-                else:
-                    window.blit(self.bg_down, (cur_x, cur_y))
-                text = self.font.render(using_text, 1, self.text_color)
-                cursor = self.font.render("|", 1, self.cursor_color)
+                window.blit(self.bg_down, (cur_x, cur_y))
 
-                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                window.blit(cursor, (text_left + left_width - 2, text_top))
-                if self.cursor_start_location is not None:
-                    window.blit(cursor, (text_left + start_width - 2, text_top))
-                window.blit(text, (text_left, text_top))
+            text = self.font.render(using_text, 1, self.text_color)
+            cursor = self.font.render("|", 1, self.cursor_color)
+
+            text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+            if self.cursor_start_location is not None:
+                # Draw selection!
+                # window.blit(cursor, (text_left + start_width - 2, text_top))
+                if left_width < start_width:
+                    pygame.draw.rect(window, self.select_color,
+                                     (text_left + left_width,
+                                      text_top, start_width - left_width, self.get_text_height()))
+                else:
+                    pygame.draw.rect(window, self.select_color,
+                                     (text_left + start_width,
+                                      text_top, left_width - start_width, self.get_text_height()))
+            if self.count < 15:
+                window.blit(cursor, (text_left + left_width - 2.5, text_top))
+            window.blit(text, (text_left, text_top))
 
             self.count = (self.count + 1) % 30
 
