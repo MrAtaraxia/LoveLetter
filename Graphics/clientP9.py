@@ -213,6 +213,7 @@ class InputTextBox:
         self.displayed_text = text
         self.active = False
         self.inputted_text = ""
+        self.cursor_location = 0
         self.x = x
         self.y = y
         self.width = w
@@ -222,10 +223,10 @@ class InputTextBox:
             self.bg_up = (0, 0, 0)
         elif type(bg) == tuple:
             self.bg_up = bg
-            new_bg = []
-            for num in bg:
-                new_bg.append((num + 50) % 256)
-            self.bg_down = tuple(new_bg)
+            #new_bg = []
+            #for num in bg:
+            #    new_bg.append((num + 50) % 256)
+            self.bg_down = tuple((i + 50) % 256 for i in list(bg))
         elif type(bg) == list:
             self.bg = bg
             self.bg_up = pygame.transform.scale(self.bg[0], (self.width, self.height))
@@ -244,13 +245,14 @@ class InputTextBox:
             self.font = font
 
     def adding_to_string(self, event):
-        print(event.unicode)
         if self.active:
             if event.key == pygame.K_BACKSPACE:
                 self.inputted_text = self.inputted_text[0:-1]
             elif event.key == pygame.K_RETURN:
                 print(self.inputted_text)
                 self.inputted_text = ""
+            elif event.key == pygame.K_ESCAPE:
+                return
             else:
                 self.inputted_text += event.unicode
 
@@ -262,18 +264,23 @@ class InputTextBox:
         :return: None
         """
         cur_x, cur_y = self.x, self.y
-
+        align_left = False
         if not self.active:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
                 pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, self.width, self.height))
             else:
                 window.blit(self.bg_up, (cur_x, cur_y))
             if self.inputted_text != "":
+                align_left = True
                 text = self.font.render(self.inputted_text, 1, self.text_color)
             else:
                 text = self.font.render(self.displayed_text, 1, self.text_color)
-            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
-                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            if align_left:
+                window.blit(text, (cur_x + 5,
+                            cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            else:
+                window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
 
         else:
             if type(self.bg_down) == tuple or type(self.bg_down) == str:
@@ -281,7 +288,7 @@ class InputTextBox:
             else:
                 window.blit(self.bg_down, (cur_x, cur_y))
             text = self.font.render(self.inputted_text, 1, self.text_color)
-            window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
+            window.blit(text, (cur_x + 5,
                                cur_y + round(self.height / 2) - round(text.get_height() / 2)))
 
     def click(self, pos):
@@ -295,6 +302,11 @@ class InputTextBox:
         else:
             self.active = False
 
+    def helper_text_height(self):
+        font_obj = self.font.render("A", False, (0, 0, 0))
+        font_rect = font_obj.get_rect()
+
+        return font_rect.height
 
 
 def button1_action():
