@@ -244,6 +244,8 @@ class InputTextBox:
         else:
             self.font = font
 
+        self.count = 0
+
     def adding_to_string(self, event):
         if self.active:
             if event.key == pygame.K_BACKSPACE:
@@ -264,32 +266,43 @@ class InputTextBox:
         :return: None
         """
         cur_x, cur_y = self.x, self.y
-        align_left = False
+        align_left = True
+        using_text = self.inputted_text
+        text_left = cur_x + 5
+        if self.inputted_text == "" and not self.active:
+            using_text = self.displayed_text
+            align_left = False
         if not self.active:
             if type(self.bg_up) == tuple or type(self.bg_up) == str:
                 pygame.draw.rect(window, self.bg_up, (cur_x, cur_y, self.width, self.height))
             else:
                 window.blit(self.bg_up, (cur_x, cur_y))
-            if self.inputted_text != "":
-                align_left = True
-                text = self.font.render(self.inputted_text, 1, self.text_color)
-            else:
-                text = self.font.render(self.displayed_text, 1, self.text_color)
-            if align_left:
-                window.blit(text, (cur_x + 5,
-                            cur_y + round(self.height / 2) - round(text.get_height() / 2)))
-            else:
-                window.blit(text, (cur_x + round(self.width / 2) - round(text.get_width() / 2),
-                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+            text = self.font.render(using_text, 1, self.text_color)
+            if not align_left:
+                text_left = cur_x + round(self.width / 2) - round(text.get_width() / 2)
+            window.blit(text, (text_left,
+                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
 
         else:
-            if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
+            if self.count < 15:
+                if type(self.bg_down) == tuple or type(self.bg_down) == str:
+                    pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
+                else:
+                    window.blit(self.bg_down, (cur_x, cur_y))
+                text = self.font.render(using_text, 1, self.text_color)
+                window.blit(text, (cur_x + 5,
+                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
             else:
-                window.blit(self.bg_down, (cur_x, cur_y))
-            text = self.font.render(self.inputted_text, 1, self.text_color)
-            window.blit(text, (cur_x + 5,
-                               cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+                using_text = using_text + "|"
+                if type(self.bg_down) == tuple or type(self.bg_down) == str:
+                    pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
+                else:
+                    window.blit(self.bg_down, (cur_x, cur_y))
+                text = self.font.render(using_text, 1, self.text_color)
+                window.blit(text, (cur_x + 5,
+                                   cur_y + round(self.height / 2) - round(text.get_height() / 2)))
+
+            self.count = (self.count + 1) % 30
 
     def click(self, pos):
         x1 = pos[0]
@@ -297,16 +310,25 @@ class InputTextBox:
         cur_x, cur_y = self.x, self.y
         # if self.updating:
         #    cur_x, cur_y = self.current_x, self.current_y
+        if self.active:
+            if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+                print("Find the LOCATION of the cursor!")
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
             self.active = True
         else:
             self.active = False
 
-    def helper_text_height(self):
+    def get_text_height(self):
         font_obj = self.font.render("A", False, (0, 0, 0))
         font_rect = font_obj.get_rect()
 
         return font_rect.height
+
+    def get_text_width(self, text):
+        font_obj = self.font.render("A", False, (0, 0, 0))
+        font_rect = font_obj.get_rect()
+
+        return font_rect.width
 
 
 def button1_action():
