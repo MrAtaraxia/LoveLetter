@@ -6,6 +6,35 @@ while clicking on it.
 
 - Now I have to figure out HOW to get it so the OTHER ones do something when
 a different one is clicked.
+
+- OK... SO... got the text box working mostly...
+
+It needs... more things though...
+OH YEAH I WANTED TO DO THAT... GOD I FORGOT ALL ABOUT THAT GOAL ABOVE...
+AND went on to make text box for user input.
+...
+I am GLAD I wrote that down before or I would have probably NEVER remembered
+to actually GO BACK AND DO THAT!...
+
+
+TODO - Clicking one button, have the other buttons do other things.
+
+TODO - Fix issues with text box. (I want a lot of things for that...)
+Selecting (WHICH IS A DISASTER IN AND OF ITSELF!) probably...
+Clicking and adjusting where the cursor is based on that click.
+(That MIGHT be able to be done with the whole text width and height things.
+Or looking for collisions with the text elements? IDK...
+I will have to look into it more!
+
+TODO - Make another menu!
+Probably the login screen next. To have it DO what I want it to do!
+(Able to login and CONTINUE a game!
+
+TODO - Make a settings menu!
+
+
+
+
 """
 # Original Imports
 import inspect
@@ -218,6 +247,7 @@ class InputTextBox:
         self.y = y
         self.width = w
         self.height = h
+        self.cursor_color = (100, 100, 100)
         if bg is None:
             self.bg_down = (50, 50, 50)
             self.bg_up = (0, 0, 0)
@@ -226,7 +256,7 @@ class InputTextBox:
             #new_bg = []
             #for num in bg:
             #    new_bg.append((num + 50) % 256)
-            self.bg_down = tuple((i + 50) % 256 for i in list(bg))
+            self.bg_down = tuple((i - 25) % 256 for i in list(bg))
         elif type(bg) == list:
             self.bg = bg
             self.bg_up = pygame.transform.scale(self.bg[0], (self.width, self.height))
@@ -248,14 +278,18 @@ class InputTextBox:
 
     def adding_to_string(self, event):
         if self.active:
-            if event.key == pygame.K_BACKSPACE:
+            if event.key in [pygame.K_BACKSPACE]:
                 if self.cursor_location > 0:
-                    self.inputted_text = self.inputted_text[::self.cursor_location] + \
-                                         self.inputted_text[self.cursor_location::]
-                self.inputted_text = self.inputted_text[0:-1]
+                    print(self.inputted_text[:self.cursor_location])
+                    print(self.inputted_text[self.cursor_location:])
+                    self.inputted_text = self.inputted_text[:self.cursor_location-1] + \
+                                         self.inputted_text[self.cursor_location:]
+                # self.inputted_text = self.inputted_text[0:-1]
                 self.cursor_location -= 1
-            if event.key in [pygame.K_DELETE]:
+            elif event.key in [pygame.K_DELETE]:
                 if self.cursor_location < len(self.inputted_text):
+                    self.inputted_text = self.inputted_text[:self.cursor_location] + \
+                                         self.inputted_text[self.cursor_location+1:]
                     # self.inputted_text.
                     pass
             elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
@@ -290,6 +324,7 @@ class InputTextBox:
     def draw(self, window):
         """
         Drawing the text box on the window.
+        Now it also does the indicator!
 
         :param window: The surface that is going to be drawn on.
         :return: None
@@ -322,14 +357,19 @@ class InputTextBox:
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
                 window.blit(text, (text_left, text_top))
             else:
-                using_text = using_text + "|" #  self.cursor_location
+                # using_text = using_text + "|" #  self.cursor_location
+                left_width = self.get_text_width(using_text[:self.cursor_location])
+                # using_text = using_text[:self.cursor_location] + "|" + using_text[self.cursor_location:]
                 if type(self.bg_down) == tuple or type(self.bg_down) == str:
                     pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
                 else:
                     window.blit(self.bg_down, (cur_x, cur_y))
                 text = self.font.render(using_text, 1, self.text_color)
+                cursor = self.font.render("|", 1, self.cursor_color)
+
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
                 window.blit(text, (text_left, text_top))
+                window.blit(cursor, (text_left+left_width-2, text_top))
 
             self.count = (self.count + 1) % 30
 
@@ -354,7 +394,7 @@ class InputTextBox:
         return font_rect.height
 
     def get_text_width(self, text):
-        font_obj = self.font.render("A", False, (0, 0, 0))
+        font_obj = self.font.render(text, False, (0, 0, 0))
         font_rect = font_obj.get_rect()
 
         return font_rect.width
@@ -510,8 +550,8 @@ def menu_screen():
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
-    menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100,
-                                  (0, 0, 0), (255, 255, 255), font_regular)]
+    menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
+                                  (0, 0, 0),  font_regular)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button1_action),
                     Button("Rules", 0, 0, 120, 80, RED_BUTTON, menu_color2, menu_font, button2_action),
