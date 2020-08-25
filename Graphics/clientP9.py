@@ -51,6 +51,7 @@ DONE - Can type characters at any point in the string now, based on the indicati
 
 TODO - Clicking on a location to put the cursor there...
 
+
 TODO - Shift clicking a location to select the text.
 (should be the same as the other once I get the clicking down.. I think)
 
@@ -605,19 +606,8 @@ class InputTextBox:
             window.blit(text, (text_left, text_top))
 
         else:
-            """if self.count < 15:
-                if type(self.bg_down) == tuple or type(self.bg_down) == str:
-                    pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
-                else:
-                    window.blit(self.bg_down, (cur_x, cur_y))
-                text = self.font.render(using_text, 1, self.text_color)
-                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                window.blit(text, (text_left, text_top))
-            else:"""
-            # using_text = using_text + "|" #  self.cursor_location
             left_width = self.get_text_width(using_text[:self.cursor_location])
             start_width = self.get_text_width(using_text[:self.cursor_start_location])
-            # using_text = using_text[:self.cursor_location] + "|" + using_text[self.cursor_location:]
             if type(self.bg_down) == tuple or type(self.bg_down) == str:
                 pygame.draw.rect(window, self.bg_down, (cur_x, cur_y, self.width, self.height))
             else:
@@ -653,6 +643,18 @@ class InputTextBox:
         if self.active:
             if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
                 print("Find the LOCATION of the cursor!")
+                using_text = self.inputted_text
+                text_left = cur_x + 5
+                text = self.font.render(using_text, 1, self.text_color)
+                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+                for i in range(len(using_text)):
+                    temp_width = self.get_text_width(text[:i])
+                    current_left = x1 + 2.5 - text_left
+
+                left_width = self.get_text_width(using_text[:self.cursor_location])
+                text_left + left_width - 2.5 = x1
+                left_width = x1 + 2.5 - text_left
+
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
             self.active = True
         else:
@@ -870,8 +872,8 @@ def menu_screen():
                         quit_game = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    for box in menu_text_box:
-                        box.click(pos)
+                    for menu in menu_text_box:
+                        menu.click(pos)
 
                     for button in menu_buttons:
                         if button.click(pos):
