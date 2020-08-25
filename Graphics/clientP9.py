@@ -49,11 +49,14 @@ DONE - FILL IN the selection
 adjusted the order of things to blit so it shows the indicator while selecting
 DONE - Can type characters at any point in the string now, based on the indicatior.
 
-TODO - Clicking on a location to put the cursor there...
-
+DONE - Clicking on a location to put the cursor there...
+I think this is all set up now.
 
 TODO - Shift clicking a location to select the text.
 (should be the same as the other once I get the clicking down.. I think)
+
+TODO - Mouse clicking and dragging to select text...
+This will basically be 'finishing' the click location above!
 
 TODO - Add copying / cuting and pasting...
 I don't think this should be too bad once I have my selection...
@@ -473,6 +476,7 @@ class InputTextBox:
         self.inputted_text = ""
         self.cursor_location = 0
         self.cursor_start_location = None
+        self.mouse_clicked = False
         self.x = x
         self.y = y
         self.width = w
@@ -647,18 +651,27 @@ class InputTextBox:
                 text_left = cur_x + 5
                 text = self.font.render(using_text, 1, self.text_color)
                 text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                for i in range(len(using_text)):
-                    temp_width = self.get_text_width(text[:i])
+                best_number = 0
+                for i in range(len(using_text)+1):
+                    temp_width = self.get_text_width(using_text[:i])
                     current_left = x1 + 2.5 - text_left
-
-                left_width = self.get_text_width(using_text[:self.cursor_location])
-                text_left + left_width - 2.5 = x1
-                left_width = x1 + 2.5 - text_left
+                    current_amount = abs(temp_width - current_left)
+                    if i == 0:
+                        best_amount = current_amount
+                    elif current_amount < best_amount:
+                        best_number = i
+                        best_amount = current_amount
+                self.cursor_start_location = None
+                self.cursor_location = best_number
+                self.mouse_clicked = True
 
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
             self.active = True
         else:
             self.active = False
+
+    def release(self):
+        self.mouse_clicked = False
 
     def get_text_height(self):
         font_obj = self.font.render("A", False, (0, 0, 0))
@@ -889,6 +902,8 @@ def menu_screen():
                 if event.type == pygame.MOUSEBUTTONUP:
                     for button in menu_buttons:
                         button.release()
+                    for box in menu_text_box:
+                        box.release()
                 if event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
                     for button in menu_buttons:
