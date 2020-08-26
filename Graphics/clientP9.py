@@ -61,19 +61,27 @@ This will basically be 'finishing' the click location above!
 I also changed it up to make it call a function to do it. instead
 of having the same code in 2 different places.
 
-TODO - Add copying / cuting and pasting...
+DONE - Add copying / cuting and pasting...
 I don't think this should be too bad once I have my selection...
 but we will see...
+And I gave each of them their own functions.
+so cutting(), pasting(), and copying()
+This way if I DO make the stupid right click menu I can easily put them in it.
 
-TODO - Shift arrow keys to select things.
-
-TODO - Fix issues with text box. (I want a lot of things for that...)
+DONE - Shift arrow keys to select things.
+Already done.. not sure when I DID do this but it is already working...
+Mostly Done - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
+
+TODO - Fix issues with delete and backspace while selecting text.
+
 
 TODO - Add more of the keyboard to this!
 all the special characters I think...
 
 TODO - DO i WANT a right click menu here?
+Do I WANT it to only be on when I have right clicked ON the selected text?
+Or do I want a DIFFERENT one when I am not on it?
 
 
 
@@ -520,6 +528,45 @@ class InputTextBox:
 
         self.count = 0
 
+    def copying(self):
+        if self.cursor_start_location is not None:
+            if self.cursor_start_location < self.cursor_location:
+                first_term = self.cursor_start_location
+                second_term = self.cursor_location
+            else:
+                second_term = self.cursor_start_location
+                first_term = self.cursor_location
+            self.clipboard = self.inputted_text[first_term:second_term]
+
+    def cutting(self):
+        if self.cursor_start_location is not None:
+            if self.cursor_start_location < self.cursor_location:
+                first_term = self.cursor_start_location
+                second_term = self.cursor_location
+            else:
+                second_term = self.cursor_start_location
+                first_term = self.cursor_location
+            self.clipboard = self.inputted_text[first_term:second_term]
+            self.inputted_text = self.inputted_text[:first_term] + self.inputted_text[second_term:]
+            self.cursor_location = first_term
+            self.cursor_start_location = None
+
+    def pasting(self):
+        if self.cursor_start_location is not None:
+            if self.cursor_start_location < self.cursor_location:
+                first_term = self.cursor_start_location
+                second_term = self.cursor_location
+            else:
+                second_term = self.cursor_start_location
+                first_term = self.cursor_location
+            self.inputted_text = self.inputted_text[:first_term] + self.inputted_text[second_term:]
+            self.cursor_location = first_term
+            self.cursor_start_location = None
+        self.inputted_text = self.inputted_text[:self.cursor_location] + \
+                             self.clipboard + \
+                             self.inputted_text[self.cursor_location:]
+        self.cursor_location += len(self.clipboard)
+
     def adding_to_string(self, event):
         if self.active:
             if event.type == pygame.KEYDOWN:
@@ -551,21 +598,21 @@ class InputTextBox:
                 elif event.key in [pygame.K_c] and self.ctrl:
                     # ctrl C - Copy
                     print("CTRL-C")
-                    if self.cursor_start_location is not None:
-                        if self.cursor_start_location < self.cursor_location:
-                            self.clipboard = self.inputted_text[self.cursor_start_location:self.cursor_location]
-                        else:
-                            self.clipboard = self.inputted_text[self.cursor_location:self.cursor_start_location]
-                        print(self.clipboard)
-                    else:
-                        print(self.cursor_start_location)
+                    self.copying()
+                    print(self.clipboard)
+
+                elif event.key in [pygame.K_x] and self.ctrl:
+                    # ctrl X - Cut
+                    print("CTRL-X") # Copies like ctrl - c
+                    self.cutting()
+                    print(self.clipboard)
+
                 elif event.key in [pygame.K_v] and self.ctrl:
-                    # Delete what IS selected
-                    # Input the new things in the location that was selected.
-                    if self.cursor_start_location is not None:
-                        if self.cursor_start_location < self.cursor_location:
-                            self.clipboard = self.inputted_text[self.cursor_start_location:self.cursor_location]
-                            print(self.clipboard)
+                    # ctrl V - Paste
+                    print("CTRL-V")
+                    self.pasting()
+                    print(self.clipboard)
+
                 elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
                                    pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
                                    pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
