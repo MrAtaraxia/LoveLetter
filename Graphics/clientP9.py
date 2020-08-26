@@ -52,8 +52,9 @@ DONE - Can type characters at any point in the string now, based on the indicati
 DONE - Clicking on a location to put the cursor there...
 I think this is all set up now.
 
-TODO - Shift clicking a location to select the text.
+DONE - Shift clicking a location to select the text.
 (should be the same as the other once I get the clicking down.. I think)
+It was rather easy as it only required setting start location before moving end location.
 
 TODO - Mouse clicking and dragging to select text...
 This will basically be 'finishing' the click location above!
@@ -61,6 +62,8 @@ This will basically be 'finishing' the click location above!
 TODO - Add copying / cuting and pasting...
 I don't think this should be too bad once I have my selection...
 but we will see...
+
+TODO - Shift arrow keys to select things.
 
 TODO - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
@@ -646,7 +649,6 @@ class InputTextBox:
         #    cur_x, cur_y = self.current_x, self.current_y
         if self.active:
             if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
-                print("Find the LOCATION of the cursor!")
                 using_text = self.inputted_text
                 text_left = cur_x + 5
                 text = self.font.render(using_text, 1, self.text_color)
@@ -661,14 +663,50 @@ class InputTextBox:
                     elif current_amount < best_amount:
                         best_number = i
                         best_amount = current_amount
-                self.cursor_start_location = None
+                if self.cursor_start_location is not None and self.shift:
+                    pass
+                elif self.shift:
+                    self.cursor_start_location = self.cursor_location
+                else:
+                    self.cursor_start_location = None
                 self.cursor_location = best_number
                 self.mouse_clicked = True
+
 
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
             self.active = True
         else:
             self.active = False
+
+    def mouse_drag(self, pos):
+        if self.active:
+            if self.mouse_clicked:
+                x1 = pos[0]
+                y1 = pos[1]
+                cur_x, cur_y = self.x, self.y
+                using_text = self.inputted_text
+                text_left = cur_x + 5
+                text = self.font.render(using_text, 1, self.text_color)
+                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+                best_number = 0
+                for i in range(len(using_text) + 1):
+                    temp_width = self.get_text_width(using_text[:i])
+                    current_left = x1 + 2.5 - text_left
+                    current_amount = abs(temp_width - current_left)
+                    if i == 0:
+                        best_amount = current_amount
+                    elif current_amount < best_amount:
+                        best_number = i
+                        best_amount = current_amount
+                if self.cursor_start_location is not None and self.shift:
+                    pass
+                elif self.shift:
+                    self.cursor_start_location = self.cursor_location
+                else:
+                    self.cursor_start_location = None
+                self.cursor_location = best_number
+                self.mouse_clicked = True
+
 
     def release(self):
         self.mouse_clicked = False
@@ -906,6 +944,8 @@ def menu_screen():
                         box.release()
                 if event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
+                    for box in menu_text_box:
+                        box.mouse_drag(pos)
                     for button in menu_buttons:
                         button.move_release(pos)
                         button.hover(pos)
