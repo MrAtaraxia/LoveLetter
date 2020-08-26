@@ -56,8 +56,10 @@ DONE - Shift clicking a location to select the text.
 (should be the same as the other once I get the clicking down.. I think)
 It was rather easy as it only required setting start location before moving end location.
 
-TODO - Mouse clicking and dragging to select text...
+DONE - Mouse clicking and dragging to select text...
 This will basically be 'finishing' the click location above!
+I also changed it up to make it call a function to do it. instead
+of having the same code in 2 different places.
 
 TODO - Add copying / cuting and pasting...
 I don't think this should be too bad once I have my selection...
@@ -480,6 +482,7 @@ class InputTextBox:
         self.cursor_location = 0
         self.cursor_start_location = None
         self.mouse_clicked = False
+        self.clipboard = ""
         self.x = x
         self.y = y
         self.width = w
@@ -545,6 +548,24 @@ class InputTextBox:
                                    pygame.K_F15]:
                     self.cursor_start_location = None
                     return
+                elif event.key in [pygame.K_c] and self.ctrl:
+                    # ctrl C - Copy
+                    print("CTRL-C")
+                    if self.cursor_start_location is not None:
+                        if self.cursor_start_location < self.cursor_location:
+                            self.clipboard = self.inputted_text[self.cursor_start_location:self.cursor_location]
+                        else:
+                            self.clipboard = self.inputted_text[self.cursor_location:self.cursor_start_location]
+                        print(self.clipboard)
+                    else:
+                        print(self.cursor_start_location)
+                elif event.key in [pygame.K_v] and self.ctrl:
+                    # Delete what IS selected
+                    # Input the new things in the location that was selected.
+                    if self.cursor_start_location is not None:
+                        if self.cursor_start_location < self.cursor_location:
+                            self.clipboard = self.inputted_text[self.cursor_start_location:self.cursor_location]
+                            print(self.clipboard)
                 elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
                                    pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
                                    pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
@@ -577,6 +598,10 @@ class InputTextBox:
                         self.cursor_location += 1
                 elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
                     self.shift = True
+                elif event.key in [pygame.K_RCTRL, pygame.K_LCTRL]:
+                    self.ctrl = True
+                elif event.key in [pygame.K_RALT, pygame.K_LALT]:
+                    self.alt = True
 
                 else:
                     print("Else Input!")
@@ -584,6 +609,10 @@ class InputTextBox:
             elif event.type == pygame.KEYUP:
                 if event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT]:
                     self.shift = False
+                if event.key in [pygame.K_RCTRL, pygame.K_LCTRL]:
+                    self.ctrl = False
+                if event.key in [pygame.K_RALT, pygame.K_LALT]:
+                    self.alt = False
                     print("Unshift", self.shift)
 
     def draw(self, window):
@@ -641,6 +670,28 @@ class InputTextBox:
 
             self.count = (self.count + 1) % 30
 
+    def mouse_update(self, x,y, curx, cury):
+        x1 = x
+        y1 = y
+        cur_x = curx
+        cur_y = cury
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            using_text = self.inputted_text
+            text_left = cur_x + 5
+            text = self.font.render(using_text, 1, self.text_color)
+            text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
+            best_number = 0
+            for i in range(len(using_text)+1):
+                temp_width = self.get_text_width(using_text[:i])
+                current_left = x1 + 2.5 - text_left
+                current_amount = abs(temp_width - current_left)
+                if i == 0:
+                    best_amount = current_amount
+                elif current_amount < best_amount:
+                    best_number = i
+                    best_amount = current_amount
+            return best_number
+
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
@@ -648,29 +699,15 @@ class InputTextBox:
         # if self.updating:
         #    cur_x, cur_y = self.current_x, self.current_y
         if self.active:
-            if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
-                using_text = self.inputted_text
-                text_left = cur_x + 5
-                text = self.font.render(using_text, 1, self.text_color)
-                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                best_number = 0
-                for i in range(len(using_text)+1):
-                    temp_width = self.get_text_width(using_text[:i])
-                    current_left = x1 + 2.5 - text_left
-                    current_amount = abs(temp_width - current_left)
-                    if i == 0:
-                        best_amount = current_amount
-                    elif current_amount < best_amount:
-                        best_number = i
-                        best_amount = current_amount
-                if self.cursor_start_location is not None and self.shift:
-                    pass
-                elif self.shift:
-                    self.cursor_start_location = self.cursor_location
-                else:
-                    self.cursor_start_location = None
-                self.cursor_location = best_number
-                self.mouse_clicked = True
+            best_num = self.mouse_update(x1, y1, cur_x, cur_y)
+            if self.cursor_start_location is not None and self.shift:
+                pass
+            elif self.shift:
+                self.cursor_start_location = self.cursor_location
+            else:
+                self.cursor_start_location = None
+            self.cursor_location = best_num
+            self.mouse_clicked = True
 
 
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
@@ -680,31 +717,16 @@ class InputTextBox:
 
     def mouse_drag(self, pos):
         if self.active:
+            x1 = pos[0]
+            y1 = pos[1]
+            cur_x, cur_y = self.x, self.y
             if self.mouse_clicked:
-                x1 = pos[0]
-                y1 = pos[1]
-                cur_x, cur_y = self.x, self.y
-                using_text = self.inputted_text
-                text_left = cur_x + 5
-                text = self.font.render(using_text, 1, self.text_color)
-                text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
-                best_number = 0
-                for i in range(len(using_text) + 1):
-                    temp_width = self.get_text_width(using_text[:i])
-                    current_left = x1 + 2.5 - text_left
-                    current_amount = abs(temp_width - current_left)
-                    if i == 0:
-                        best_amount = current_amount
-                    elif current_amount < best_amount:
-                        best_number = i
-                        best_amount = current_amount
-                if self.cursor_start_location is not None and self.shift:
+                best_num = self.mouse_update(x1, y1, cur_x, cur_y)
+                if self.cursor_start_location is not None:
                     pass
-                elif self.shift:
-                    self.cursor_start_location = self.cursor_location
                 else:
-                    self.cursor_start_location = None
-                self.cursor_location = best_number
+                    self.cursor_start_location = self.cursor_location
+                self.cursor_location = best_num
                 self.mouse_clicked = True
 
 
