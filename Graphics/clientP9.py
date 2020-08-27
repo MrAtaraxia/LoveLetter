@@ -269,6 +269,14 @@ B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 
+
+def scroll_down(pos):
+    pass
+
+def scroll_up(pos):
+    pass
+
+
 class HideableChat:
     def __init__(self):
         self.width = 90
@@ -278,6 +286,7 @@ class HideableChat:
         self.text1 = "show chat"
         self.text2 = "hide chat"
         self.clicked = False
+        self.hovered = False
         self.t_color = (100, 100, 100)
         self.b_color = (0, 0, 0)
         self.font = pygame.font.SysFont("comicsans", 25)
@@ -294,10 +303,10 @@ class HideableChat:
         self.scroll_font = pygame.font.SysFont("comicsans", 20)
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
-                                       (200, 200, 200), self.scroll_font)
+                                       (200, 200, 200), self.scroll_font,{"click": self.scrollup})
         self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w, self.scroll_w,
                                          self.scroll_w, self.s_color,
-                                         (200, 200, 200), self.scroll_font)
+                                         (200, 200, 200), self.scroll_font,{"click": self.scrolldown})
         self.text_area_back = (200, 200, 200)
         self.text_area_text = (100, 100, 100)
         self.text_area_font = pygame.font.SysFont("comicsans", 20)
@@ -352,6 +361,31 @@ class HideableChat:
         elif cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height and self.clicked is True:
             self.clicked = False
             self.y += self.display_h
+        self.scroll_down_button.click(pos)
+        self.scroll_up_button.click(pos)
+
+    def hover(self, pos):
+        x1 = pos[0]
+        y1 = pos[1]
+        cur_x = self.display_x
+        cur_y = self.display_y
+        if cur_x <= x1 <= cur_x + self.display_w and cur_y <= y1 <= cur_y + self.display_h:
+            self.hovered = True
+        else:
+            self.hovered = False
+            print("Not hovered")
+
+
+
+    def scrollup(self, pos):
+        if self.scrolled_amount < 0:
+            self.scrolled_amount += 5
+
+
+    def scrolldown(self, pos):
+        if self.scrolled_amount > self.scroll_h-(self.get_text_height(self.scroll_font) +
+                                                 8)*(len(self.text_to_write)+1):
+            self.scrolled_amount -= 5
 
     @staticmethod
     def get_text_height(font):
@@ -1224,7 +1258,8 @@ def menu_screen():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     if event.button == 1:
-                        if menu_chat.click(pos):
+                        menu_chat.click(pos)
+                        if menu_chat.clicked:
                             #This SHOULD stop other things from interacting under it.
                             continue
                         right_menu.left_click(pos)
@@ -1261,6 +1296,9 @@ def menu_screen():
                         box.release()
                 if event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
+                    menu_chat.hover(pos)
+                    if menu_chat.hovered:
+                        continue
                     for box in menu_text_box:
                         box.mouse_drag(pos)
                     for button in menu_buttons:
