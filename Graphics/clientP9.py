@@ -103,15 +103,21 @@ ADD COPYING AND PASTING Ctrl + C / Ctrl + V / Ctrl + Z
 
 DONE - Made a hideable location for the chat to be on.
 
+DONE - Made buttons for top and bottom of the scroll area.
+DONE - Added text and the ability to add text to the scroll area.
+
 TODO - Make a scroll bar!
 
-TODO - Make a scroll bar location.
+TODO - Make it so that on hovering it doesn't interact with what is below it.
+put a continue somewhere in it I believe.
 
+DONE - Make a scroll bar location.
+The location is there... though it doesn't have anything special about it.
 TODO - Put a sprite on it that can only move up and down.
 
 TODO - I do REALLY want a log that can be viewed through this...
 
-
+TODO - MAKE scrollable ACTUALLY scrollable!!!
 
 TODO - make a scrolling location of the log?
 I can do what was in video for a basic one. Last x messages
@@ -623,7 +629,7 @@ class Button:
 
 class InputTextBox:
     def __init__(self, text, x, y, w, h,
-                 bg=None, text_color=None, font=None, ):
+                 bg=None, text_color=None, font=None, to_write_to=None):
         self.displayed_text = text
         self.active = False
         self.inputted_text = ""
@@ -667,6 +673,7 @@ class InputTextBox:
             self.font = font
 
         self.count = 0
+        self.to_write_to = to_write_to
 
     def copying(self):
         if self.cursor_start_location is not None:
@@ -739,6 +746,7 @@ class InputTextBox:
                                                  self.inputted_text[self.cursor_location + 1:]
                 elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
                     self.cursor_start_location = None
+                    self.to_write_to.append(self.inputted_text)
                     print(self.inputted_text, self.cursor_location)
                     self.inputted_text = ""
                     self.cursor_location = 0
@@ -1122,7 +1130,7 @@ def menu_screen():
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
-                                  (0, 0, 0), font_regular)]
+                                  (0, 0, 0), font_regular,menu_chat.text_to_write)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button1_action,
                            b_width=5, b_color=(0, 0, 0)),
