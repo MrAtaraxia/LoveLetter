@@ -259,7 +259,7 @@ class HideableChat:
         self.t_color = (100,100,100)
         self.b_color = (0,0,0)
         self.font = pygame.font.SysFont("comicsans", 25)
-        self.d_color = (200,200,200)
+        self.d_color = (100,100,100)
         self.display_x = 0
         self.display_w = 200
         self.display_h = 300
@@ -276,6 +276,15 @@ class HideableChat:
         self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w, self.scroll_w,
                                          self.scroll_w, self.s_color,
                                          (200, 200, 200), self.scroll_font)
+        self.text_area_back = (200, 200, 200)
+        self.text_area_text = (100, 100, 100)
+        self.text_area_font = pygame.font.SysFont("comicsans", 20)
+        self.text_to_write = ["word1", "word2", "Again"]
+        self.text_area_border = 5
+        self.text_area_x = self.text_area_border
+        self.text_area_y = height - self.display_h + self.text_area_border
+        self.text_area_w = self.display_w - 2*self.text_area_border - self.scroll_w
+        self.text_area_h = self.display_h - 2*self.text_area_border
 
     def draw(self, window):
         cur_x = self.x
@@ -289,6 +298,14 @@ class HideableChat:
             text = self.text2
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
+            pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
+                                                           self.text_area_w, self.text_area_h))
+            current_y = self.text_area_y
+            for number, to_render in enumerate(self.text_to_write):
+                render_text = self.font.render(to_render, 1, self.t_color)
+                text_height = self.get_text_height(self.text_area_font)
+                window.blit(render_text, (self.text_area_x, current_y))
+                current_y += text_height + 8
 
         pygame.draw.rect(window, self.b_color, (cur_x, cur_y, wid, hei))
         rendered_text = self.font.render(text, 1, self.t_color)
@@ -308,6 +325,19 @@ class HideableChat:
             self.clicked = False
             self.y += self.display_h
 
+    @staticmethod
+    def get_text_height(font):
+        font_obj = font.render("A", False, (0, 0, 0))
+        font_rect = font_obj.get_rect()
+
+        return font_rect.height
+
+    @staticmethod
+    def get_text_width(text, font):
+        font_obj = font.render(text, False, (0, 0, 0))
+        font_rect = font_obj.get_rect()
+
+        return font_rect.width
 
 class RightClickMenu:
     def __init__(self, text_color, back_color, *args):
