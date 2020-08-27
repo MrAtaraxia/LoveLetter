@@ -75,11 +75,12 @@ Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
 
 DONE - Mapped all of the mouse buttons, in case I want to do the right click for menu thing.
 
-TODO - Fix issues with delete and backspace while selecting text.
+DONE - Fix issues with delete and backspace while selecting text.
+This should be working correctly now!
 
-
-TODO - Add more of the keyboard to this!
+DONE - Add more of the keyboard to this!
 all the special characters I think...
+Nearly all of the keyboard on an English keyboard should be working now.
 
 TODO - DO i WANT a right click menu here?
 Do I WANT it to only be on when I have right clicked ON the selected text?
@@ -236,6 +237,16 @@ R_DOWN = pygame.image.load(os.path.join("moreimages", "red_button_down.png")).co
 R_UP = pygame.image.load(os.path.join("moreimages", "red_button_normal.png")).convert_alpha()
 B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
+
+class RightClickMenu:
+    def __init__(self, x, y, *args):
+        self.menu_buttons = args
+        self.x = x
+        self.y = y
+        
+
+    def draw(self, screen):
+
 
 
 class Button:
