@@ -392,7 +392,7 @@ class RightClickMenu:
 class Button:
     def __init__(self, text: str, x: int, y: int, w: int, h: int,
                  bg=None, text_color=None, font=None,
-                 actions=None,
+                 c_action=None, h_action=None,
                  b_width=0, b_color=None,
                  rotation=None, scale=1):
         """
@@ -422,12 +422,9 @@ class Button:
         self.rotation = {"is": False, "amount": rotation, "bgs": bg}
         self.scale = {"is": False, "amount": scale, "bgs": bg}
         self.border = {"color": b_color, "width": b_width, "current": b_color, "forward": True}
-        """self.action = {"click": c_action, "hover": h_action, "release": r_action, "move": m_action,
+        self.action = {"click": c_action, "hover": h_action, "move": c_action,
                        "c_hand": c_action, "h_hand": h_action, "m_hand": c_action,
-                       "c_table": c_action, "h_table": h_action, "m_table": c_action}"""
-        for action in actions:
-            print(action)
-        self.action = actions
+                       "c_table": c_action, "h_table": h_action, "m_table": c_action}
 
         temp = (0, 0, 0)
         self.bg = {"o_u": temp, "o_h": temp, "o_d": temp,
@@ -492,7 +489,7 @@ class Button:
         x1 = pos[0]
         y1 = pos[1]
         cur_x, cur_y = self.xy["x"], self.xy["y"]
-        print(self.action["click"])
+        self.action["click"]
         if self.clicked["update"]:  # Still not sure about this one
             cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
         if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
@@ -983,21 +980,9 @@ class InputTextBox:
         return font_rect.width
 
 
-def click1(pos):
-    print("b1 Clicked!")
-    print(pos[0], pos[1])
+def button1_action():
+    print("Button 1 was clicked!")
 
-
-def release1():
-    print("b1 released!")
-
-
-def hover1():
-    print("b1 hover!")
-
-
-def move1():
-    print("b1 hover!")
 
 def button2_action():
     print("Button 2 was clicked!")
@@ -1149,10 +1134,8 @@ def menu_screen():
     menu_color3 = (0, 0, 255)
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
                                   (0, 0, 0), font_regular, menu_chat.text_to_write)]
-    my_dict = {"click": click1, "release": release1, "hover": hover1, "move": move1}
-
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, actions=my_dict,
+                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button1_action,
                            b_width=5, b_color=(0, 0, 0)),
                     Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button2_action),
                     Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, button3_action),
