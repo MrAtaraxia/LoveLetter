@@ -108,8 +108,14 @@ DONE - Added text and the ability to add text to the scroll area.
 
 TODO - Make a scroll bar!
 
-TODO - Make it so that on hovering it doesn't interact with what is below it.
+DONE - Make it so that on hovering it doesn't interact with what is below it.
 put a continue somewhere in it I believe.
+This worked, though I didn't do it right when I started it
+So it took longer than I expected it to. Mostly because I
+was planning to put a return variable in for it
+but then relaized it would cause other issues
+so I just used its normal variables to do it.
+I think that worked out fine.
 
 TODO - Add word wrap to the thing as well.
 # find the first space from the right.
@@ -120,9 +126,20 @@ DONE - Make a scroll bar location.
 The location is there... though it doesn't have anything special about it.
 TODO - Put a sprite on it that can only move up and down.
 
+
+TODO - Make a scroll bar that works to scroll around the chat log.
+
+
+TODO - Put a different input text under the chat log, as it should be.
+
+
 TODO - I do REALLY want a log that can be viewed through this...
 
-TODO - MAKE scrollable ACTUALLY scrollable!!!
+DONE - MAKE scrollable ACTUALLY scrollable!!!
+Mostly... It works from the BUTTONS... So yeah. it scrolls at least!!!
+
+TODO - Make it so that it can be scrolled from the mouse wheel.
+
 
 TODO - make a scrolling location of the log?
 I can do what was in video for a basic one. Last x messages
@@ -211,6 +228,13 @@ Settings
 Quit Match
 Exit Game
 
+TODO - Make UI Elements.
+
+TODO - Make the UI Elements drag and drop able so they can have it how they want it.
+How would I want to have to customized though?
+Have a seperate screen for adjusting things? Or have it always be able to be accidently moved?
+Hmm...
+
 TODO - Make the words wrap
 TODO - Make the words pull the thing to the window.
 (Probably similar to the scrolling down for the Text window.)
@@ -267,14 +291,6 @@ R_DOWN = pygame.image.load(os.path.join("moreimages", "red_button_down.png")).co
 R_UP = pygame.image.load(os.path.join("moreimages", "red_button_normal.png")).convert_alpha()
 B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
-
-
-
-def scroll_down(pos):
-    pass
-
-def scroll_up(pos):
-    pass
 
 
 class HideableChat:
@@ -375,12 +391,9 @@ class HideableChat:
             self.hovered = False
             print("Not hovered")
 
-
-
     def scrollup(self, pos):
         if self.scrolled_amount < 0:
             self.scrolled_amount += 5
-
 
     def scrolldown(self, pos):
         if self.scrolled_amount > self.scroll_h-(self.get_text_height(self.scroll_font) +
