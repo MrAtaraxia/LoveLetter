@@ -258,12 +258,24 @@ class HideableChat:
         self.clicked = False
         self.t_color = (100,100,100)
         self.b_color = (0,0,0)
-        self.d_color = (200,200,200)
         self.font = pygame.font.SysFont("comicsans", 25)
+        self.d_color = (200,200,200)
         self.display_x = 0
         self.display_w = 200
         self.display_h = 300
         self.display_y = height - self.display_h
+        self.s_color = (150, 150, 150)
+        self.scroll_w = 20
+        self.scroll_x = self.display_x + self.display_w - self.scroll_w
+        self.scroll_y = self.display_y
+        self.scroll_h = self.display_h
+        self.scroll_font = pygame.font.SysFont("comicsans", 20)
+
+        self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
+                                       (200, 200, 200), self.scroll_font)
+        self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w, self.scroll_w,
+                                         self.scroll_w, self.s_color,
+                                         (200, 200, 200), self.scroll_font)
 
     def draw(self, window):
         cur_x = self.x
@@ -273,12 +285,16 @@ class HideableChat:
         text = self.text1
         if self.clicked:
             pygame.draw.rect(window, self.d_color, (self.display_x, self.display_y, self.display_w, self.display_h))
+            pygame.draw.rect(window, self.s_color, (self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_h))
             text = self.text2
+            self.scroll_up_button.draw(window)
+            self.scroll_down_button.draw(window)
 
         pygame.draw.rect(window, self.b_color, (cur_x, cur_y, wid, hei))
         rendered_text = self.font.render(text, 1, self.t_color)
         window.blit(rendered_text, (cur_x + round(wid / 2) - round(rendered_text.get_width() / 2),
                                     cur_y + round(hei / 2) - round(rendered_text.get_height() / 2)))
+
 
     def click(self, pos):
         x1 = pos[0]
