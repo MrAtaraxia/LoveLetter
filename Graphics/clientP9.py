@@ -95,16 +95,13 @@ TODO - Add a lock to the buttons about where they are going?
 AKA so that once they are going one direction, they can not be told to go a different one?
 SO it doesn't modify d_x d_y if you are currently using them?
 
-
-
-
-
-
 Clicking and adjusting where the cursor is based on that click.
 (That MIGHT be able to be done with the whole text width and height things.
 Or looking for collisions with the text elements? IDK...
 I will have to look into it more!
 ADD COPYING AND PASTING Ctrl + C / Ctrl + V / Ctrl + Z
+
+DONE - Made a hideable location for the chat to be on.
 
 TODO - Make a scroll bar!
 
@@ -252,44 +249,48 @@ R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 class HideableChat:
     def __init__(self):
-        self.width = 50
+        self.width = 90
         self.height = 30
         self.x = 0
         self.y = height - self.height
-        self.text = "chat"
+        self.text1 = "show chat"
+        self.text2 = "hide chat"
         self.clicked = False
         self.t_color = (100,100,100)
         self.b_color = (0,0,0)
+        self.d_color = (200,200,200)
         self.font = pygame.font.SysFont("comicsans", 25)
         self.display_x = 0
-        self.display_w = 100
-        self.display_h = 100
+        self.display_w = 200
+        self.display_h = 300
         self.display_y = height - self.display_h
 
-
     def draw(self, window):
-        x1 = self.x
-        y1 = self.y
+        cur_x = self.x
+        cur_y = self.y
+        wid = self.width
+        hei = self.height
+        text = self.text1
         if self.clicked:
-            y1 += self.display_h
-            pygame.draw.rect(window, self.b_color, (self.display_x, self.display_y, self.display_w, self.display_h))
+            pygame.draw.rect(window, self.d_color, (self.display_x, self.display_y, self.display_w, self.display_h))
+            text = self.text2
 
-
-        text_left = x1 + 7
-        text_top = y1 + 7
-        pygame.draw.rect(window, self.b_color, (x1, y1, self.width, self.height))
-        rendered_text = self.font.render(self.text, 1, self.t_color)
-        window.blit(rendered_text, (text_left, text_top))
+        pygame.draw.rect(window, self.b_color, (cur_x, cur_y, wid, hei))
+        rendered_text = self.font.render(text, 1, self.t_color)
+        window.blit(rendered_text, (cur_x + round(wid / 2) - round(rendered_text.get_width() / 2),
+                                    cur_y + round(hei / 2) - round(rendered_text.get_height() / 2)))
 
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
         cur_x = self.x
         cur_y = self.y
-        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height and self.clicked is False:
             self.clicked = True
-
-
+            self.y -= self.display_h
+        elif cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height and self.clicked is True:
+            self.clicked = False
+            self.y += self.display_h
 
 
 class RightClickMenu:
@@ -1126,6 +1127,7 @@ def menu_screen():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     if event.button == 1:
+                        menu_chat.click(pos)
                         right_menu.left_click(pos)
                         for menu in menu_text_box:
                             menu.click(pos)
