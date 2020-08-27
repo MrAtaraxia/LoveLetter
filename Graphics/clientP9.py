@@ -239,14 +239,26 @@ B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 class RightClickMenu:
-    def __init__(self, x, y, *args):
+    def __init__(self, text_color, back_color, *args):
         self.menu_buttons = args
-        self.x = x
-        self.y = y
-        
+        #self.x = x
+        #self.y = y
+        if text_color == None:
+            self.t_color = (150, 0, 0)
+        else:
+            self.t_color = text_color
+        if back_color == None:
+            self.b_color = (100, 100, 100)
+        else:
+            self.b_color = back_color
+        self.width = 80
+        self.height = 40
 
-    def draw(self, screen):
+    def draw(self, window, pos):
+        x1 = pos[0]
+        y1 = pos[1]
 
+        pygame.draw.rect(window, self.b_color, (x1, y1, self.width, self.height))
 
 
 class Button:
@@ -989,6 +1001,7 @@ def menu_screen():
     menu_title = font_big
     menu_font = font_regular
     buttons_clicked = False
+    right_menu = RightClickMenu()
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
