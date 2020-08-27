@@ -301,12 +301,15 @@ class HideableChat:
         self.text_area_back = (200, 200, 200)
         self.text_area_text = (100, 100, 100)
         self.text_area_font = pygame.font.SysFont("comicsans", 20)
-        self.text_to_write = ["word1", "word2", "Again"]
+        self.text_to_write = ["word1", "word2", "Again","word1", "word2", "Again","word1", "word2", "Again"
+                              "More","Yep","keep", "it", "up", "yep", "again", "ok"]
         self.text_area_border = 5
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
         self.text_area_w = self.display_w - 2 * self.text_area_border - self.scroll_w
         self.text_area_h = self.display_h - 2 * self.text_area_border
+        # self.scrollable_area_h =
+        self.scrolled_amount = 0
 
     def draw(self, window):
         cur_x = self.x
@@ -320,15 +323,19 @@ class HideableChat:
             text = self.text2
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
-            pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
-                                                           self.text_area_w, self.text_area_h))
-            current_y = self.text_area_y
+            #pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
+            #                                               self.text_area_w, self.text_area_h))
+            # current_y = self.text_area_y
+            current_y = 10 + self.scrolled_amount
+            text_height = self.get_text_height(self.text_area_font)
+            scrollable_area = pygame.Surface((self.text_area_w, self.text_area_h))
+            scrollable_area.fill(self.text_area_back)
             for number, to_render in enumerate(self.text_to_write):
                 render_text = self.font.render(to_render, 1, self.t_color)
-                text_height = self.get_text_height(self.text_area_font)
-                window.blit(render_text, (self.text_area_x, current_y))
+                scrollable_area.blit(render_text, (self.text_area_x, current_y))
                 current_y += text_height + 8
-
+                # window.blit(render_text, (self.text_area_x, current_y))
+            window.blit(scrollable_area, (self.text_area_x, self.text_area_y))
         pygame.draw.rect(window, self.b_color, (cur_x, cur_y, wid, hei))
         rendered_text = self.font.render(text, 1, self.t_color)
         window.blit(rendered_text, (cur_x + round(wid / 2) - round(rendered_text.get_width() / 2),
