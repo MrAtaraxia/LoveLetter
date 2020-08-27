@@ -205,6 +205,13 @@ TODO - LOOK INTO how to make it so the buttons run from the mouse!
 Like if within 20 pixels will move in the other direction.
 Would be interesting.
 
+TODO - PAUSE MENU -
+Resume
+Settings
+Quit Match
+Exit Game
+
+
 
 END GOAL:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
