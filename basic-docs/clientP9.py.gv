@@ -2,10 +2,10 @@ digraph structs {
 	node [shape=record]
 	node [shape=record]
 	subgraph sub1 {
-		struct0 [label="{HideableChat|__init__|draw}"]
+		struct0 [label="{HideableChat|__init__|draw|click|get_text_height|get_text_width}"]
 		struct1 [label="{RightClickMenu|__init__|right_click|left_click|draw}"]
-		struct2 [label="{Button|__init__|draw|click|hover|move_release|release|other_update|update}"]
-		struct3 [label="{InputTextBox|__init__|copying|cutting|pasting|deleting|adding_to_string|draw|mouse_update|click}"]
+		struct2 [label="{Button|__init__|draw|click|hover|move_release|release|other_update|update|making_changes|animate|change_border_color|move_while_true}"]
+		struct3 [label="{InputTextBox|__init__|copying|cutting|pasting|deleting|adding_to_string|draw|mouse_update|click|mouse_drag|release|get_text_height|get_text_width}"]
 		struct4 [label="{Global|button1_action|button2_action|button3_action|button4_action|redrawWindow|game_main_loop|game_handle_keys|menu_screen|main}"]
 	}
 }

@@ -111,6 +111,11 @@ TODO - Make a scroll bar!
 TODO - Make it so that on hovering it doesn't interact with what is below it.
 put a continue somewhere in it I believe.
 
+TODO - Add word wrap to the thing as well.
+# find the first space from the right.
+if len(words) > window length
+input a /r after it?
+
 DONE - Make a scroll bar location.
 The location is there... though it doesn't have anything special about it.
 TODO - Put a sprite on it that can only move up and down.
@@ -262,10 +267,10 @@ class HideableChat:
         self.text1 = "show chat"
         self.text2 = "hide chat"
         self.clicked = False
-        self.t_color = (100,100,100)
-        self.b_color = (0,0,0)
+        self.t_color = (100, 100, 100)
+        self.b_color = (0, 0, 0)
         self.font = pygame.font.SysFont("comicsans", 25)
-        self.d_color = (100,100,100)
+        self.d_color = (100, 100, 100)
         self.display_x = 0
         self.display_w = 200
         self.display_h = 300
@@ -289,8 +294,8 @@ class HideableChat:
         self.text_area_border = 5
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
-        self.text_area_w = self.display_w - 2*self.text_area_border - self.scroll_w
-        self.text_area_h = self.display_h - 2*self.text_area_border
+        self.text_area_w = self.display_w - 2 * self.text_area_border - self.scroll_w
+        self.text_area_h = self.display_h - 2 * self.text_area_border
 
     def draw(self, window):
         cur_x = self.x
@@ -318,7 +323,6 @@ class HideableChat:
         window.blit(rendered_text, (cur_x + round(wid / 2) - round(rendered_text.get_width() / 2),
                                     cur_y + round(hei / 2) - round(rendered_text.get_height() / 2)))
 
-
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
@@ -344,6 +348,7 @@ class HideableChat:
         font_rect = font_obj.get_rect()
 
         return font_rect.width
+
 
 class RightClickMenu:
     def __init__(self, text_color, back_color, *args):
@@ -552,7 +557,7 @@ class Button:
         if self.hovered["was"]:
             self.hovered["was"] = False
             if not self.hovered["update"]:
-                self.making_changes(width / 2, height-100, 50, self.hovered)
+                self.making_changes(width / 2, height - 100, 50, self.hovered)
                 self.hovered["update"] = True
                 self.hovered["count"] = 1
         # print("hovered was", self.hovered["update"], self.hovered["was"], self.hovered["is"], self.hovered["count"])
@@ -601,7 +606,6 @@ class Button:
         if not self.hovered["update"] and not self.clicked["update"] and not self.updated["update"]:
             self.xy["cur_x"] = self.xy["x"]
             self.xy["cur_y"] = self.xy["y"]
-
 
     def making_changes(self, des_x, des_y, steps, my_dict):
         self.xy["d_x"] = ((self.xy["x"] - des_x) / steps)
@@ -764,7 +768,7 @@ class InputTextBox:
 
                 elif event.key in [pygame.K_x] and self.ctrl:
                     # ctrl X - Cut
-                    print("CTRL-X") # Copies like ctrl - c
+                    print("CTRL-X")  # Copies like ctrl - c
                     self.cutting()
                     print(self.clipboard)
 
@@ -901,7 +905,7 @@ class InputTextBox:
 
             self.count = (self.count + 1) % 30
 
-    def mouse_update(self, x,y, curx, cury):
+    def mouse_update(self, x, y, curx, cury):
         x1 = x
         y1 = y
         cur_x = curx
@@ -912,7 +916,7 @@ class InputTextBox:
             text = self.font.render(using_text, 1, self.text_color)
             text_top = cur_y + round(self.height / 2) - round(text.get_height() / 2)
             best_number = 0
-            for i in range(len(using_text)+1):
+            for i in range(len(using_text) + 1):
                 temp_width = self.get_text_width(using_text[:i])
                 current_left = x1 + 2.5 - text_left
                 current_amount = abs(temp_width - current_left)
@@ -940,7 +944,6 @@ class InputTextBox:
             self.cursor_location = best_num
             self.mouse_clicked = True
 
-
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
             self.active = True
         else:
@@ -959,7 +962,6 @@ class InputTextBox:
                     self.cursor_start_location = self.cursor_location
                 self.cursor_location = best_num
                 self.mouse_clicked = True
-
 
     def release(self):
         self.mouse_clicked = False
@@ -1125,12 +1127,12 @@ def menu_screen():
     menu_font = font_regular
     buttons_clicked = False
     menu_chat = HideableChat()
-    right_menu = RightClickMenu((100,0,0), (50,50,50), "menu1", "menu2")
+    right_menu = RightClickMenu((100, 0, 0), (50, 50, 50), "menu1", "menu2")
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
-                                  (0, 0, 0), font_regular,menu_chat.text_to_write)]
+                                  (0, 0, 0), font_regular, menu_chat.text_to_write)]
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button1_action,
                            b_width=5, b_color=(0, 0, 0)),
