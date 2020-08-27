@@ -73,6 +73,8 @@ Already done.. not sure when I DID do this but it is already working...
 Mostly Done - Fix issues with text box. (I want a lot of things for that...)
 Selecting (WHICH i think IS A DISASTER IN AND OF ITSELF!) probably...
 
+DONE - Mapped all of the mouse buttons, in case I want to do the right click for menu thing.
+
 TODO - Fix issues with delete and backspace while selecting text.
 
 
@@ -567,23 +569,39 @@ class InputTextBox:
                              self.inputted_text[self.cursor_location:]
         self.cursor_location += len(self.clipboard)
 
+    def deleting(self):
+        if self.cursor_start_location is not None:
+            if self.cursor_start_location < self.cursor_location:
+                first_term = self.cursor_start_location
+                second_term = self.cursor_location
+            else:
+                second_term = self.cursor_start_location
+                first_term = self.cursor_location
+            self.inputted_text = self.inputted_text[:first_term] + self.inputted_text[second_term:]
+            self.cursor_location = first_term
+            self.cursor_start_location = None
+
     def adding_to_string(self, event):
         if self.active:
             if event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_BACKSPACE]:
                     if self.cursor_location > 0:
-                        print(self.inputted_text[:self.cursor_location])
-                        print(self.inputted_text[self.cursor_location:])
-                        self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
-                                             self.inputted_text[self.cursor_location:]
-                    # self.inputted_text = self.inputted_text[0:-1]
-                    self.cursor_location -= 1
+                        if self.cursor_start_location is not None:
+                            self.deleting()
+                        else:
+                            print(self.inputted_text[:self.cursor_location])
+                            print(self.inputted_text[self.cursor_location:])
+                            self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
+                                                 self.inputted_text[self.cursor_location:]
+                        # self.inputted_text = self.inputted_text[0:-1]
+                        self.cursor_location -= 1
                 elif event.key in [pygame.K_DELETE]:
-                    if self.cursor_location < len(self.inputted_text):
-                        self.inputted_text = self.inputted_text[:self.cursor_location] + \
-                                             self.inputted_text[self.cursor_location + 1:]
-                        # self.inputted_text.
-                        pass
+                    if self.cursor_start_location is not None:
+                        self.deleting()
+                    else:
+                        if self.cursor_location < len(self.inputted_text):
+                            self.inputted_text = self.inputted_text[:self.cursor_location] + \
+                                                 self.inputted_text[self.cursor_location + 1:]
                 elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
                     self.cursor_start_location = None
                     print(self.inputted_text, self.cursor_location)
@@ -619,7 +637,16 @@ class InputTextBox:
                                    pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
                                    pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
                                    pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
-                                   pygame.K_SPACE]:
+                                   pygame.K_SPACE, pygame.K_EXCLAIM, pygame.K_QUOTEDBL, pygame.K_HASH,
+                                   pygame.K_DOLLAR, pygame.K_AMPERSAND, pygame.K_QUOTE, pygame.K_LEFTPAREN,
+                                   pygame.K_RIGHTPAREN, pygame.K_ASTERISK, pygame.K_PLUS, pygame.K_COMMA,
+                                   pygame.K_MINUS, pygame.K_PERIOD, pygame.K_SLASH, pygame.K_COLON,
+                                   pygame.K_SEMICOLON, pygame.K_LESS, pygame.K_EQUALS, pygame.K_GREATER, pygame.K_AT,
+                                   pygame.K_QUESTION, pygame.K_LEFTBRACKET, pygame.K_BACKSLASH, pygame.K_RIGHTBRACKET,
+                                   pygame.K_CARET, pygame.K_UNDERSCORE, pygame.K_BACKQUOTE, pygame.K_TAB,
+                                   pygame.K_KP_PERIOD, pygame.K_KP_DIVIDE, pygame.K_KP_MULTIPLY,
+                                   pygame.K_KP_MINUS, pygame.K_KP_PLUS, pygame.K_KP_EQUALS, pygame., pygame., pygame., pygame.,
+                                   pygame., pygame., pygame., pygame., pygame.,]:
                     self.cursor_start_location = None
                     self.inputted_text = self.inputted_text[:self.cursor_location] + \
                                          event.unicode + \
@@ -991,21 +1018,35 @@ def menu_screen():
                         on_menu = False
                         quit_game = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    for menu in menu_text_box:
-                        menu.click(pos)
+                    print(event)
+                    if event.button == 1:
+                        pos = pygame.mouse.get_pos()
+                        for menu in menu_text_box:
+                            menu.click(pos)
+                        for button in menu_buttons:
+                            if button.click(pos):
+                                buttons_clicked = True
+                                print("button clicked!")
+                                if button.text["text"] == "Click to Play!":
+                                    on_menu = False
+                                    break
+                                if button.text["text"] == "Quit":
+                                    on_menu = False
+                                    quit_game = True
+                                    break
+                    if event.button == 3:
+                        print("RIGHT click!")
+                    if event.button == 2:
+                        print("Middle click!")
+                    if event.button == 4:
+                        print("Mouse Wheel Up!")
+                    if event.button == 5:
+                        print("Mouse Wheel Down!")
+                    if event.button == 7:
+                        print("Top Other Button (forward usually)!")
+                    if event.button == 6:
+                        print("Bottom Other Button (back usually)!")
 
-                    for button in menu_buttons:
-                        if button.click(pos):
-                            buttons_clicked = True
-                            print("button clicked!")
-                            if button.text["text"] == "Click to Play!":
-                                on_menu = False
-                                break
-                            if button.text["text"] == "Quit":
-                                on_menu = False
-                                quit_game = True
-                                break
                 if event.type == pygame.MOUSEBUTTONUP:
                     for button in menu_buttons:
                         button.release()
