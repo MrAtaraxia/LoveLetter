@@ -425,8 +425,8 @@ class Button:
         """self.action = {"click": c_action, "hover": h_action, "release": r_action, "move": m_action,
                        "c_hand": c_action, "h_hand": h_action, "m_hand": c_action,
                        "c_table": c_action, "h_table": h_action, "m_table": c_action}"""
-        for action in actions:
-            print(action)
+        if actions != None:
+            print(actions)
         self.action = actions
 
         temp = (0, 0, 0)
@@ -492,7 +492,10 @@ class Button:
         x1 = pos[0]
         y1 = pos[1]
         cur_x, cur_y = self.xy["x"], self.xy["y"]
-        print(self.action["click"])
+        #if self.action != None:
+        #    self.action["click"](pos)
+        """if self.action["click"] is not None:
+            print(self.action["click"])"""
         if self.clicked["update"]:  # Still not sure about this one
             cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
         if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
@@ -506,7 +509,7 @@ class Button:
                 self.clicked["was"] = True
 
             if self.action["click"]:
-                self.action["click"]()
+                self.action["click"](pos)
             return True
         else:
             return False
@@ -983,21 +986,22 @@ class InputTextBox:
         return font_rect.width
 
 
-def click1(pos):
+def click_1(pos):
     print("b1 Clicked!")
     print(pos[0], pos[1])
 
 
-def release1():
+def release_1():
     print("b1 released!")
 
 
-def hover1():
+def hover_1():
     print("b1 hover!")
 
 
-def move1():
+def move_1():
     print("b1 hover!")
+
 
 def button2_action():
     print("Button 2 was clicked!")
@@ -1149,14 +1153,15 @@ def menu_screen():
     menu_color3 = (0, 0, 255)
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
                                   (0, 0, 0), font_regular, menu_chat.text_to_write)]
-    my_dict = {"click": click1, "release": release1, "hover": hover1, "move": move1}
-
+    my_dict1 = {"click": click_1, "release": release_1, "hover": hover_1, "move": move_1}
+    my_dict2 = {"click": click_1}
+    my_dict3 = {"click": click_1}
+    my_dict4 = {"click": click_1}
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, actions=my_dict,
-                           b_width=5, b_color=(0, 0, 0)),
-                    Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, button2_action),
-                    Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, button3_action),
-                    Button("Quit", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, button4_action)
+                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict1,),
+                    Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict2),
+                    Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict3),
+                    Button("Quit", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict4)
                     ]
     menu_buttons[0].xy["x"] = int(width / 10 - menu_buttons[0].xy["width"] / 10) * 5
     menu_buttons[0].xy["y"] = int(height / 10 - menu_buttons[0].xy["height"] / 10) * 3
@@ -1201,7 +1206,9 @@ def menu_screen():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     if event.button == 1:
-                        menu_chat.click(pos)
+                        if menu_chat.click(pos):
+                            #This SHOULD stop other things from interacting under it.
+                            continue
                         right_menu.left_click(pos)
                         for menu in menu_text_box:
                             menu.click(pos)
