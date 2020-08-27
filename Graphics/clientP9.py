@@ -589,12 +589,9 @@ class InputTextBox:
                         if self.cursor_start_location is not None:
                             self.deleting()
                         else:
-                            print(self.inputted_text[:self.cursor_location])
-                            print(self.inputted_text[self.cursor_location:])
                             self.inputted_text = self.inputted_text[:self.cursor_location - 1] + \
                                                  self.inputted_text[self.cursor_location:]
-                        # self.inputted_text = self.inputted_text[0:-1]
-                        self.cursor_location -= 1
+                            self.cursor_location -= 1
                 elif event.key in [pygame.K_DELETE]:
                     if self.cursor_start_location is not None:
                         self.deleting()
@@ -631,6 +628,17 @@ class InputTextBox:
                     self.pasting()
                     print(self.clipboard)
 
+                elif event.key in [pygame.K_a] and self.ctrl:
+                    # ctrl A - Select All
+                    print("CTRL-A")
+                    self.cursor_start_location = 0
+                    self.cursor_location = len(self.inputted_text)
+                elif self.ctrl:
+                    # dealing with all of the ctrl ones so they don't add random stuff
+                    pass
+                elif self.alt:
+                    # dealing with all of the alt ones so they don't add random stuff
+                    pass
                 elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5,
                                    pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
                                    pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h,
@@ -645,13 +653,16 @@ class InputTextBox:
                                    pygame.K_QUESTION, pygame.K_LEFTBRACKET, pygame.K_BACKSLASH, pygame.K_RIGHTBRACKET,
                                    pygame.K_CARET, pygame.K_UNDERSCORE, pygame.K_BACKQUOTE, pygame.K_TAB,
                                    pygame.K_KP_PERIOD, pygame.K_KP_DIVIDE, pygame.K_KP_MULTIPLY,
-                                   pygame.K_KP_MINUS, pygame.K_KP_PLUS, pygame.K_KP_EQUALS, pygame., pygame., pygame., pygame.,
-                                   pygame., pygame., pygame., pygame., pygame.,]:
+                                   pygame.K_KP_MINUS, pygame.K_KP_PLUS, pygame.K_KP_EQUALS, pygame.K_KP0,
+                                   pygame.K_KP1, pygame.K_KP2, pygame.K_KP3, pygame.K_KP4, pygame.K_KP5,
+                                   pygame.K_KP6, pygame.K_KP7, pygame.K_KP8, pygame.K_KP9]:
+                    # stops selecting text
                     self.cursor_start_location = None
+                    # adds the new key to the location of the indicator.
                     self.inputted_text = self.inputted_text[:self.cursor_location] + \
                                          event.unicode + \
                                          self.inputted_text[self.cursor_location:]
-                    # self.inputted_text += event.unicode
+                    # increases the indicator to after the new input.
                     self.cursor_location += 1
                 elif event.key in [pygame.K_LEFT]:
                     print("lshift?", self.cursor_start_location)
