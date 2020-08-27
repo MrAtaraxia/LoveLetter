@@ -82,9 +82,20 @@ DONE - Add more of the keyboard to this!
 all the special characters I think...
 Nearly all of the keyboard on an English keyboard should be working now.
 
-TODO - DO i WANT a right click menu here?
+DONE - DO i WANT a right click menu here?
+Basic right click menu added. It doesn't DO anything
+or have any CHOICES on it but it is a right click menu!
+
 Do I WANT it to only be on when I have right clicked ON the selected text?
 Or do I want a DIFFERENT one when I am not on it?
+TODO - Add options to the right click menu.
+
+
+TODO - Add a lock to the buttons about where they are going?
+AKA so that once they are going one direction, they can not be told to go a different one?
+SO it doesn't modify d_x d_y if you are currently using them?
+
+
 
 
 
@@ -241,8 +252,9 @@ R_BUTTON = {"up": R_UP, "down": R_DOWN}
 class RightClickMenu:
     def __init__(self, text_color, back_color, *args):
         self.menu_buttons = args
-        #self.x = x
-        #self.y = y
+        self.x = 0
+        self.y = 0
+        self.clicked = False
         if text_color == None:
             self.t_color = (150, 0, 0)
         else:
@@ -254,11 +266,26 @@ class RightClickMenu:
         self.width = 80
         self.height = 40
 
-    def draw(self, window, pos):
+    def right_click(self, pos):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.clicked = True
+
+    def left_click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
+        cur_x = self.x
+        cur_y = self.y
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            pass
+        else:
+            self.clicked = False
 
-        pygame.draw.rect(window, self.b_color, (x1, y1, self.width, self.height))
+    def draw(self, window):
+        if self.clicked:
+            x1 = self.x
+            y1 = self.y
+            pygame.draw.rect(window, self.b_color, (x1, y1, self.width, self.height))
 
 
 class Button:
@@ -305,7 +332,7 @@ class Button:
             self.bg = {"o_u": bg, "o_h": bg, "o_d": bg,
                        "s_u": bg, "s_h": bg, "s_d": bg}
         elif type(bg) == dict:
-            print("LIST!")
+            # print("LIST!")
             self.bg = {"o_u": bg["up"], "o_h": bg["up"], "o_d": bg["down"],
                        "s_u": pygame.transform.scale(bg["up"], (self.xy["width"], self.xy["height"])),
                        "s_d": pygame.transform.scale(bg["down"], (self.xy["width"], self.xy["height"])),
@@ -427,7 +454,6 @@ class Button:
 
     def update(self):
         if self.hovered["was"]:
-            print("UPDATE hover WAS")
             self.hovered["was"] = False
             if not self.hovered["update"]:
                 self.making_changes(width / 2, height-100, 50, self.hovered)
@@ -465,13 +491,12 @@ class Button:
                 self.clicked["count"] -= 1
 
         if self.hovered["update"]:
-            print("Update Hover UPDATE")
             # if self.hovered["count"] <= self.hovered["max"] and self.hovered["forward"]:
             #     self.hovered["forward"] = False
-            print(self.xy["d_x"], self.hovered["count"])
+            # print(self.xy["d_x"], self.hovered["count"])
             self.xy["cur_x"] = self.xy["x"] - self.xy["d_x"] * self.hovered["count"]
             self.xy["cur_y"] = self.xy["y"] - self.xy["d_y"] * self.hovered["count"]
-            print(self.xy["cur_x"], self.xy["cur_y"])
+            # print(self.xy["cur_x"], self.xy["cur_y"])
             if self.hovered["forward"] and self.hovered["count"] < self.hovered["max"]:
                 self.hovered["count"] += 1
             if not self.hovered["forward"]:
@@ -1001,7 +1026,7 @@ def menu_screen():
     menu_title = font_big
     menu_font = font_regular
     buttons_clicked = False
-    right_menu = RightClickMenu()
+    right_menu = RightClickMenu((100,0,0), (50,50,50), "menu1", "menu2")
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
@@ -1040,6 +1065,7 @@ def menu_screen():
                 button.draw(screen)
             for box in menu_text_box:
                 box.draw(screen)
+            right_menu.draw(screen)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -1053,9 +1079,9 @@ def menu_screen():
                         on_menu = False
                         quit_game = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    print(event)
+                    pos = pygame.mouse.get_pos()
                     if event.button == 1:
-                        pos = pygame.mouse.get_pos()
+                        right_menu.left_click(pos)
                         for menu in menu_text_box:
                             menu.click(pos)
                         for button in menu_buttons:
@@ -1070,7 +1096,7 @@ def menu_screen():
                                     quit_game = True
                                     break
                     if event.button == 3:
-                        print("RIGHT click!")
+                        right_menu.right_click(pos)
                     if event.button == 2:
                         print("Middle click!")
                     if event.button == 4:
