@@ -249,6 +249,49 @@ R_UP = pygame.image.load(os.path.join("moreimages", "red_button_normal.png")).co
 B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
+
+class HideableChat:
+    def __init__(self):
+        self.width = 50
+        self.height = 30
+        self.x = 0
+        self.y = height - self.height
+        self.text = "chat"
+        self.clicked = False
+        self.t_color = (100,100,100)
+        self.b_color = (0,0,0)
+        self.font = pygame.font.SysFont("comicsans", 25)
+        self.display_x = 0
+        self.display_w = 100
+        self.display_h = 100
+        self.display_y = height - self.display_h
+
+
+    def draw(self, window):
+        x1 = self.x
+        y1 = self.y
+        if self.clicked:
+            y1 += self.display_h
+            pygame.draw.rect(window, self.b_color, (self.display_x, self.display_y, self.display_w, self.display_h))
+
+
+        text_left = x1 + 7
+        text_top = y1 + 7
+        pygame.draw.rect(window, self.b_color, (x1, y1, self.width, self.height))
+        rendered_text = self.font.render(self.text, 1, self.t_color)
+        window.blit(rendered_text, (text_left, text_top))
+
+    def click(self, pos):
+        x1 = pos[0]
+        y1 = pos[1]
+        cur_x = self.x
+        cur_y = self.y
+        if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height:
+            self.clicked = True
+
+
+
+
 class RightClickMenu:
     def __init__(self, text_color, back_color, *args):
         self.menu_buttons = args
@@ -1026,6 +1069,7 @@ def menu_screen():
     menu_title = font_big
     menu_font = font_regular
     buttons_clicked = False
+    menu_chat = HideableChat()
     right_menu = RightClickMenu((100,0,0), (50,50,50), "menu1", "menu2")
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
@@ -1066,6 +1110,7 @@ def menu_screen():
             for box in menu_text_box:
                 box.draw(screen)
             right_menu.draw(screen)
+            menu_chat.draw(screen)
             pygame.display.update()
 
             for event in pygame.event.get():
