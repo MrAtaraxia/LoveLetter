@@ -489,6 +489,7 @@ class Button:
         x1 = pos[0]
         y1 = pos[1]
         cur_x, cur_y = self.xy["x"], self.xy["y"]
+        print(self.action["click"])
         if self.clicked["update"]:  # Still not sure about this one
             cur_x, cur_y = self.xy["cur_x"], self.xy["cur_y"]
         if cur_x <= x1 <= cur_x + self.xy["width"] and cur_y <= y1 <= cur_y + self.xy["height"]:
