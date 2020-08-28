@@ -304,14 +304,47 @@ class CircularProgressBar():
         stop_angle = 0
         color = (150, 0, 0)
         rect = pygame.Rect(300, 300, 100, 100)
+        rect1 = pygame.Rect(301, 301, 100, 100)
         # pygame.draw.arc(surface, color, rect, start_angle, stop_angle, width=1)
         # pygame.draw.arc(self.surface, color, rect, start_angle, stop_angle, width=1)
+        my_surface = pygame.Surface((50, 50))
+        my_surface.fill((100,0,0))
         pygame.draw.arc(window, color, rect, start_angle, stop_angle, 5)
+        pygame.draw.arc(window, color, rect1, start_angle, stop_angle, 5)
         # circle(surface, color, center, radius) -> Rect
         # circle(surface, color, center, radius, width=0, draw_top_right=None,
         # draw_top_left=None, draw_bottom_left=None, draw_bottom_right=None) -> Rect
 
-        pygame.draw.circle(window, color, )
+        # pygame.draw.circle(window, color, )
+        for degree in range(0,360,10):
+            self.rotate_around_point(my_surface,(300,300),degree,100)
+
+    def rotate_around_point(self, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
+        # card_to_rotate.rotation = -rotate_to_degrees
+        rotation = -rotate_to_degrees
+        #card_to_rotate.rotation = card_to_rotate.rotation % 360
+        rotation = rotation % 360
+        # card_to_rotate.rotation_in_radians = (rotate_to_degrees - 90) / 180
+        rotation_in_radians = (rotate_to_degrees - 90) / 180
+        # card_to_rotate.rotation_in_radians = card_to_rotate.rotation_in_radians % 2
+        rotation_in_radians = rotation_in_radians % 2
+        # center_x, center_y = card_to_rotate.rect.center
+        point_of_rotation_x, point_of_rotation_y = point_to_rotate_around
+        radius = radius_yep
+        # card_to_rotate.outline_the_card()
+        # card_to_rotate.rotated_image = pygame.transform.rotate(card_to_rotate.scaled_image,
+        #                                                        card_to_rotate.rotation)
+        # card_to_rotate.image = card_to_rotate.rotated_image
+
+        #x = point_of_rotation_x + radius * math.cos(card_to_rotate.rotation_in_radians * math.pi)
+        x = point_of_rotation_x + radius * math.cos(rotation_in_radians * math.pi)
+        #y = point_of_rotation_y + radius * math.sin(card_to_rotate.rotation_in_radians * math.pi)
+        y = point_of_rotation_y + radius * math.sin(rotation_in_radians * math.pi)
+        # new_rect = card_to_rotate.rotated_image.get_rect()
+        new_rect = card_to_rotate.get_rect()
+        new_x, new_y, new_width, new_height = new_rect
+        card_to_rotate.rect = pygame.Rect(x - new_width / 2, y - new_height / 2, new_width, new_height)
+
 
 
 class HideableChat:
