@@ -273,6 +273,7 @@ import os
 import sys
 # Distributed Imports
 import pygame
+import pygame.gfxdraw
 from pygame.locals import *
 # Local Imports
 from networkP9 import Network
@@ -304,15 +305,21 @@ class CircularProgressBar():
         my_surface = pygame.Surface([20, 20], pygame.SRCALPHA, 32)
         my_surface.convert_alpha()
         center = (10, 10)
-        radius = 10
-        pygame.draw.circle(my_surface, color, center, radius)
+        radius = 5
+        # pygame.draw.circle(my_surface, color, center, radius)
+        # circle(surface, x, y, r, color) -> None
+        # aacircle(surface, x, y, r, color) -> None
+        # filled_circle(surface, x, y, r, color)
+        pygame.gfxdraw.filled_circle(my_surface, center[0], center[1], radius, color)
+        # filled_ellipse(surface, x, y, rx, ry, color) -> None
+        pygame.gfxdraw.filled_ellipse(window,200, 200, 31, 11, color)
         # pygame.draw.circle
         # for degree in range(0, 180, 1):   # RIGHT SIDE ONLY
         # for degree in range(-90, 90, 1):  # TOP ONLY
         for degree in range(-90, 90, 1):
-            self.rotate_around_point(my_surface,(300,300),degree,100)
+            self.rotate_around_point(window, my_surface,(300,300),degree,50)
 
-    def rotate_around_point(self, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
+    def rotate_around_point(self, window, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
         # card_to_rotate.rotation = -rotate_to_degrees
         rotation = -rotate_to_degrees
         #card_to_rotate.rotation = card_to_rotate.rotation % 360
@@ -338,7 +345,7 @@ class CircularProgressBar():
         new_x, new_y, new_width, new_height = new_rect
         # again_rect = pygame.Rect(x - new_width / 2, y - new_height / 2, new_width, new_height)
         # card_to_rotate.center = (x - new_width / 2, y - new_height / 2, new_width, new_height)
-        screen.blit(rotated_card, (x - new_width / 2, y - new_height / 2))
+        window.blit(rotated_card, (x - new_width / 2, y - new_height / 2))
         # again_surface = pygame.transform.scale()
 
 
