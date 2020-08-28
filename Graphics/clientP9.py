@@ -428,6 +428,7 @@ class CircularProgressBar:
 
 
 class HideableChat:
+    # Do I want middle click to be another scroll method?
     def __init__(self):
         self.width = 90
         self.height = 30
@@ -481,12 +482,16 @@ class HideableChat:
         hei = self.height
         text = self.text1
         if self.clicked:
+            #  Drawing the border
             pygame.draw.rect(window, self.d_color, (self.display_x, self.display_y, self.display_w, self.display_h))
             pygame.draw.rect(window, self.s_color, (self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_h))
             text = self.text2
+            #  Drawing the scroll things
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
             window.blit(self.scroll_bar, (self.scroll_x, self.scroll_y + self.scroll_w))
+            print((self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1))
+            #  Drawing the text.
             #pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
             #                                               self.text_area_w, self.text_area_h))
             # current_y = self.text_area_y
@@ -529,6 +534,7 @@ class HideableChat:
 
     def release(self):
         self.scroll_bar_clicked = False
+        self.scrolled_change = 0
 
     def hover(self, pos):
         x1 = pos[0]
@@ -543,18 +549,38 @@ class HideableChat:
     def scrollup(self, pos):
         if self.scrolled_amount < 0:
             #self.scrolled_amount += 5
-            self.scrolled_change = 5
+            self.scrolled_change = 3
 
     def scrolldown(self, pos):
         if self.scrolled_amount > self.scroll_h-(self.get_text_height(self.scroll_font) +
                                                  8)*(len(self.text_to_write)+1):
             #self.scrolled_amount -= 5
-            self.scrolled_change = -5
+            self.scrolled_change = -3
 
     def update(self):
         if self.scrolled_change != 0:
-            if 0 >= self.scrolled_amount >= self.scroll_h-(self.get_text_height(self.scroll_font) + 8)*(len(self.text_to_write)+1):
+            print(self.scrolled_change)
+            print(self.scroll_h - (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1))
+            if self.scrolled_amount > self.scroll_h - \
+                    (self.get_text_height(self.scroll_font) + 8) * \
+                    (len(self.text_to_write) + 1) and self.scrolled_amount < 0:
                 self.scrolled_amount += self.scrolled_change
+                print("update1", self.scrolled_amount)
+            elif self.scrolled_amount == 0 and self.scrolled_change < 0:
+                self.scrolled_amount += self.scrolled_change
+                print("update2", self.scrolled_amount)
+            elif self.scroll_h - \
+                    (self.get_text_height(self.scroll_font) + 8) * \
+                    (len(self.text_to_write) + 1) > self.scrolled_amount > self.scroll_h - \
+                    (self.get_text_height(self.scroll_font) + 8) * \
+                    (len(self.text_to_write) + 2) and self.scrolled_change > 0:
+                self.scrolled_amount += self.scrolled_change
+                print("update3", self.scrolled_amount)
+            #elif self.scrolled_amount < 0:
+            #    self.scrolled_amount += self.scrolled_change
+            #    print("Update2", self.scrolled_amount)
+            else:
+                self.scrolled_change = 0
 
 
     @staticmethod
