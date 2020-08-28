@@ -720,6 +720,7 @@ class InputTextBox:
         self.shift = False
         self.ctrl = False
         self.alt = False
+        self.word_wrap = False
         self.select_color = (100, 100, 100)
         self.cursor_color = (20, 20, 20)
         if bg is None:
