@@ -428,6 +428,8 @@ class HideableChat:
     def __init__(self):
         self.width = 90
         self.height = 30
+        self.scroll_input_height = 25
+        self.text_area_border = 5
         self.x = 0
         self.y = height - self.height
         self.text1 = "show chat"
@@ -440,14 +442,14 @@ class HideableChat:
         self.d_color = (100, 100, 100)
         self.display_x = 0
         self.display_w = 200
-        self.display_h = 300
-        self.display_y = height - self.display_h - 50 #  for the input
+        self.display_h = 350 + self.scroll_input_height + self.text_area_border * 2
+        self.display_y = height - self.display_h
         self.s_color = (150, 150, 150)
         self.s_b_color = (25, 25, 25)
         self.scroll_w = 20
         self.scroll_x = self.display_x + self.display_w - self.scroll_w
         self.scroll_y = self.display_y
-        self.scroll_h = self.display_h
+        self.scroll_h = self.display_h - self.scroll_input_height - self.text_area_border * 2
         self.scroll_bar_clicked = False
         self.scroll_bar = pygame.Surface((self.scroll_w, self.scroll_h - 2 * self.scroll_w))
         self.current_scroll_bar = self.scroll_bar
@@ -457,7 +459,9 @@ class HideableChat:
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
                                        (200, 200, 200), self.scroll_font, {"click": self.scrollup})
-        self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w - 50, self.scroll_w,
+        self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w -
+                                         self.scroll_input_height - self.text_area_border * 2,
+                                         self.scroll_w,
                                          self.scroll_w, self.s_color,
                                          (200, 200, 200), self.scroll_font, {"click": self.scrolldown})
         self.text_area_back = (200, 200, 200)
@@ -465,15 +469,16 @@ class HideableChat:
         self.text_area_font = pygame.font.SysFont("comicsans", 20)
         self.text_to_write = ["word1", "word2", "Again", "word1", "word2", "Again", "word2", "Again", "word2", "Again",
                               "up", "Yep", "keep", "it", "up"]
-        self.text_area_border = 5
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
         self.text_area_w = self.display_w - 2 * self.text_area_border - self.scroll_w
-        self.text_area_h = self.display_h - 2 * self.text_area_border
+        self.text_area_h = self.display_h - 3 * self.text_area_border - self.scroll_input_height
         # self.scrollable_area_h =
         self.scrolled_amount = 0
         self.scrolled_change = 0
-        self.scroll_input = InputTextBox("Input Text Here", 0, height-50, self.text_area_w, 50, (255, 255, 255),
+        self.scroll_input = InputTextBox("Input Text Here", self.text_area_border,
+                                         height-self.scroll_input_height- self.text_area_border,
+                                         self.text_area_w, self.scroll_input_height, (255, 255, 255),
                                          (0, 0, 0), self.text_area_font, self.text_to_write)
 
     def draw(self, window):
@@ -519,6 +524,7 @@ class HideableChat:
                 current_y += text_height + 8
                 # window.blit(render_text, (self.text_area_x, current_y))
             window.blit(scrollable_area, (self.text_area_x, self.text_area_y))
+            self.scroll_input.draw(window)
         pygame.draw.rect(window, self.b_color, (cur_x, cur_y, wid, hei))
         rendered_text = self.font.render(text, 1, self.t_color)
         window.blit(rendered_text, (cur_x + round(wid / 2) - round(rendered_text.get_width() / 2),
@@ -541,6 +547,7 @@ class HideableChat:
             self.y += self.display_h
         self.scroll_down_button.click(pos)
         self.scroll_up_button.click(pos)
+        self.scroll_input.click(pos)
 
     def movement(self, pos):
         if self.scroll_bar_clicked:
@@ -1462,6 +1469,7 @@ def menu_screen():
             for event in pygame.event.get():
                 for box in menu_text_box:
                     box.adding_to_string(event)
+                menu_chat.scroll_input.adding_to_string(event)
                 if event.type == pygame.QUIT:
                     on_menu = False
                     quit_game = True
@@ -1473,12 +1481,13 @@ def menu_screen():
                     pos = pygame.mouse.get_pos()
                     if event.button == 1:
                         menu_chat.click(pos)
-                        if menu_chat.clicked:
+                        # if menu_chat.clicked:
                             # This SHOULD stop other things from interacting under it.
-                            continue
+                            # continue
                         right_menu.left_click(pos)
                         for menu in menu_text_box:
                             menu.click(pos)
+                        menu_chat.scroll_input.click(pos)
                         for button in menu_buttons:
                             if button.click(pos):
                                 buttons_clicked = True
@@ -1509,6 +1518,7 @@ def menu_screen():
                     for box in menu_text_box:
                         box.release()
                     menu_chat.release()
+                    menu_chat.scroll_input.release()
                 if event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
                     menu_chat.hover(pos)
@@ -1517,6 +1527,7 @@ def menu_screen():
                         continue
                     for box in menu_text_box:
                         box.mouse_drag(pos)
+                    menu_chat.scroll_input.mouse_drag(pos)
                     for button in menu_buttons:
                         button.move_release(pos)
                         button.hover(pos)
