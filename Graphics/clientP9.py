@@ -310,10 +310,8 @@ class CircularProgressBar():
         # circle(surface, color, center, radius) -> Rect
         # circle(surface, color, center, radius, width=0, draw_top_right=None,
         # draw_top_left=None, draw_bottom_left=None, draw_bottom_right=None) -> Rect
-        
+
         pygame.draw.circle(window, color, )
-
-
 
 
 class HideableChat:
