@@ -441,7 +441,7 @@ class HideableChat:
         self.display_x = 0
         self.display_w = 200
         self.display_h = 300
-        self.display_y = height - self.display_h
+        self.display_y = height - self.display_h - 50 #  for the input
         self.s_color = (150, 150, 150)
         self.s_b_color = (25, 25, 25)
         self.scroll_w = 20
@@ -457,7 +457,7 @@ class HideableChat:
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
                                        (200, 200, 200), self.scroll_font, {"click": self.scrollup})
-        self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w, self.scroll_w,
+        self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w - 50, self.scroll_w,
                                          self.scroll_w, self.s_color,
                                          (200, 200, 200), self.scroll_font, {"click": self.scrolldown})
         self.text_area_back = (200, 200, 200)
@@ -473,6 +473,8 @@ class HideableChat:
         # self.scrollable_area_h =
         self.scrolled_amount = 0
         self.scrolled_change = 0
+        self.scroll_input = InputTextBox("Input Text Here", 0, height-50, self.text_area_w, 50, (255, 255, 255),
+                                         (0, 0, 0), self.text_area_font, self.text_to_write)
 
     def draw(self, window):
         cur_x = self.x
@@ -499,16 +501,14 @@ class HideableChat:
                                                                      (self.scroll_w,
                                                                       round((self.scroll_h - 2 * self.scroll_w) *
                                                                             self.scroll_percent)))
-            print((self.scrolled_amount / (self.scroll_h - (self.get_text_height(self.scroll_font) +8) * (len(self.text_to_write) + 1))))
+            thing = (self.scrolled_amount / (self.scroll_h - (self.get_text_height(self.scroll_font) +8) *
+                                             (len(self.text_to_write) + 1)))
+            prev_height = (self.scroll_h - 2 * self.scroll_w)
+            current_height = prev_height * self.scroll_percent
             window.blit(self.current_scroll_bar, (self.scroll_x,
                                                   self.scroll_y +
-                                                  self.scroll_w -
-                                                  (self.scrolled_amount/((self.get_text_height(self.scroll_font) + 8) *
-                                                                         (len(self.text_to_write) + 2)))))
+                                                  self.scroll_w + (prev_height - current_height)*thing))
             #  Drawing the text.
-            # pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
-            #                                               self.text_area_w, self.text_area_h))
-            # current_y = self.text_area_y
             current_y = 10 + self.scrolled_amount
             text_height = self.get_text_height(self.text_area_font)
             scrollable_area = pygame.Surface((self.text_area_w, self.text_area_h))
@@ -575,9 +575,9 @@ class HideableChat:
         if self.scrolled_change != 0:
             print(self.scrolled_change)
             print(self.scroll_h - (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1))
-            if self.scrolled_amount > self.scroll_h - \
+            if self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
-                    (len(self.text_to_write) + 1) and self.scrolled_amount < 0:
+                    (len(self.text_to_write) + 1) < self.scrolled_amount < 0:
                 self.scrolled_amount += self.scrolled_change
                 print("update1", self.scrolled_amount)
             elif self.scrolled_amount == 0 and self.scrolled_change < 0:
