@@ -88,6 +88,27 @@ or have any CHOICES on it but it is a right click menu!
 
 Do I WANT it to only be on when I have right clicked ON the selected text?
 Or do I want a DIFFERENT one when I am not on it?
+
+2020-08-28 - Friday -
+Done- PROGRESS BARS.
+Flat ones
+Circular Ones
+And I kind of went a little cooky with the circular ones and now
+I might use it as an indicator because it is that interesting.
+
+I have also been thinking about WHAT I want to do about the general UI UX design
+of this whole thing.
+And it is causing me annoyances...
+Because I don't think I have the skills to currently do what I want to do.
+Or I don't know someone who would be willing to guide me through the graphic part of it.
+I THINK I can program it fine now... probably...
+I just don't have a clear enough VISION of the stupid thing
+to be able to be like, YES THAT is what I want...
+
+
+
+
+
 TODO - Add options to the right click menu.
 
 
@@ -295,6 +316,11 @@ B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 
+class Card:
+    def __init__(self):
+        pass
+
+
 class ProgressBar:
     def __init__(self, x, y, w, h):
         self.x = x
@@ -316,11 +342,16 @@ class ProgressBar:
 
 
 class CircularProgressBar:
+    # Highlighting things...
+    # Loading screen
+    # Actually a progress bar / hp bar...
+    # Other...
+
     def __init__(self):
         self.percentage = 50
         self.surface = pygame.Surface((100, 100))
         self.curve_start = 0
-        self.curve_end = 135
+        self.curve_end = 120
 
     def draw(self, window):
         color = (0, 0, 0)
@@ -348,38 +379,41 @@ class CircularProgressBar:
             self.curve_start -= 360
         self.curve_end += 6
         for degree in range(self.curve_start, self.curve_end, 1):
-            mod_color = (mod_color - 1) % 255
+
+            mod_color = (mod_color - 2) % 255
+
             pygame.draw.circle(my_surface, (mod_color, 0, 0), center, radius)
             self.rotate_around_point(window, my_surface,(300,300),degree,50)
 
+        mod_color = color[0]
+        for degree in range(self.curve_start-180, self.curve_end-180, 1):
+
+            mod_color = (mod_color - 2) % 255
+
+            pygame.draw.circle(my_surface, (mod_color, 0, 0), center, radius)
+            self.rotate_around_point(window, my_surface,(300,300),degree,50)
+
+
+
     def rotate_around_point(self, window, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
-        # card_to_rotate.rotation = -rotate_to_degrees
         rotation = -rotate_to_degrees
-        #card_to_rotate.rotation = card_to_rotate.rotation % 360
         rotation = rotation % 360
-        # card_to_rotate.rotation_in_radians = (rotate_to_degrees - 90) / 180
         rotation_in_radians = (rotate_to_degrees - 90) / 180
-        # card_to_rotate.rotation_in_radians = card_to_rotate.rotation_in_radians % 2
         rotation_in_radians = rotation_in_radians % 2
-        # center_x, center_y = card_to_rotate.rect.center
         point_of_rotation_x, point_of_rotation_y = point_to_rotate_around
         radius = radius_yep
-        # card_to_rotate.outline_the_card()
-        # card_to_rotate = card_to_rotate.scaled_image
-        rotated_card = pygame.transform.rotate(card_to_rotate, rotation)
-        # card_to_rotate.image = card_to_rotate.rotated_image
+        # print(type(card_to_rotate))
         rotated_card = card_to_rotate
-        #x = point_of_rotation_x + radius * math.cos(card_to_rotate.rotation_in_radians * math.pi)
+        # if type(card_to_rotate) == str:
+        if isinstance(card_to_rotate, pygame.Surface):
+            rotated_card = card_to_rotate
+        if isinstance(card_to_rotate, Card):
+            rotated_card = pygame.transform.rotate(card_to_rotate, rotation)
         x = point_of_rotation_x + radius * math.cos(rotation_in_radians * math.pi)
-        #y = point_of_rotation_y + radius * math.sin(card_to_rotate.rotation_in_radians * math.pi)
         y = point_of_rotation_y + radius * math.sin(rotation_in_radians * math.pi)
-        # new_rect = card_to_rotate.rotated_image.get_rect()
         new_rect = rotated_card.get_rect()
         new_x, new_y, new_width, new_height = new_rect
-        # again_rect = pygame.Rect(x - new_width / 2, y - new_height / 2, new_width, new_height)
-        # card_to_rotate.center = (x - new_width / 2, y - new_height / 2, new_width, new_height)
         window.blit(rotated_card, (x - new_width / 2, y - new_height / 2))
-        # again_surface = pygame.transform.scale()
 
 
 class HideableChat:
