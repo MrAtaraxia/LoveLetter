@@ -105,6 +105,12 @@ I THINK I can program it fine now... probably...
 I just don't have a clear enough VISION of the stupid thing
 to be able to be like, YES THAT is what I want...
 
+I suppose I will have to Tear apart what I like / don't like about both.
+
+THAT might help me with the whole thing...
+
+
+
 
 
 
@@ -127,7 +133,12 @@ DONE - Made a hideable location for the chat to be on.
 DONE - Made buttons for top and bottom of the scroll area.
 DONE - Added text and the ability to add text to the scroll area.
 
+OK... Let's try this one again...
+TODO - WORD wrap.
+
 TODO - Make a scroll bar!
+if not long, don't display.
+
 
 DONE - Make it so that on hovering it doesn't interact with what is below it.
 put a continue somewhere in it I believe.
@@ -439,6 +450,9 @@ class HideableChat:
         self.scroll_x = self.display_x + self.display_w - self.scroll_w
         self.scroll_y = self.display_y
         self.scroll_h = self.display_h
+        self.scroll_bar_clicked = False
+        self.scroll_bar = pygame.Surface((self.scroll_w,self.scroll_h-2*self.scroll_w))
+        self.scroll_bar.fill((0, 0, 0))
         self.scroll_font = pygame.font.SysFont("comicsans", 20)
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
@@ -458,6 +472,7 @@ class HideableChat:
         self.text_area_h = self.display_h - 2 * self.text_area_border
         # self.scrollable_area_h =
         self.scrolled_amount = 0
+        self.scrolled_change = 0
 
     def draw(self, window):
         cur_x = self.x
@@ -471,6 +486,7 @@ class HideableChat:
             text = self.text2
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
+            window.blit(self.scroll_bar, (self.scroll_x, self.scroll_y + self.scroll_w))
             #pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
             #                                               self.text_area_w, self.text_area_h))
             # current_y = self.text_area_y
@@ -492,6 +508,10 @@ class HideableChat:
     def click(self, pos):
         x1 = pos[0]
         y1 = pos[1]
+        cur_x = self.scroll_x
+        cur_y = self.scroll_y
+        if cur_x <= x1 <= cur_x + self.scroll_w and cur_y <= y1 <= cur_y + self.scroll_h:
+            self.scroll_bar_clicked = True
         cur_x = self.x
         cur_y = self.y
         if cur_x <= x1 <= cur_x + self.width and cur_y <= y1 <= cur_y + self.height and self.clicked is False:
@@ -502,6 +522,13 @@ class HideableChat:
             self.y += self.display_h
         self.scroll_down_button.click(pos)
         self.scroll_up_button.click(pos)
+
+    def movement(self, pos):
+        if self.scroll_bar_clicked:
+            print("movement")
+
+    def release(self):
+        self.scroll_bar_clicked = False
 
     def hover(self, pos):
         x1 = pos[0]
@@ -515,12 +542,20 @@ class HideableChat:
 
     def scrollup(self, pos):
         if self.scrolled_amount < 0:
-            self.scrolled_amount += 5
+            #self.scrolled_amount += 5
+            self.scrolled_change = 5
 
     def scrolldown(self, pos):
         if self.scrolled_amount > self.scroll_h-(self.get_text_height(self.scroll_font) +
                                                  8)*(len(self.text_to_write)+1):
-            self.scrolled_amount -= 5
+            #self.scrolled_amount -= 5
+            self.scrolled_change = -5
+
+    def update(self):
+        if self.scrolled_change != 0:
+            if 0 >= self.scrolled_amount >= self.scroll_h-(self.get_text_height(self.scroll_font) + 8)*(len(self.text_to_write)+1):
+                self.scrolled_amount += self.scrolled_change
+
 
     @staticmethod
     def get_text_height(font):
@@ -1434,9 +1469,11 @@ def menu_screen():
                         button.release()
                     for box in menu_text_box:
                         box.release()
+                    menu_chat.release()
                 if event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
                     menu_chat.hover(pos)
+                    menu_chat.movement(pos)
                     if menu_chat.hovered:
                         continue
                     for box in menu_text_box:
@@ -1453,7 +1490,7 @@ def menu_screen():
                     if button.clicked["update"]:
                         continue
                     button.animate()
-
+            menu_chat.update()
             for button in menu_buttons:
                 button.update()
 
