@@ -390,21 +390,17 @@ class CircularProgressBar:
             self.curve_start -= 360
         self.curve_end += 6
         for degree in range(self.curve_start, self.curve_end, 1):
-
             mod_color = (mod_color - 2) % 255
 
             pygame.draw.circle(my_surface, (mod_color, 0, 0), center, radius)
-            self.rotate_around_point(window, my_surface,(300,300),degree,50)
+            self.rotate_around_point(window, my_surface, (300, 300), degree, 50)
 
         mod_color = color[0]
-        for degree in range(self.curve_start-180, self.curve_end-180, 1):
-
+        for degree in range(self.curve_start - 180, self.curve_end - 180, 1):
             mod_color = (mod_color - 2) % 255
 
             pygame.draw.circle(my_surface, (mod_color, 0, 0), center, radius)
-            self.rotate_around_point(window, my_surface,(300,300),degree,50)
-
-
+            self.rotate_around_point(window, my_surface, (300, 300), degree, 50)
 
     def rotate_around_point(self, window, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
         rotation = -rotate_to_degrees
@@ -452,20 +448,21 @@ class HideableChat:
         self.scroll_y = self.display_y
         self.scroll_h = self.display_h
         self.scroll_bar_clicked = False
-        self.scroll_bar = pygame.Surface((self.scroll_w,self.scroll_h-2*self.scroll_w))
+        self.scroll_bar = pygame.Surface((self.scroll_w, self.scroll_h - 2 * self.scroll_w))
         self.scroll_bar.fill((0, 0, 0))
         self.scroll_font = pygame.font.SysFont("comicsans", 20)
+        self.scroll_percent = 1
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
-                                       (200, 200, 200), self.scroll_font,{"click": self.scrollup})
+                                       (200, 200, 200), self.scroll_font, {"click": self.scrollup})
         self.scroll_down_button = Button(r"\/", self.scroll_x, height - self.scroll_w, self.scroll_w,
                                          self.scroll_w, self.s_color,
-                                         (200, 200, 200), self.scroll_font,{"click": self.scrolldown})
+                                         (200, 200, 200), self.scroll_font, {"click": self.scrolldown})
         self.text_area_back = (200, 200, 200)
         self.text_area_text = (100, 100, 100)
         self.text_area_font = pygame.font.SysFont("comicsans", 20)
-        self.text_to_write = ["word1", "word2", "Again","word1", "word2", "Again","word1", "word2", "Again"
-                              "More","Yep","keep", "it", "up", "yep", "again", "ok"]
+        self.text_to_write = ["word1", "word2", "Again", "word1", "word2", "Again", "word2", "Again", "word2", "Again",
+                              "up", "Yep", "keep", "it", "up"]
         self.text_area_border = 5
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
@@ -489,10 +486,23 @@ class HideableChat:
             #  Drawing the scroll things
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
-            window.blit(self.scroll_bar, (self.scroll_x, self.scroll_y + self.scroll_w))
-            print((self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1))
+            current_scroll_bar = self.scroll_bar
+            if self.display_h < (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1):
+                if self.scroll_percent != (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
+                                                             (len(self.text_to_write) + 1))):
+                    self.scroll_percent = (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
+                                                             (len(self.text_to_write) + 1)))
+                # scale(Surface, (width, height)
+                current_scroll_bar = pygame.transform.scale(current_scroll_bar,
+                                                            (self.scroll_w, round((self.scroll_h - 2 * self.scroll_w) *
+                                                                                  self.scroll_percent)))
+
+            window.blit(current_scroll_bar, (self.scroll_x,
+                                             self.scroll_y +
+                                             self.scroll_w -
+                                             ((self.scroll_percent) * self.scrolled_amount)))
             #  Drawing the text.
-            #pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
+            # pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
             #                                               self.text_area_w, self.text_area_h))
             # current_y = self.text_area_y
             current_y = 10 + self.scrolled_amount
@@ -548,13 +558,13 @@ class HideableChat:
 
     def scrollup(self, pos):
         if self.scrolled_amount < 0:
-            #self.scrolled_amount += 5
+            # self.scrolled_amount += 5
             self.scrolled_change = 3
 
     def scrolldown(self, pos):
-        if self.scrolled_amount > self.scroll_h-(self.get_text_height(self.scroll_font) +
-                                                 8)*(len(self.text_to_write)+1):
-            #self.scrolled_amount -= 5
+        if self.scrolled_amount > self.scroll_h - (self.get_text_height(self.scroll_font) +
+                                                   8) * (len(self.text_to_write) + 1):
+            # self.scrolled_amount -= 5
             self.scrolled_change = -3
 
     def update(self):
@@ -571,17 +581,16 @@ class HideableChat:
                 print("update2", self.scrolled_amount)
             elif self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
-                    (len(self.text_to_write) + 1) > self.scrolled_amount > self.scroll_h - \
+                    (len(self.text_to_write) + 1) >= self.scrolled_amount >= self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
                     (len(self.text_to_write) + 2) and self.scrolled_change > 0:
                 self.scrolled_amount += self.scrolled_change
                 print("update3", self.scrolled_amount)
-            #elif self.scrolled_amount < 0:
+            # elif self.scrolled_amount < 0:
             #    self.scrolled_amount += self.scrolled_change
             #    print("Update2", self.scrolled_amount)
             else:
                 self.scrolled_change = 0
-
 
     @staticmethod
     def get_text_height(font):
@@ -740,7 +749,7 @@ class Button:
         x1 = pos[0]
         y1 = pos[1]
         cur_x, cur_y = self.xy["x"], self.xy["y"]
-        #if self.action != None:
+        # if self.action != None:
         #    self.action["click"](pos)
         """if self.action["click"] is not None:
             print(self.action["click"])"""
@@ -1409,7 +1418,7 @@ def menu_screen():
     my_dict3 = {"click": click_1}
     my_dict4 = {"click": click_1}
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
-                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict1,),
+                    Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict1, ),
                     Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict2),
                     Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict3),
                     Button("Quit", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict4)
@@ -1461,7 +1470,7 @@ def menu_screen():
                     if event.button == 1:
                         menu_chat.click(pos)
                         if menu_chat.clicked:
-                            #This SHOULD stop other things from interacting under it.
+                            # This SHOULD stop other things from interacting under it.
                             continue
                         right_menu.left_click(pos)
                         for menu in menu_text_box:
