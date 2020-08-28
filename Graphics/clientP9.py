@@ -443,13 +443,15 @@ class HideableChat:
         self.display_h = 300
         self.display_y = height - self.display_h
         self.s_color = (150, 150, 150)
+        self.s_b_color = (25, 25, 25)
         self.scroll_w = 20
         self.scroll_x = self.display_x + self.display_w - self.scroll_w
         self.scroll_y = self.display_y
         self.scroll_h = self.display_h
         self.scroll_bar_clicked = False
         self.scroll_bar = pygame.Surface((self.scroll_w, self.scroll_h - 2 * self.scroll_w))
-        self.scroll_bar.fill((0, 0, 0))
+        self.current_scroll_bar = self.scroll_bar
+        self.scroll_bar.fill(self.s_color)
         self.scroll_font = pygame.font.SysFont("comicsans", 20)
         self.scroll_percent = 1
 
@@ -481,26 +483,28 @@ class HideableChat:
         if self.clicked:
             #  Drawing the border
             pygame.draw.rect(window, self.d_color, (self.display_x, self.display_y, self.display_w, self.display_h))
-            pygame.draw.rect(window, self.s_color, (self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_h))
+            pygame.draw.rect(window, self.s_b_color, (self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_h))
             text = self.text2
             #  Drawing the scroll things
             self.scroll_up_button.draw(window)
             self.scroll_down_button.draw(window)
             current_scroll_bar = self.scroll_bar
-            if self.display_h < (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1):
+            if self.display_h < (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 2):
                 if self.scroll_percent != (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
-                                                             (len(self.text_to_write) + 1))):
+                                                             (len(self.text_to_write) + 2))):
                     self.scroll_percent = (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
-                                                             (len(self.text_to_write) + 1)))
-                # scale(Surface, (width, height)
-                current_scroll_bar = pygame.transform.scale(current_scroll_bar,
-                                                            (self.scroll_w, round((self.scroll_h - 2 * self.scroll_w) *
-                                                                                  self.scroll_percent)))
-
-            window.blit(current_scroll_bar, (self.scroll_x,
-                                             self.scroll_y +
-                                             self.scroll_w -
-                                             ((self.scroll_percent) * self.scrolled_amount)))
+                                                             (len(self.text_to_write) + 2)))
+                    # scale(Surface, (width, height)
+                    self.current_scroll_bar = pygame.transform.scale(current_scroll_bar,
+                                                                     (self.scroll_w,
+                                                                      round((self.scroll_h - 2 * self.scroll_w) *
+                                                                            self.scroll_percent)))
+            print((self.scrolled_amount / (self.scroll_h - (self.get_text_height(self.scroll_font) +8) * (len(self.text_to_write) + 1))))
+            window.blit(self.current_scroll_bar, (self.scroll_x,
+                                                  self.scroll_y +
+                                                  self.scroll_w -
+                                                  (self.scrolled_amount/((self.get_text_height(self.scroll_font) + 8) *
+                                                                         (len(self.text_to_write) + 2)))))
             #  Drawing the text.
             # pygame.draw.rect(window, self.text_area_back, (self.text_area_x, self.text_area_y,
             #                                               self.text_area_w, self.text_area_h))
