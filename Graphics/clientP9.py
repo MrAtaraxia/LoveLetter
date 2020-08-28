@@ -276,6 +276,7 @@ import pygame
 from pygame.locals import *
 # Local Imports
 from networkP9 import Network
+import math
 
 # import pickle
 
@@ -291,6 +292,28 @@ R_DOWN = pygame.image.load(os.path.join("moreimages", "red_button_down.png")).co
 R_UP = pygame.image.load(os.path.join("moreimages", "red_button_normal.png")).convert_alpha()
 B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
+
+
+class CircularProgressBar():
+    def __init__(self):
+        self.percentage = 50
+        self.surface = pygame.Surface((100, 100))
+
+    def draw(self, window):
+        start_angle = math.pi
+        stop_angle = 0
+        color = (150, 0, 0)
+        rect = pygame.Rect(300, 300, 100, 100)
+        # pygame.draw.arc(surface, color, rect, start_angle, stop_angle, width=1)
+        # pygame.draw.arc(self.surface, color, rect, start_angle, stop_angle, width=1)
+        pygame.draw.arc(window, color, rect, start_angle, stop_angle, 5)
+        # circle(surface, color, center, radius) -> Rect
+        # circle(surface, color, center, radius, width=0, draw_top_right=None,
+        # draw_top_left=None, draw_bottom_left=None, draw_bottom_right=None) -> Rect
+        
+        pygame.draw.circle(window, color, )
+
+
 
 
 class HideableChat:
@@ -1213,6 +1236,7 @@ def menu_screen():
     menu_font = font_regular
     buttons_clicked = False
     menu_chat = HideableChat()
+    c_bar = CircularProgressBar()
     right_menu = RightClickMenu((100, 0, 0), (50, 50, 50), "menu1", "menu2")
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
@@ -1253,6 +1277,7 @@ def menu_screen():
             # screen.blit(text, ((width / 2 - text.get_width() / 2), 200))
             for button in menu_buttons:
                 button.draw(screen)
+            c_bar.draw(screen)
             for box in menu_text_box:
                 box.draw(screen)
             right_menu.draw(screen)
