@@ -295,13 +295,35 @@ B_BUTTON = {"up": B_UP, "down": B_DOWN}
 R_BUTTON = {"up": R_UP, "down": R_DOWN}
 
 
-class CircularProgressBar():
+class ProgressBar:
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.progress = .20
+        self.border = (0, 0, 0)
+        self.bar = (0, 150, 0)
+
+    def draw(self, window):
+        if self.progress > 1:
+            self.progress -= 1
+        self.progress += 0.01
+        pygame.draw.rect(window, self.border, (self.x, self.y, self.w, self.h), 2)
+        innerPos = (self.x + 3, self.y + 3)
+        innerSize = ((self.w - 6) * self.progress, self.h - 6)
+        pygame.draw.rect(window, self.bar, (*innerPos, *innerSize))
+
+
+class CircularProgressBar:
     def __init__(self):
         self.percentage = 50
         self.surface = pygame.Surface((100, 100))
+        self.curve_start = 0
+        self.curve_end = 135
 
     def draw(self, window):
-        color = (100, 0, 0)
+        color = (0, 0, 0)
         my_surface = pygame.Surface([20, 20], pygame.SRCALPHA, 32)
         my_surface.convert_alpha()
         center = (10, 10)
@@ -310,13 +332,24 @@ class CircularProgressBar():
         # circle(surface, x, y, r, color) -> None
         # aacircle(surface, x, y, r, color) -> None
         # filled_circle(surface, x, y, r, color)
-        pygame.gfxdraw.filled_circle(my_surface, center[0], center[1], radius, color)
+        # pygame.gfxdraw.filled_circle(my_surface, center[0], center[1], radius, color)
         # filled_ellipse(surface, x, y, rx, ry, color) -> None
-        pygame.gfxdraw.filled_ellipse(window,200, 200, 31, 11, color)
+        # pygame.gfxdraw.filled_ellipse(window,200, 200, 31, 11, color)
         # pygame.draw.circle
         # for degree in range(0, 180, 1):   # RIGHT SIDE ONLY
         # for degree in range(-90, 90, 1):  # TOP ONLY
-        for degree in range(-90, 90, 1):
+        mod_color = color[0]
+        if self.curve_start > 360:
+            self.curve_start -= 360
+            self.curve_end -= 360
+        self.curve_start += 6
+        if self.curve_end > 360:
+            self.curve_end -= 360
+            self.curve_start -= 360
+        self.curve_end += 6
+        for degree in range(self.curve_start, self.curve_end, 1):
+            mod_color = (mod_color - 1) % 255
+            pygame.draw.circle(my_surface, (mod_color, 0, 0), center, radius)
             self.rotate_around_point(window, my_surface,(300,300),degree,50)
 
     def rotate_around_point(self, window, card_to_rotate, point_to_rotate_around, rotate_to_degrees, radius_yep):
@@ -445,7 +478,6 @@ class HideableChat:
             self.hovered = True
         else:
             self.hovered = False
-            print("Not hovered")
 
     def scrollup(self, pos):
         if self.scrolled_amount < 0:
@@ -1271,6 +1303,7 @@ def menu_screen():
     menu_chat = HideableChat()
     c_bar = CircularProgressBar()
     right_menu = RightClickMenu((100, 0, 0), (50, 50, 50), "menu1", "menu2")
+    my_progress = ProgressBar(100, 300, 200, 20)
     menu_color1 = (255, 0, 0)
     menu_color2 = (0, 0, 0)
     menu_color3 = (0, 0, 255)
@@ -1311,6 +1344,7 @@ def menu_screen():
             for button in menu_buttons:
                 button.draw(screen)
             c_bar.draw(screen)
+            my_progress.draw(screen)
             for box in menu_text_box:
                 box.draw(screen)
             right_menu.draw(screen)
