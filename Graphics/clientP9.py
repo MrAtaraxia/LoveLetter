@@ -301,6 +301,7 @@ Exit Game
 TODO - Make UI Elements.
 List of things on the left like there are in TableTopSimulator?
 
+TODO - Fix buttons to have clicking change location when button moves
 
 TODO - Make the UI Elements drag and drop able so they can have it how they want it.
 How would I want to have to customized though?
@@ -1341,6 +1342,7 @@ class InputTextBox:
 def click_1(pos):
     print("b1 Clicked!")
     print(pos[0], pos[1])
+    return menu_settings(screen)
 
 
 def release_1():
@@ -1490,6 +1492,29 @@ def game_handle_keys(buttons, connect, game_name, player_number):
                     else:
                         if not game_name.p2Went:
                             connect.send(button.text)
+
+
+def menu_settings(window):
+    on_menu = True
+    global screen
+    quit_game = False
+    clock = pygame.time.Clock()
+    while on_menu:
+        # Draw Things
+        window.fill((0, 0, 128))
+        pygame.display.update()
+        # Input things
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                on_menu = False
+                quit_game = True
+                return quit_game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # To go back to the other menu
+                    on_menu = False
+        # Update Things
+
+
 
 
 def menu_screen():
