@@ -109,6 +109,26 @@ I suppose I will have to Tear apart what I like / don't like about both.
 
 THAT might help me with the whole thing...
 
+Ok.
+
+DONE - Make a Scroll bar...
+It does scroll
+but you can't click on it TO scroll
+not yet at least...
+Also put another text input
+at the bottom of that whole thing
+and it now inputs to above
+the only problem is that I had to REMOVE the other thing
+the one where it dealt with hovering it
+so it would not do the other things below it
+Which is annoying
+I will have to look for a different way to deal with that...
+Yep.
+
+SO The NEW
+TODO - Figure out better way to not click things beneath top things.
+I might want to go through and use an "active" thing?
+To think about later.
 
 
 
@@ -116,7 +136,9 @@ THAT might help me with the whole thing...
 
 
 TODO - Add options to the right click menu.
-
+Do I want EVERYTHING to have it's OWN right click
+thing inside of it or do I want the right click method
+to call the thing?
 
 TODO - Add a lock to the buttons about where they are going?
 AKA so that once they are going one direction, they can not be told to go a different one?
@@ -776,8 +798,9 @@ class Button:
             else:
                 self.clicked["was"] = True
 
-            if self.action["click"]:
-                self.action["click"](pos)
+            if self.action:
+                if self.action["click"]:
+                    self.action["click"](pos)
             return True
         else:
             return False
