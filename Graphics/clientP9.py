@@ -467,7 +467,7 @@ class HideableChat:
         self.hovered = False
         self.t_color = (100, 100, 100)
         self.b_color = (0, 0, 0)
-        self.font = pygame.font.SysFont("Arial", 25)
+        self.font = pygame.font.SysFont("roboto/Roboto-Thin.ttf", 16)
         self.d_color = (100, 100, 100)
         self.display_x = 0
         self.display_w = 200
@@ -483,7 +483,7 @@ class HideableChat:
         self.scroll_bar = pygame.Surface((self.scroll_w, self.scroll_h - 2 * self.scroll_w))
         self.current_scroll_bar = self.scroll_bar
         self.scroll_bar.fill(self.s_color)
-        self.scroll_font = pygame.font.SysFont("Arial", 20)
+        self.scroll_font = pygame.font.SysFont("roboto/Roboto-Thin.ttf", 16)
         self.scroll_percent = 1
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
@@ -495,10 +495,12 @@ class HideableChat:
                                          (200, 200, 200), self.scroll_font, {"click": self.scrolldown})
         self.text_area_back = (200, 200, 200)
         self.text_area_text = (100, 100, 100)
-        self.text_area_font = pygame.font.SysFont("comicsans", 20)
-        self.text_to_write = ["word1 and we write more potato and potatio because why not and more ok yep",
+        # self.text_area_font = pygame.font.SysFont("comicsans", 20)
+        self.text_area_font = pygame.font.SysFont("roboto/Roboto-Thin.ttf", 16)
+        self.text_to_write = ["word1 and we write more potato and potatio because i i i i i i i i i i i i i  i i why not and more ok yep",
                               "word2", "Again", "word1", "word2", "Again", "word2", "Again", "word2", "Again",
                               "up", "Yep", "keep", "it", "up"]
+        self.word_wrap_count = 0
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
         self.text_area_w = self.display_w - 2 * self.text_area_border - self.scroll_w
@@ -529,16 +531,16 @@ class HideableChat:
             current_scroll_bar = self.scroll_bar
             if self.display_h < (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 2):
                 if self.scroll_percent != (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
-                                                             (len(self.text_to_write) + 2))):
+                                                             (len(self.text_to_write) + 1 + self.word_wrap_count))):
                     self.scroll_percent = (self.display_h / ((self.get_text_height(self.scroll_font) + 8) *
-                                                             (len(self.text_to_write) + 2)))
+                                                             (len(self.text_to_write) + 1 + self.word_wrap_count)))
                     # scale(Surface, (width, height)
                     self.current_scroll_bar = pygame.transform.scale(current_scroll_bar,
                                                                      (self.scroll_w,
                                                                       round((self.scroll_h - 2 * self.scroll_w) *
                                                                             self.scroll_percent)))
             thing = (self.scrolled_amount / (self.scroll_h - (self.get_text_height(self.scroll_font) +8) *
-                                             (len(self.text_to_write) + 1)))
+                                             (len(self.text_to_write) + 1 + self.word_wrap_count)))
             prev_height = (self.scroll_h - 2 * self.scroll_w)
             current_height = prev_height * self.scroll_percent
             window.blit(self.current_scroll_bar, (self.scroll_x,
@@ -551,36 +553,38 @@ class HideableChat:
             scrollable_area.fill(self.text_area_back)
             for number, to_render in enumerate(self.text_to_write):
                 # WORD WRAP... Probably
-                if text_wid < self.get_text_width(to_render,self.text_area_font):
-                    i_font = self.text_area_font
+                if text_wid < self.get_text_width(to_render, self.font):
+                    i_font = self.font
+                    count_wraps = 0
                     current_issue = to_render
-                    while text_wid < self.get_text_width(current_issue,i_font):
+                    while text_wid < self.get_text_width(current_issue, i_font):
                         goes_past_at = 0
                         break_at = 0
                         for i in range(len(current_issue)):
                             if text_wid < self.get_text_width(current_issue[:i], i_font):
                                 goes_past_at = i
                                 break
-                        print(goes_past_at)
+                        # print(goes_past_at)
                         for i in range(goes_past_at, 0, -1):
                             if current_issue[i].isspace():
                                 break_at = i
                                 break
-                        print(break_at)
+                        # print(break_at)
                         if break_at == 0:
                             to_rend = current_issue[:goes_past_at-1]
                             current_issue = current_issue[goes_past_at - 1:]
                         else:
                             to_rend = current_issue[:break_at]
                             current_issue = current_issue[break_at+1:]
-                        print(to_rend)
-                        print(current_issue)
+                        # print(to_rend)
+                        # print(current_issue)
                         render_text = self.font.render(to_rend, 1, self.t_color)
                         scrollable_area.blit(render_text, (self.text_area_x, current_y))
                         current_y += text_height + 8
-                        if text_wid > self.get_text_width(current_issue, self.text_area_font):
+                        count_wraps += 1
+                        if text_wid > self.get_text_width(current_issue, self.font):
                             to_render = current_issue
-
+                    self.word_wrap_count = count_wraps
                 render_text = self.font.render(to_render, 1, self.t_color)
                 scrollable_area.blit(render_text, (self.text_area_x, current_y))
                 current_y += text_height + 8
@@ -636,17 +640,18 @@ class HideableChat:
 
     def scrolldown(self, pos):
         if self.scrolled_amount > self.scroll_h - (self.get_text_height(self.scroll_font) +
-                                                   8) * (len(self.text_to_write) + 1):
+                                                   8) * (len(self.text_to_write) + 1 + self.word_wrap_count):
             # self.scrolled_amount -= 5
             self.scrolled_change = -3
 
     def update(self):
         if self.scrolled_change != 0:
             print(self.scrolled_change)
-            print(self.scroll_h - (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1))
+            print(self.scroll_h - (self.get_text_height(self.scroll_font) + 8) * (len(self.text_to_write) + 1
+                                                                                  + self.word_wrap_count))
             if self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
-                    (len(self.text_to_write) + 1) < self.scrolled_amount < 0:
+                    (len(self.text_to_write) + 1 + self.word_wrap_count) < self.scrolled_amount < 0:
                 self.scrolled_amount += self.scrolled_change
                 print("update1", self.scrolled_amount)
             elif self.scrolled_amount == 0 and self.scrolled_change < 0:
@@ -654,9 +659,9 @@ class HideableChat:
                 print("update2", self.scrolled_amount)
             elif self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
-                    (len(self.text_to_write) + 1) >= self.scrolled_amount >= self.scroll_h - \
+                    (len(self.text_to_write) + 1 + self.word_wrap_count) >= self.scrolled_amount >= self.scroll_h - \
                     (self.get_text_height(self.scroll_font) + 8) * \
-                    (len(self.text_to_write) + 2) and self.scrolled_change > 0:
+                    (len(self.text_to_write) + 2 + self.word_wrap_count) and self.scrolled_change > 0:
                 self.scrolled_amount += self.scrolled_change
                 print("update3", self.scrolled_amount)
             # elif self.scrolled_amount < 0:
