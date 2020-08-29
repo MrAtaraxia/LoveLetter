@@ -126,9 +126,7 @@ I will have to look for a different way to deal with that...
 Yep.
 
 SO The NEW
-TODO - Figure out better way to not click things beneath top things.
-I might want to go through and use an "active" thing?
-To think about later.
+
 
 
 OK... Let's try this one again...
@@ -137,10 +135,19 @@ DONE - WORD wrap.
 The words wrap...
 But it broke other things...
 SOO...
-TODO - Fix the whole issue with scrolling and word wrapping
+DONE - Fix the whole issue with scrolling and word wrapping
+So I was using different fonts in different areas
+and refrencing them for their font height when they are different
+sizes. It caused many issues.
+I think I have fixed it all now.
 
 
 
+For LATER...
+
+TODO - Figure out better way to not click things beneath top things.
+I might want to go through and use an "active" thing?
+To think about later.
 
 
 TODO - Add options to the right click menu.
