@@ -1357,15 +1357,15 @@ def move_1():
     print("b1 hover!")
 
 
-def button2_action():
+def click_2(pos):
     print("Button 2 was clicked!")
 
 
-def button3_action():
+def click_3(pos):
     print("Button 3 was clicked!")
 
 
-def button4_action():
+def click_4(pos):
     print("Button 4 was clicked!")
 
 
@@ -1533,9 +1533,9 @@ def menu_screen():
     menu_text_box = [InputTextBox("Input Text Here", 0, 0, 400, 100, (255, 255, 255),
                                   (0, 0, 0), font_regular, menu_chat.text_to_write)]
     my_dict1 = {"click": click_1, "release": release_1, "hover": hover_1, "move": move_1}
-    my_dict2 = {"click": click_1}
-    my_dict3 = {"click": click_1}
-    my_dict4 = {"click": click_1}
+    my_dict2 = {"click": click_2}
+    my_dict3 = {"click": click_3}
+    my_dict4 = {"click": click_4}
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict1, ),
                     Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict2),
