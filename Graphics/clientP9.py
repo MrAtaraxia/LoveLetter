@@ -131,6 +131,10 @@ I might want to go through and use an "active" thing?
 To think about later.
 
 
+OK... Let's try this one again...
+TODO - WORD wrap.
+
+
 
 
 
@@ -155,10 +159,8 @@ DONE - Made a hideable location for the chat to be on.
 DONE - Made buttons for top and bottom of the scroll area.
 DONE - Added text and the ability to add text to the scroll area.
 
-OK... Let's try this one again...
-TODO - WORD wrap.
 
-TODO - Make a scroll bar!
+Done - Make a scroll bar!
 if not long, don't display.
 
 
@@ -219,6 +221,7 @@ TODO - bring in drag and drop from other one.
 
 TODO - bring in hand of cards.
 
+TODO - Look into how I set it up so I didn't pick up everything on drag and drop.
 
 TODO - make stackable things!
 PUT A NUMBER OF COUNT ABOVE THINGS
@@ -261,6 +264,8 @@ in this version of pycharm!
 Oh and look into what potato has put out recently. I did like his old videos.
 
 TODO - ALSO get it so I can move around the map like I used to.
+Click and dragging on the map, moves the 'camera' around?
+If nothing is 'selected' have keys move around the map?
 
 TODO - Look at A LOT of old projects and see how they are / if I want to use any parts of them or not!
 
@@ -283,6 +288,8 @@ Quit Match
 Exit Game
 
 TODO - Make UI Elements.
+List of things on the left like there are in TableTopSimulator?
+
 
 TODO - Make the UI Elements drag and drop able so they can have it how they want it.
 How would I want to have to customized though?
@@ -460,7 +467,7 @@ class HideableChat:
         self.hovered = False
         self.t_color = (100, 100, 100)
         self.b_color = (0, 0, 0)
-        self.font = pygame.font.SysFont("comicsans", 25)
+        self.font = pygame.font.SysFont("Arial", 25)
         self.d_color = (100, 100, 100)
         self.display_x = 0
         self.display_w = 200
@@ -476,7 +483,7 @@ class HideableChat:
         self.scroll_bar = pygame.Surface((self.scroll_w, self.scroll_h - 2 * self.scroll_w))
         self.current_scroll_bar = self.scroll_bar
         self.scroll_bar.fill(self.s_color)
-        self.scroll_font = pygame.font.SysFont("comicsans", 20)
+        self.scroll_font = pygame.font.SysFont("Arial", 20)
         self.scroll_percent = 1
 
         self.scroll_up_button = Button("/\\", self.scroll_x, self.scroll_y, self.scroll_w, self.scroll_w, self.s_color,
@@ -489,7 +496,8 @@ class HideableChat:
         self.text_area_back = (200, 200, 200)
         self.text_area_text = (100, 100, 100)
         self.text_area_font = pygame.font.SysFont("comicsans", 20)
-        self.text_to_write = ["word1", "word2", "Again", "word1", "word2", "Again", "word2", "Again", "word2", "Again",
+        self.text_to_write = ["word1 and we write more potato and potatio because why not and more ok yep",
+                              "word2", "Again", "word1", "word2", "Again", "word2", "Again", "word2", "Again",
                               "up", "Yep", "keep", "it", "up"]
         self.text_area_x = self.text_area_border
         self.text_area_y = height - self.display_h + self.text_area_border
@@ -509,6 +517,7 @@ class HideableChat:
         wid = self.width
         hei = self.height
         text = self.text1
+        text_wid = self.text_area_w - 3 * self.text_area_border
         if self.clicked:
             #  Drawing the border
             pygame.draw.rect(window, self.d_color, (self.display_x, self.display_y, self.display_w, self.display_h))
@@ -541,6 +550,37 @@ class HideableChat:
             scrollable_area = pygame.Surface((self.text_area_w, self.text_area_h))
             scrollable_area.fill(self.text_area_back)
             for number, to_render in enumerate(self.text_to_write):
+                # WORD WRAP... Probably
+                if text_wid < self.get_text_width(to_render,self.text_area_font):
+                    i_font = self.text_area_font
+                    current_issue = to_render
+                    while text_wid < self.get_text_width(current_issue,i_font):
+                        goes_past_at = 0
+                        break_at = 0
+                        for i in range(len(current_issue)):
+                            if text_wid < self.get_text_width(current_issue[:i], i_font):
+                                goes_past_at = i
+                                break
+                        print(goes_past_at)
+                        for i in range(goes_past_at, 0, -1):
+                            if current_issue[i].isspace():
+                                break_at = i
+                                break
+                        print(break_at)
+                        if break_at == 0:
+                            to_rend = current_issue[:goes_past_at-1]
+                            current_issue = current_issue[goes_past_at - 1:]
+                        else:
+                            to_rend = current_issue[:break_at]
+                            current_issue = current_issue[break_at+1:]
+                        print(to_rend)
+                        print(current_issue)
+                        render_text = self.font.render(to_rend, 1, self.t_color)
+                        scrollable_area.blit(render_text, (self.text_area_x, current_y))
+                        current_y += text_height + 8
+                        if text_wid > self.get_text_width(current_issue, self.text_area_font):
+                            to_render = current_issue
+
                 render_text = self.font.render(to_render, 1, self.t_color)
                 scrollable_area.blit(render_text, (self.text_area_x, current_y))
                 current_y += text_height + 8
