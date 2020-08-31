@@ -184,21 +184,21 @@ but then relaized it would cause other issues
 so I just used its normal variables to do it.
 I think that worked out fine.
 
-TODO - Add word wrap to the thing as well.
+DONE - Add word wrap to the thing as well.
 # find the first space from the right.
 if len(words) > window length
 input a /r after it?
 
 DONE - Make a scroll bar location.
 The location is there... though it doesn't have anything special about it.
-TODO - Put a sprite on it that can only move up and down.
+DONE - Put a sprite on it that can only move up and down.
 
 
 TODO - Make a scroll bar that works to scroll around the chat log.
 
 
-TODO - Put a different input text under the chat log, as it should be.
-
+DONE - Put a different input text under the chat log, as it should be.
+Yep
 
 TODO - I do REALLY want a log that can be viewed through this...
 
@@ -1358,15 +1358,19 @@ def move_1():
 
 
 def click_2(pos):
-    print("Button 2 was clicked!")
+    print("Rules - Was Clicked!")
+    print(pos[0], pos[1])
+    return menu_settings(screen)
 
 
 def click_3(pos):
-    print("Button 3 was clicked!")
+    print("ExampleGame - Was Clicked!")
+    print(pos[0], pos[1])
+    return example_game(screen)
 
 
 def click_4(pos):
-    print("Button 4 was clicked!")
+    print("Quit Button was clicked!")
 
 
 def redrawWindow(win, game, p, buttons):
@@ -1494,9 +1498,31 @@ def game_handle_keys(buttons, connect, game_name, player_number):
                             connect.send(button.text)
 
 
+def example_game(window):
+    in_game = True
+    quit_game = False
+    clock = pygame.time.Clock()
+    while in_game:
+        # Draw Things
+        window.fill((0, 128, 0))
+        # Update Things
+        pygame.display.update()
+        # Input things
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                in_game = False
+                quit_game = True
+                return quit_game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # To go back to the other menu
+                    in_game = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # To go back to the other menu
+                    in_game = False
+
+
 def menu_settings(window):
     on_menu = True
-    global screen
     quit_game = False
     clock = pygame.time.Clock()
     while on_menu:
@@ -1515,9 +1541,7 @@ def menu_settings(window):
         # Update Things
 
 
-
-
-def menu_screen():
+def main_menu_screen():
     font_big = pygame.font.SysFont("comicsans", 60)
     font_regular = pygame.font.SysFont("comicsans", 30)
     menu_title = font_big
@@ -1539,7 +1563,7 @@ def menu_screen():
     menu_buttons = [Button("Click to Play!", 0, 0, 300, 100, menu_color1, menu_color2, menu_title),
                     Button("Options", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict1, ),
                     Button("Rules", 0, 0, 120, 80, R_BUTTON, menu_color2, menu_font, my_dict2),
-                    Button("Print", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict3),
+                    Button("Example", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict3),
                     Button("Quit", 0, 0, 120, 80, B_BUTTON, menu_color2, menu_font, my_dict4)
                     ]
     menu_buttons[0].xy["x"] = int(width / 10 - menu_buttons[0].xy["width"] / 10) * 5
@@ -1660,7 +1684,7 @@ def menu_screen():
 
 def main():
     while True:
-        menu_screen()
+        main_menu_screen()
 
 
 if __name__ == "__main__":
