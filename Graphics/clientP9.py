@@ -312,6 +312,7 @@ TODO - Make the words wrap
 TODO - Make the words pull the thing to the window.
 (Probably similar to the scrolling down for the Text window.)
 
+TODO - Convert this into a better version with classes.
 
 
 END GOAL:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
