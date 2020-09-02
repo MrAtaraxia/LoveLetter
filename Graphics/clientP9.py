@@ -1,5 +1,17 @@
 """
 Client
+2020.09.02.
+So recently I have been going deeper into ObjectOrientedPython Book
+I BELIEVE that THAT will help me have a better understanding of what
+I want to do with this...
+Totally real thing... yep... not just saying things...
+Nope...
+
+Well it DOES cover some topics that I want to have a better understanding
+of including file storage and file transmission, which COULD help this...
+but we will see how much I actually use that in this...
+Hopefully a lot.
+
 - A little issue with moving toward the corners
 As It does not stop all the time when I am moving the mouse
 while clicking on it.
