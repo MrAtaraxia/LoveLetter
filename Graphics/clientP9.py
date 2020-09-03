@@ -12,6 +12,8 @@ of including file storage and file transmission, which COULD help this...
 but we will see how much I actually use that in this...
 Hopefully a lot.
 
+
+
 - A little issue with moving toward the corners
 As It does not stop all the time when I am moving the mouse
 while clicking on it.
