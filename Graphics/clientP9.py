@@ -12,8 +12,6 @@ of including file storage and file transmission, which COULD help this...
 but we will see how much I actually use that in this...
 Hopefully a lot.
 
-
-
 - A little issue with moving toward the corners
 As It does not stop all the time when I am moving the mouse
 while clicking on it.
@@ -188,6 +186,9 @@ DONE - Added text and the ability to add text to the scroll area.
 Done - Make a scroll bar!
 if not long, don't display.
 
+TODO - have some order figured out.
+Back to front for drawing.
+Front to back for interacting.
 
 DONE - Make it so that on hovering it doesn't interact with what is below it.
 put a continue somewhere in it I believe.
