@@ -1558,8 +1558,10 @@ def menu_settings(window):
 
 
 def main_menu_screen():
-    font_big = pygame.font.SysFont("comicsans", 60)
-    font_regular = pygame.font.SysFont("comicsans", 30)
+    # font_big = pygame.font.SysFont("comicsans", 60)
+    font_big = pygame.font.SysFont("roboto/Roboto-Bold.ttf", 50)
+    # font_regular = pygame.font.SysFont("comicsans", 30)
+    font_regular = pygame.font.SysFont("roboto/Roboto-Thin.ttf", 25)
     menu_title = font_big
     menu_font = font_regular
     buttons_clicked = False
