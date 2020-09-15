@@ -149,7 +149,7 @@ But it broke other things...
 SOO...
 DONE - Fix the whole issue with scrolling and word wrapping
 So I was using different fonts in different areas
-and refrencing them for their font height when they are different
+and referencing them for their font height when they are different
 sizes. It caused many issues.
 I think I have fixed it all now.
 
@@ -195,7 +195,7 @@ put a continue somewhere in it I believe.
 This worked, though I didn't do it right when I started it
 So it took longer than I expected it to. Mostly because I
 was planning to put a return variable in for it
-but then relaized it would cause other issues
+but then realized it would cause other issues
 so I just used its normal variables to do it.
 I think that worked out fine.
 
